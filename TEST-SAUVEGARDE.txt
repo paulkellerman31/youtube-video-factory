@@ -1,0 +1,3 @@
+Test de sauvegarde automatique GitHub.
+Si tu vois ce fichier sur github.com, la synchro fonctionne.
+Créé le 2026-06-08 par Claude. Tu peux le supprimer ensuite.
