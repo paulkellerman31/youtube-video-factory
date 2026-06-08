@@ -1,0 +1,14 @@
+{
+  "name": "youtube-video-factory",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "factory": "tsx scripts/cli.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "playwright": "^1.49.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

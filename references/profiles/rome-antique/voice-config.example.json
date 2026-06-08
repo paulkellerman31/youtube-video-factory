@@ -1,0 +1,7 @@
+{
+  "provider": "elevenlabs",
+  "voiceId": "REMPLIR_ton_voiceId_elevenlabs",
+  "modelId": "eleven_multilingual_v2",
+  "settings": { "stability": 0.5, "similarityBoost": 0.75, "style": 0.0, "useSpeakerBoost": true },
+  "note": "Copie ce fichier en voice-config.json et mets ton voiceId. voice-config.json est gitignored."
+}

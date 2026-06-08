@@ -1,0 +1,4 @@
+[
+  { "sceneId": "s01", "prompt": "Abstract concept image for the hook, dark cinematic, no text, no words, no letters, no numbers, no labels, no logos" },
+  { "sceneId": "s02", "source": "screen_capture", "capture": { "url": "https://example.com/pricing", "viewport": "1920x1080", "fullPage": false, "hideSelectors": ["#cookie-banner"], "delayMs": 2000 } }
+]

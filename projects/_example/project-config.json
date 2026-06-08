@@ -1,0 +1,13 @@
+{
+  "projectId": "_example",
+  "channel": "ofm",
+  "format": "C",
+  "tone": "AUTHORITY",
+  "language": "en",
+  "subtitles": "burned",
+  "scenes": [
+    { "sceneId": "s01", "audioStart": 0.0, "audioEnd": 8.0, "visualType": "AI_IMAGE", "motion": "push-in", "textOverlay": "YOUR HOOK HERE" },
+    { "sceneId": "s02", "audioStart": 8.0, "audioEnd": 16.0, "visualType": "GRAPHIC", "motion": "static", "textOverlay": null }
+  ],
+  "music": { "mood": "dark confident pulse", "searchTerms": "dark minimal electronic" }
+}

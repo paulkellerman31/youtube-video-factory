@@ -1,0 +1,7 @@
+{
+  "provider": "elevenlabs",
+  "voiceId": "uPAMWfxbOkHa2IH8c1p2",
+  "modelId": "eleven_multilingual_v2",
+  "settings": { "stability": 0.5, "similarityBoost": 0.75, "style": 0.0, "useSpeakerBoost": true },
+  "note": "Monte stability si les phrases longues vacillent. Toute modif = entree CHANGELOG."
+}
