@@ -1,0 +1,7 @@
+{
+  "provider": "elevenlabs",
+  "voiceId": "A_REMPLIR_voix_narration_documentaire",
+  "modelId": "eleven_multilingual_v2",
+  "settings": { "stability": 0.55, "similarityBoost": 0.75, "style": 0.0, "useSpeakerBoost": true },
+  "note": "Gabarit. Choisir une voix narration documentaire posee. La pipeline refuse de tourner tant que voiceId contient REMPLIR."
+}
