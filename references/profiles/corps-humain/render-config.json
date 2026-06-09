@@ -1,0 +1,4 @@
+{
+  "subtitles": "burned",
+  "note": "burned | cc | none — le .srt CC est TOUJOURS produit. Burned = segments courts (<=4 mots) incrustes, pour visionnage mobile/sans son. Surchargeable par projet via project-config.json (champ subtitles)."
+}
