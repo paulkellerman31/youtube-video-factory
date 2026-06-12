@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { captureHashInput, screenCapture, type CaptureSpec } from "./lib/capture.js";
 import { compositionDir, hyperframesHashInput, renderHyperframes, type HyperframesSpec } from "./lib/hyperframes.js";
 import { readManifest, writeFragment, type ImageFragment } from "./lib/manifest.js";
+import { thumbnailOverlay } from "./lib/ffmpeg.js";
 import { getRates } from "./lib/rates.js";
 import { getChannel, profileFile } from "./lib/profile.js";
 import { fetchWithRetry, log, round2, sha256 } from "./lib/util.js";
@@ -19,6 +20,28 @@ interface SceneAsset {
   hyperframes?: HyperframesSpec; // optional for hyperframes (composition dir defaults to hyperframes/<sceneId>)
   quality?: "low" | "medium" | "high"; // per-entry override of IMAGE_QUALITY (e.g. thumbnail -> "high")
   overlay?: { lines: string[]; accent?: string }; // thumbnail only: text burned by ffmpeg ($0) -> assets/thumbnail.png
+}
+
+/**
+ * Thumbnail final: burn the playbook text overlay (Impact, white + accent, right third)
+ * onto assets/images/thumbnail.png -> assets/thumbnail.png + keep assets/thumbnail-raw.png.
+ * Local ffmpeg, $0, ~1s: re-run unconditionally (no hash) so an overlay edit never re-bills the AI image.
+ */
+function applyThumbnailOverlay(p: SceneAsset, rawFile: string, projectDir: string, dryRun: boolean): void {
+  if (p.sceneId !== "thumbnail" || !p.overlay?.lines?.length) return;
+  if (dryRun) {
+    log("DRY", `images: thumbnail overlay "${p.overlay.lines.join(" / ")}" -> assets/thumbnail.png - $0 (ffmpeg local)`);
+    return;
+  }
+  if (!existsSync(rawFile)) return; // raw not generated yet (e.g. ONLY_SCENE run)
+  copyFileSync(rawFile, join(projectDir, "assets", "thumbnail-raw.png"));
+  thumbnailOverlay({
+    image: rawFile,
+    out: join(projectDir, "assets", "thumbnail.png"),
+    lines: p.overlay.lines,
+    accent: p.overlay.accent,
+  });
+  log("COST", `images: thumbnail overlay $0 (ffmpeg) -> assets/thumbnail.png + thumbnail-raw.png`);
 }
 
 /** Pull the global style string out of the channel profile's style.md (code fence under its heading). */
@@ -201,6 +224,7 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
     log("COST", `images: ${p.sceneId} $${perImage}`);
     generated++;
     cost += perImage;
+    applyThumbnailOverlay(p, outFile, projectDir, dryRun);
   }
 
   if (dryRun && !process.env.OPENAI_API_KEY) log("WARN", "images: OPENAI_API_KEY missing from .env");
