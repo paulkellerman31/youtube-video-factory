@@ -208,7 +208,12 @@ THEN append after table:
 📺 METADATA:
 
 * 3 titles (no OnlyFans in title, keyword left-loaded, concrete numbers if possible)
-* Description: line 3 = affiliate link, repeated after content bullets, full timestamps
+* Description — ordre verrouillé (2026-06-12, but: tunnel lead magnet) :
+  1. hook (1-2 lignes)
+  2. `🎁 FREE — the 312 searches your next models are Googling tonight: https://go.ofm-tools.com/keyword-pack` ← TOUJOURS en 2e bloc, avant tout lien affilié
+  3. lien(s) affilié(s) + ressources
+  4. contenu/bullets + timestamps complets
+  5. rappel lien + `Subscribe for honest infrastructure audits for OFM agencies.`
 * 15 tags
 
 🖼 THUMBNAIL PROMPT: Generate using this exact structure: "A high-impact YouTube Thumbnail, [NICHE] style. Subject: An oversized ultra-detailed [HERO OBJECT] displaying [TOOL/CONCEPT] interface with NO text, NO words, NO labels on screen or any surface, held by a human hand with visible skin texture. Background: dark luxury tech office with [BRAND COLORS] and subtle bokeh blur. Lighting: extreme cinematic rim lighting, high contrast, vibrant saturation. Composition: rule of thirds, subject on the LEFT, large empty negative space on the RIGHT for text overlay. Sharp focus, 8k, photorealistic. --ar 16:9 --style raw"
