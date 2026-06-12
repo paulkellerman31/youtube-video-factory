@@ -252,3 +252,16 @@ text overlay contract (max 4, trigger words), thumbnail prompt structure, format
     "capture": { "url": "https://exemple.com/pricing", "viewport": "1920x1080",
                  "fullPage": false, "selector": ".pricing-table",
                  "hideSelectors": ["#cookie-banner"], "delayMs": 1500 } },
+  { "sceneId": "s03", "source": "manual_asset" }                        // ← fichier humain: assets/captures/s03.png
+]
+```
+
+Routing for tool reviews: `screen_capture` = public pages (pricing, homepage, comparatif) ;
+`manual_asset` = dashboard connecté fourni par l'humain ; `ai_image` = tout le reste.
+
+Subtitles: profile `render-config.json` → `subtitles: burned | cc | none` (override par projet
+via `project-config.json`). `subs.srt` toujours produit pour les CC YouTube. En `burned` :
+segments ≤ 4 mots, une ligne, remontés au-dessus des contrôles, fond semi-transparent,
+JAMAIS affichés sur une scène capture/manual_asset ni sur une scène à overlay.
+Public URLs only — no login automation, ever. Captures cost $0 and are idempotent
+(hash of url+viewport+fullPage+selector+hideSelectors; re-captured only if the spec changes).
