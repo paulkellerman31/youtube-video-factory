@@ -27,12 +27,16 @@ BRAND COLORS:   blue + white, neon blue #00C8FF (see image-prompt-style.md)
 
 **FORMATS:**
 
-* A — Tool Review → Problem→Tool→Proof→CTA | Ceiling: medium
+* A — Tool Review → Problem→Tool→Proof→CTA | Ceiling: medium — **packaging confirmé faible** (Bright Data Review : CTR 0,65 %, data 2026-06). Format A garde sa structure mais son TITRE/THUMBNAIL est toujours packagé comme un B (problème d'abord).
 * B — Problem First → Problem→Solutions→Tool→CTA | Ceiling: high
 * C — Myth Buster → Belief→Why wrong→Fix→CTA | Ceiling: very high
 * D — Case Study → Story→Fail→Fix→Results→CTA | Ceiling: very high
 * E — System Reveal → System→Components→Tool→CTA | Ceiling: high
 * Mix: 40%B / 30%C / 20%D / 10%A
+
+**HIGH-CTR ANGLES (data chaîne OFM, 90 j au 2026-06-12 — échantillon faible, directionnel) :**
+
+* "Free resource + sécurité légale/financière" = meilleur package observé (Contract Template : CTR 13,3 % ; Anti-Freeze Banking : 9,4 %). Quand Théo dépose un sujet compatible, prioriser cet angle : peur concrète (freeze, ban, arnaque) + livrable prêt à l'emploi nommé dans le titre.
 
 **TONES:**
 
@@ -70,6 +74,7 @@ Output is valid when:
 * ✗ STRIP ≠ ROUTE: only strip DECORATIVE text (fake burning invoice, bogus seal). If the text CARRIES the meaning (calendar = the months, dashboard = data, sign = a number, clock = the time) do NOT blank it — a blank box guts the scene. ROUTE it instead (overlay with the real words / GRAPHIC / capture)
 * ✗ No full table before PLAN is confirmed
 * ✗ No "OnlyFans" in video title — use in tags/description only
+* ✗ No "<Tool> Review" as title (CTR mort : 0,65 % vs 13,3 % problem-first, data 2026-06). Le titre vend le problème résolu ou le bénéfice ("Stop the Shadowban…") ; le nom de l'outil va dans la vidéo, les tags, la description — jamais seul en titre
 
 ## CONTENT SELECTION
 

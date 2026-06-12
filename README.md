@@ -2,6 +2,13 @@
 
 Outil de création de vidéos faceless YouTube, en bulk, à ~20% d'effort humain.
 
+## Lancer les rendus (process)
+
+- **Tout le backlog** : double-clique `factory.bat` → rend chaque projet non à jour, skippe les
+  déjà-faits (idempotent, 0 $). C'est le mode normal pour le volume.
+- **Un seul projet** : glisse-dépose son dossier sur `run-windows.bat`.
+- Ne plus créer de launcher par vidéo.
+
 ## Installation (après clone)
 
 ```bash

@@ -70,9 +70,17 @@ To raise quality, change a preset — never re-decide per video.
    - `manual_asset` — a file the human drops at `assets/captures/<sceneId>.png` BEFORE the
      run (logged-in dashboards). Pipeline uses it, never generates/overwrites it; missing =
      hard stop, no silent AI fallback.
+   - `hyperframes` — animated HTML scene (charts, counters, kinetic text) for data/number
+     scenes where a still is weak. The plan writes a self-contained composition at
+     `hyperframes/<sceneId>/index.html` (`data-duration` = scene length, GSAP timeline in
+     `window.__timelines`); the render produces `assets/hyperframes/<sceneId>.mp4` locally
+     (HyperFrames CLI, $0, no API) and assemble conforms the clip to the scene window
+     instead of Ken Burns. Optional fields: `hyperframes.dir` / `fps` (30) / `quality`
+     (standard). `textOverlay` is ignored on these scenes — the text lives in the HTML.
+     Local render only, never the CLI's cloud commands.
 
    Tool reviews: `screen_capture` for public pages, `manual_asset` for the connected
-   dashboard, `ai_image` for the rest.
+   dashboard, `hyperframes` for data/number scenes, `ai_image` for the rest.
 
    **Hard rule — text:** AI images NEVER contain readable text (model can't write). Every
    `ai_image` prompt ends with the canonical negative: `no text, no words, no letters,
@@ -86,8 +94,8 @@ To raise quality, change a preset — never re-decide per video.
 5. **Subtitles per channel** (`references/profiles/<channel>/render-config.json`, field
    `subtitles`, overridable per project in `project-config.json`):
    - `burned` (ofm default) — short one-line segments (≤4 words), raised above player
-     controls, semi-transparent box, auto-suppressed on `screen_capture`/`manual_asset`
-     scenes and on overlay scenes. For niches watched muted/ambient.
+     controls, semi-transparent box, auto-suppressed on `screen_capture`/`manual_asset`/
+     `hyperframes` scenes and on overlay scenes. For niches watched muted/ambient.
    - `cc` (rome-antique default) — clean image, native YouTube CC carry the text.
    - `none` — neither emphasized.
    Whatever the mode, `subs.srt` is ALWAYS generated — upload it as YouTube CC.

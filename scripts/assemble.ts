@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { concatClips, ffmpegAvailable, ffprobeDuration, finalMux, kenBurnsClip, type Motion } from "./lib/ffmpeg.js";
+import { concatClips, conformClip, ffmpegAvailable, ffprobeDuration, finalMux, kenBurnsClip, type Motion } from "./lib/ffmpeg.js";
 import { readManifest, writeFragment } from "./lib/manifest.js";
 import { getSubtitlesMode } from "./lib/profile.js";
 import { log, round2, sha256 } from "./lib/util.js";
@@ -80,23 +80,34 @@ function toSrt(captions: Caption[]): string {
   return captions.map((c, i) => `${i + 1}\n${ts(c.start)} --> ${ts(c.end)}\n${c.text}\n`).join("\n");
 }
 
-/** Scene ids whose visuals must never be covered by burned subtitles (real UI + overlays). */
+/** sceneId -> asset source (default ai_image), from image-prompts.json. */
+function sceneSources(projectDir: string): Map<string, string> {
+  try {
+    const prompts = JSON.parse(readFileSync(join(projectDir, "image-prompts.json"), "utf8")) as Array<{ sceneId: string; source?: string }>;
+    return new Map(prompts.map((p) => [p.sceneId, p.source ?? "ai_image"]));
+  } catch {
+    return new Map(); // no prompts file -> everything treated as ai_image
+  }
+}
+
+/** Scene ids whose visuals must never be covered by burned subtitles (real UI, animated HTML, overlays). */
 function protectedSceneIds(projectDir: string, scenes: SceneCfg[]): Set<string> {
   const ids = new Set<string>();
   for (const s of scenes) if (s.textOverlay) ids.add(s.sceneId);
-  try {
-    const prompts = JSON.parse(readFileSync(join(projectDir, "image-prompts.json"), "utf8")) as Array<{ sceneId: string; source?: string }>;
-    for (const p of prompts) if (p.source === "screen_capture" || p.source === "manual_asset") ids.add(p.sceneId);
-  } catch { /* no prompts file -> only overlays protected */ }
+  for (const [sceneId, source] of sceneSources(projectDir)) {
+    if (source === "screen_capture" || source === "manual_asset" || source === "hyperframes") ids.add(sceneId);
+  }
   return ids;
 }
 
 /**
  * project-config.json + manifest + assets -> final.mp4
  * Per scene: Ken Burns clip sized to its (rescaled) audio window -> concat -> voice (+ music bed).
+ * hyperframes scenes use their pre-rendered clip (assets/hyperframes/<sceneId>.mp4) conformed to
+ * the scene window instead of a Ken Burns still.
  * Subtitles: subs.srt (CC chunking) is ALWAYS written. Burned subtitles (mode "burned") use
  * their own short-segment cut (subs-burned.srt: <=4 words, one line) and are dropped on
- * screen_capture / manual_asset scenes and on scenes with a text overlay.
+ * screen_capture / manual_asset / hyperframes scenes and on scenes with a text overlay.
  */
 export async function assemble(ctx: StepCtx): Promise<void> {
   const { projectDir, dryRun } = ctx;
@@ -109,7 +120,13 @@ export async function assemble(ctx: StepCtx): Promise<void> {
   const subsMode = getSubtitlesMode(projectDir);
   const manifest = readManifest(projectDir);
   const voice = join(projectDir, "assets", "audio", "voice.mp3");
-  const missingImages = scenes.filter((s) => !existsSync(join(projectDir, "assets", "images", `${s.sceneId}.png`)));
+  const sources = sceneSources(projectDir);
+  const isHyper = (sceneId: string): boolean => sources.get(sceneId) === "hyperframes";
+  const sceneAssetPath = (sceneId: string): string =>
+    isHyper(sceneId)
+      ? join(projectDir, "assets", "hyperframes", `${sceneId}.mp4`)
+      : join(projectDir, "assets", "images", `${sceneId}.png`);
+  const missingImages = scenes.filter((s) => !existsSync(sceneAssetPath(s.sceneId)));
 
   // Optional music bed: first audio file in assets/music/
   const musicDir = join(projectDir, "assets", "music");
@@ -156,6 +173,16 @@ export async function assemble(ctx: StepCtx): Promise<void> {
   const clipsDir = join(projectDir, "assets", "clips");
   mkdirSync(clipsDir, { recursive: true });
   scenes.forEach((s, i) => {
+    if (isHyper(s.sceneId)) {
+      log("INFO", `assemble: scene ${s.sceneId} — hyperframes clip, ${durations[i].toFixed(2)}s`);
+      if (s.textOverlay) log("WARN", `assemble: ${s.sceneId} textOverlay ignoré (hyperframes — le texte vit dans la composition HTML)`);
+      conformClip({
+        clip: join(projectDir, "assets", "hyperframes", `${s.sceneId}.mp4`),
+        out: join(clipsDir, `${s.sceneId}.mp4`),
+        durationSec: durations[i],
+      });
+      return;
+    }
     log("INFO", `assemble: scene ${s.sceneId} — ${s.motion}, ${durations[i].toFixed(2)}s`);
     kenBurnsClip({
       image: join(projectDir, "assets", "images", `${s.sceneId}.png`),

@@ -52,6 +52,11 @@ human hand for authenticity (avoids the CGI look); hero object oversized for mob
 | Trending / Cultural | riding a current trend | current aesthetic codes (retro, neon, gaming) |
 | Drama / Exaggeration | shock | oversized reaction or staged accident |
 
+**Règle dure — vidéos "review" d'outil (data 2026-06 : CTR 0,65 % sur packaging logo/outil) :**
+jamais l'outil/logo seul en héros. Archétype imposé : **Contrast Grab** ou **Urgency/FOMO**,
+centré sur le problème que l'outil résout (danger, blocage, perte). L'outil peut apparaître
+en objet secondaire, jamais en sujet principal.
+
 ---
 
 ## 5. Power-keyword glossary — include to lift render quality + CTR

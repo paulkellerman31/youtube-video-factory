@@ -105,6 +105,37 @@ export function kenBurnsClip(opts: {
   );
 }
 
+/**
+ * Conform a pre-rendered clip (hyperframes) to its scene window: scale/pad to frame, exact
+ * duration (last frame held if the source is shorter), same codec params as kenBurnsClip so
+ * concatClips' -c copy stays valid. Video only — any composition audio is dropped.
+ */
+export function conformClip(opts: {
+  clip: string;
+  out: string;
+  durationSec: number;
+  width?: number;
+  height?: number;
+  fps?: number;
+  cwd?: string;
+}): void {
+  const { clip, out, durationSec, width = 1920, height = 1080, fps = 30, cwd } = opts;
+  const d = durationSec.toFixed(3);
+  const filters = [
+    `scale=${width}:${height}:force_original_aspect_ratio=decrease`,
+    `pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
+    `fps=${fps}`,
+    `tpad=stop_mode=clone:stop_duration=${d}`,
+    `trim=duration=${d}`,
+    "setpts=PTS-STARTPTS",
+    "format=yuv420p",
+  ];
+  run(
+    ["-i", clip, "-vf", filters.join(","), "-r", String(fps), "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-an", out],
+    cwd,
+  );
+}
+
 /** Concat pre-encoded scene clips (same codec/params) without re-encoding. */
 export function concatClips(listFile: string, out: string, cwd?: string): void {
   run(["-f", "concat", "-safe", "0", "-i", listFile, "-c", "copy", out], cwd);

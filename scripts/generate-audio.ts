@@ -14,7 +14,7 @@ export interface StepCtx {
 interface VoiceConfig {
   voiceId: string;
   modelId: string;
-  settings: { stability: number; similarityBoost: number; style: number; useSpeakerBoost: boolean };
+  settings: { stability: number; similarityBoost: number; style: number; useSpeakerBoost: boolean; speed?: number };
 }
 
 /**
@@ -66,6 +66,7 @@ export async function generateAudio(ctx: StepCtx): Promise<void> {
           similarity_boost: vc.settings.similarityBoost,
           style: vc.settings.style,
           use_speaker_boost: vc.settings.useSpeakerBoost,
+          ...(vc.settings.speed != null ? { speed: vc.settings.speed } : {}),
         },
       }),
     },

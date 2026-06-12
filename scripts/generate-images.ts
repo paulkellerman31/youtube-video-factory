@@ -1,13 +1,14 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { captureHashInput, screenCapture, type CaptureSpec } from "./lib/capture.js";
+import { compositionDir, hyperframesHashInput, renderHyperframes, type HyperframesSpec } from "./lib/hyperframes.js";
 import { readManifest, writeFragment, type ImageFragment } from "./lib/manifest.js";
 import { getRates } from "./lib/rates.js";
 import { getChannel, profileFile } from "./lib/profile.js";
 import { fetchWithRetry, log, round2, sha256 } from "./lib/util.js";
 import type { StepCtx } from "./generate-audio.js";
 
-type AssetSource = "ai_image" | "screen_capture" | "manual_asset";
+type AssetSource = "ai_image" | "screen_capture" | "manual_asset" | "hyperframes";
 
 interface SceneAsset {
   sceneId: string;
@@ -15,6 +16,7 @@ interface SceneAsset {
   prompt?: string; // required for ai_image
   ar?: string;
   capture?: CaptureSpec; // required for screen_capture
+  hyperframes?: HyperframesSpec; // optional for hyperframes (composition dir defaults to hyperframes/<sceneId>)
 }
 
 /** Pull the global style string out of the channel profile's style.md (code fence under its heading). */
@@ -31,8 +33,11 @@ function extractGlobalStyle(stylePath: string): string {
  *  - screen_capture : Playwright screenshot of a PUBLIC url ($0)
  *  - manual_asset   : human-dropped file at assets/captures/<sceneId>.png ($0) — never
  *                     generated, never overwritten; missing = hard stop, no silent AI fallback
+ *  - hyperframes    : animated HTML composition (hyperframes/<sceneId>/index.html, written by
+ *                     the plan) -> assets/hyperframes/<sceneId>.mp4 via the HyperFrames CLI ($0,
+ *                     local render); assemble conforms the clip instead of Ken Burns
  * Idempotent per scene: ai_image hash(prompt+style+size+quality) / capture hash(spec) /
- * manual hash(file bytes).
+ * manual hash(file bytes) / hyperframes hash(composition files + render settings).
  */
 export async function generateImages(ctx: StepCtx): Promise<void> {
   const { projectDir, dryRun } = ctx;
@@ -116,6 +121,37 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
       await screenCapture(p.capture, outFile);
       upsert({ sceneId: p.sceneId, file: `assets/images/${p.sceneId}.png`, hash, costUSD: 0, generatedAt: new Date().toISOString() });
       log("COST", `images: ${p.sceneId} $0 (screen_capture)`);
+      generated++;
+      continue;
+    }
+
+    // ---------- hyperframes: local HTML composition -> animated MP4 clip ----------
+    if (source === "hyperframes") {
+      const compDir = compositionDir(projectDir, p.sceneId, p.hyperframes);
+      const outClip = join(projectDir, "assets", "hyperframes", `${p.sceneId}.mp4`);
+      if (!existsSync(join(compDir, "index.html"))) {
+        const msg = `composition manquante pour ${p.sceneId} (attendu: ${p.hyperframes?.dir ?? `hyperframes/${p.sceneId}`}/index.html)`;
+        if (dryRun) {
+          log("WARN", `images: ${p.sceneId} source=hyperframes — ${msg}`);
+          continue;
+        }
+        throw new Error(msg);
+      }
+      const hash = sha256(hyperframesHashInput(compDir, p.hyperframes) + "|hyperframes");
+      if (existsSync(outClip) && existing?.hash === hash) {
+        log("SKIP", `images: ${p.sceneId} up to date (hyperframes, hash ${hash})`);
+        skipped++;
+        continue;
+      }
+      if (dryRun) {
+        log("DRY", `images: ${p.sceneId} source=hyperframes comp=${p.hyperframes?.dir ?? `hyperframes/${p.sceneId}`} fps=${p.hyperframes?.fps ?? 30} quality=${p.hyperframes?.quality ?? "standard"} - $0 (render local NOT launched)`);
+        generated++;
+        continue;
+      }
+      mkdirSync(join(projectDir, "assets", "hyperframes"), { recursive: true });
+      renderHyperframes(compDir, outClip, p.hyperframes);
+      upsert({ sceneId: p.sceneId, file: `assets/hyperframes/${p.sceneId}.mp4`, hash, costUSD: 0, generatedAt: new Date().toISOString() });
+      log("COST", `images: ${p.sceneId} $0 (hyperframes)`);
       generated++;
       continue;
     }
