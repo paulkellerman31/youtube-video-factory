@@ -159,12 +159,16 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
 
     // ---------- ai_image: historical behaviour, byte-for-byte identical hash ----------
     if (!p.prompt) throw new Error(`images: ${p.sceneId} source=ai_image sans prompt`);
+    const quality = p.quality ?? defaultQuality; // per-entry override (thumbnail -> "high")
+    const perImage = getRates().gptImage1PerImageUSD[quality] ?? getRates().gptImage1PerImageUSD.medium;
     const fullPrompt = `${p.prompt.trim()}. ${style}`;
+    // legacy entries (no quality/overlay) keep a byte-identical hash -> nothing regenerates
     const hash = sha256([fullPrompt, size, quality].join("|"));
 
     if (existsSync(outFile) && existing?.hash === hash) {
       log("SKIP", `images: ${p.sceneId} up to date (hash ${hash})`);
       skipped++;
+      applyThumbnailOverlay(p, outFile, projectDir, dryRun);
       continue;
     }
 
@@ -172,6 +176,7 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
       log("DRY", `images: would generate ${p.sceneId} (${quality}, ${size}) - est. $${perImage} - prompt: "${fullPrompt.slice(0, 110)}..."`);
       generated++;
       cost += perImage;
+      applyThumbnailOverlay(p, outFile, projectDir, dryRun);
       continue;
     }
 
