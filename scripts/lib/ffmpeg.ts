@@ -54,6 +54,30 @@ function fontFilePrefix(outFile: string, cwd?: string): string {
   return `fontfile='${rel}':`;
 }
 
+/**
+ * Burn the thumbnail text overlay per references/thumbnail-playbook.md §6:
+ * ≤ 2 lines ALL CAPS, Impact (FONT_CANDIDATES), line 1 white / line 2 accent color,
+ * right-aligned in the reserved right third, never in the bottom 20%.
+ * Output: 1280x720 (YouTube upload spec), center-cropped from the 1536x1024 source.
+ */
+export function thumbnailOverlay(opts: {
+  image: string;
+  out: string;
+  lines: string[];
+  accent?: string; // brand accent — default neon blue (image-prompt-style.md)
+  cwd?: string;
+}): void {
+  const { image, out, lines, accent = "#00C8FF", cwd } = opts;
+  const font = fontFilePrefix(out, cwd);
+  const esc = (t: string) => t.replace(/\\/g, "\\\\").replace(/'/g, "’").replace(/:/g, "\\:");
+  const draw = lines.slice(0, 2).map((l, i) => {
+    const color = i === 0 ? "white" : accent;
+    return `drawtext=${font}text='${esc(l.toUpperCase())}':fontsize=120:fontcolor=${color}:borderw=8:bordercolor=black@0.9:x=w-text_w-56:y=${72 + i * 144}`;
+  });
+  const filters = ["scale=1280:720:force_original_aspect_ratio=increase", "crop=1280:720", ...draw];
+  run(["-i", image, "-vf", filters.join(","), "-frames:v", "1", "-update", "1", out], cwd);
+}
+
 /** Render one still image into a Ken Burns motion clip (video only, no audio). */
 export function kenBurnsClip(opts: {
   image: string;
