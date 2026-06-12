@@ -106,8 +106,4 @@ This is what makes the playbook universal. Fill these per niche; everything abov
 
 ---
 
-## 9. The edge compounds here
-The universal framework above is a strong **baseline** — but the real CTR lift comes from the
-niche slots, and they get sharper when fed real data. Log each published thumbnail's CTR; every
-quarter, promote what wins into §8 for that niche. That is where this stops being "generic best
-practice" and becomes your moat.
+## 9. The e
