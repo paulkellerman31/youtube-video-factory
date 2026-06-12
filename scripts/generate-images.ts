@@ -17,6 +17,8 @@ interface SceneAsset {
   ar?: string;
   capture?: CaptureSpec; // required for screen_capture
   hyperframes?: HyperframesSpec; // optional for hyperframes (composition dir defaults to hyperframes/<sceneId>)
+  quality?: "low" | "medium" | "high"; // per-entry override of IMAGE_QUALITY (e.g. thumbnail -> "high")
+  overlay?: { lines: string[]; accent?: string }; // thumbnail only: text burned by ffmpeg ($0) -> assets/thumbnail.png
 }
 
 /** Pull the global style string out of the channel profile's style.md (code fence under its heading). */
@@ -50,8 +52,7 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
   const style = extractGlobalStyle(stylePath);
   log("INFO", `images: channel=${getChannel(projectDir)} style=${stylePath}`);
   const size = "1536x1024"; // gpt-image-1 landscape; assemble scales to 1920x1080
-  const quality = (process.env.IMAGE_QUALITY ?? "medium") as "low" | "medium" | "high";
-  const perImage = getRates().gptImage1PerImageUSD[quality] ?? getRates().gptImage1PerImageUSD.medium;
+  const defaultQuality = (process.env.IMAGE_QUALITY ?? "medium") as "low" | "medium" | "high";
 
   const outDir = join(projectDir, "assets", "images");
   const manifest = readManifest(projectDir);
