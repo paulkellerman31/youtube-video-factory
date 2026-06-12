@@ -70,7 +70,9 @@ en objet secondaire, jamais en sujet principal.
 - Font: **Bebas Neue** or **Impact** (bold, condensed).
 - Two-tone: line 1 white / line 2 the brand accent color.
 - Never in the bottom 20%. Maximum contrast against the background.
-- Added in Canva **after** the image is generated (keep text out of the AI prompt).
+- Burned by the **pipeline** (ffmpeg, `overlay.lines` in the thumbnail entry of
+  `image-prompts.json`) — keep text out of the AI prompt. Output: `assets/thumbnail.png`
+  (ready) + `assets/thumbnail-raw.png` (no text, for optional Canva rework).
 
 ---
 

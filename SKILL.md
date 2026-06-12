@@ -82,6 +82,15 @@ To raise quality, change a preset — never re-decide per video.
    Tool reviews: `screen_capture` for public pages, `manual_asset` for the connected
    dashboard, `hyperframes` for data/number scenes, `ai_image` for the rest.
 
+   **Thumbnail = a pipeline entry, not a manual step.** The plan ALWAYS appends to
+   `image-prompts.json` an entry `sceneId: "thumbnail"` (never referenced in
+   `project-config.json` scenes — generated, not assembled): prompt from the channel's
+   thumbnail-playbook archetype, plus `"quality": "high"` (CTR asset — the one place high
+   pays for itself; scenes stay on IMAGE_QUALITY default) and `"overlay": { "lines":
+   ["LINE1", "LINE2"], "accent": "#00C8FF" }` (≤ 2 lines, ≤ 3-4 words total, playbook §6;
+   accent = channel brand color). Pipeline outputs `assets/thumbnail.png` (text burned,
+   1280x720, ready to upload) + `assets/thumbnail-raw.png` (no text, for manual rework).
+
    **Hard rule — text:** AI images NEVER contain readable text (model can't write). Every
    `ai_image` prompt ends with the canonical negative: `no text, no words, no letters,
    no numbers, no labels, no logos, no readable seals or stamps`. A scene that must show
