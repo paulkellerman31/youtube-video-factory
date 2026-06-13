@@ -13,6 +13,10 @@ Toute modification systémique (presets, pipeline, structure) se note ici. Une l
   CONTRACT.md + template-ofm.html). gpt-image-1 ne sait pas écrire → un GRAPHIC IA sort avec du
   texte cassé ; hyperframes rend du texte net animé en local, 0 $. `style.md` (ofm) mis à jour.
   Prouvé sur beacons s20 (funnel SOURCE/BUFFER/DESTINATION) et s27 (break-even 9% vs $30, $334/mo).
+- **Tokens DA hyperframes par chaîne** : `references/profiles/<chaîne>/hyperframes-tokens.css`
+  (bloc `:root` couleurs/police, inliné dans chaque compo). La compo style avec `var(--…)`, jamais
+  de HEX en dur → la DA suit le projet. ofm (dark/bleu), corps-humain (cartoon clair teal/corail,
+  no glow), rome-antique (or/bronze, provisoire). Contrat preset MAJ.
 
 ## 2026-06-11
 
