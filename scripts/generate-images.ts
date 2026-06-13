@@ -208,15 +208,15 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
     const key = process.env.OPENAI_API_KEY;
     if (!key) throw new Error("OPENAI_API_KEY missing (put it in .env at repo root)");
 
-    log("INFO", `images: generating ${p.sceneId} (${quality})...`);
+    log("INFO", `images: generating ${p.sceneId} (${imageModel}, ${quality})...`);
     const res = await fetchWithRetry(
       "https://api.openai.com/v1/images/generations",
       {
         method: "POST",
         headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
-        body: JSON.stringify({ model: "gpt-image-1", prompt: fullPrompt, n: 1, size, quality }),
+        body: JSON.stringify({ model: imageModel, prompt: fullPrompt, n: 1, size, quality }),
       },
-      { label: `gpt-image-1 ${p.sceneId}`, timeoutMs: 300_000 },
+      { label: `${imageModel} ${p.sceneId}`, timeoutMs: 300_000 },
     );
     const json = (await res.json()) as { data: Array<{ b64_json: string }> };
     mkdirSync(outDir, { recursive: true });
