@@ -27,7 +27,9 @@ marble and bronze textures, torch-lit warm tones, volumetric dust, photorealisti
 - Voix ElevenLabs (voir voice-config.json — placeholder).
 - Slots miniature (thumbnail-playbook.md §8).
 
-## Règle texte (héritée — vaut pour toutes les chaînes)
-Les images IA ne contiennent JAMAIS de texte lisible. Chaque prompt AI_IMAGE se termine par :
-`no text, no words, no letters, no numbers, no labels, no logos, no readable seals or stamps`.
-Mots/chiffres/documents → screen_capture, manual_asset, GRAPHIC (cartes, frises) ou overlay.
+## Règle texte (héritée — vaut pour toutes les chaînes) — méthode INVERSÉE (data 2026)
+gpt-image-1 ne sait pas écrire ET **ignore les négations** : « no text / no logo » attire le mot.
+On n'écrit **JAMAIS** `text, word, letter, label, logo, sign` dans un prompt. On décrit les surfaces
+en **positif** : « plain blank surfaces, unmarked parchment, smooth featureless stone ». Picto sans
+lettrage → « emblem / symbol », jamais « logo ».
+Mots/chiffres/documents porteurs de sens → screen_capture, manual_asset, GRAPHIC (cartes, frises) ou overlay.

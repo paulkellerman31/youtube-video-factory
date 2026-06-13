@@ -50,13 +50,15 @@ non à 14 dessins sans lien, on définit un CASTING au début de la vidéo et on
 - **Casting figé** (voir section ci-dessus) : personnages récurrents décrits verbatim à chaque
   scène.
 - **Pas de gore** — même une scène « danger » reste douce, lisible, non choquante.
-- **ZÉRO texte dans les images IA — règle dure.** gpt-image-1 ne sait pas écrire. Chaque prompt
-  **AI_IMAGE** se termine par le négatif canonique, mot pour mot :
-  `no text, no words, no letters, no numbers, no labels, no logos, no readable seals or stamps`
-  Objets pièges : horloge→sablier sans chiffres, calendrier→pages vierges, étiquette→forme
-  vierge, écran→lueur unie.
-  ⚠️ Le négatif vit dans CHAQUE prompt AI_IMAGE écrit par le skill — PAS dans la chaîne de
-  style globale (elle est hashée et s'applique aussi aux GRAPHIC, qui ont droit à 2-4 labels).
+- **ZÉRO texte parasite — méthode INVERSÉE (data 2026).** gpt-image-1 ne sait pas écrire ET
+  **ignore les négations** : « no text / no logo » attire le mot et fait apparaître l'artefact.
+  On n'écrit **JAMAIS** `text, word, letter, label, logo, sign` dans un prompt. À la place :
+  - surfaces en **positif** : « plain blank surfaces, unmarked shapes, smooth featureless cartoon
+    background ».
+  - picto sans lettrage → « icon / symbol », jamais « logo ».
+  - pièges décrits vides : horloge→sablier sans chiffres, calendrier→pages vierges, étiquette→forme unie.
+  ⚠️ Consigne dans CHAQUE prompt AI_IMAGE — pas dans la chaîne globale (hashée). Texte porteur
+  de sens → routé (overlay / GRAPHIC-hyperframes / capture).
 - **Une scène qui DOIT montrer des mots/chiffres/un écran/un document ne passe JAMAIS en
   AI_IMAGE.** Routage décidé au PLAN : `screen_capture`, `manual_asset`, GRAPHIC (2-4 labels),
   ou image + **text overlay** à l'assemblage.

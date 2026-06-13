@@ -17,6 +17,11 @@ silhouette only, no visible face, high contrast, photorealistic, 8k, 16:9
 - **Palette:** blue + white (OFM codes). No green / "Matrix" look.
 - **Human touch:** when a hand appears, specify "visible skin texture" (avoid the CGI look).
 - **Hero object oversized** for mobile readability.
+- **Texte parasite — méthode INVERSÉE (data 2026).** gpt-image-1 IGNORE les négations et le mot
+  « text/logo » ATTIRE l'artefact. Ne jamais écrire `text, word, letter, label, logo, sign` dans
+  un prompt. Décrire les surfaces en positif (« plain blank surfaces, unmarked screens, smooth
+  featureless background ») ; pictogramme sans lettrage = « icon/emblem/symbol », jamais « logo ».
+  Texte porteur de sens → routé (overlay / GRAPHIC-hyperframes / capture).
 
 ## By scene type (routing matches the build spec)
 - **GRAPHIC** (data / numbers / comparison): clean infographic, large legible text, + global string.
