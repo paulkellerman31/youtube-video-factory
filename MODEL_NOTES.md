@@ -38,6 +38,17 @@ test dédié (voir ci-dessous), OU supprimer les `.png` des scènes à retester.
   puis **mettre à jour `scripts/lib/rates.ts`** (`gptImage1PerImageUSD`) — sinon l'estimation de
   coût du log sera fausse (le rendu, lui, marche quand même).
 
+### Tarif gpt-image-1.5 documenté (à CONFIRMER par usage facturé réel avant MAJ rates.ts)
+| Taille | medium | high |
+|---|---|---|
+| 1536x1024 (notre prod) | **0,05 $** | **0,20 $** |
+| 1024x1024 | 0,034 $ | 0,133 $ |
+
+À noter : en `medium` 1536x1024, gpt-image-1.5 (**0,05 $**) serait **moins cher** que notre
+estimation actuelle gpt-image-1 (`rates.ts` medium = 0,07 $) — donc potentiellement meilleur texte
+ET coût plus bas. Le runner A/B le confirme côté usage réel.
+Paliers `quality` confirmés côté doc : `low | medium | high | auto` (comme gpt-image-1).
+
 ## Décision
 
 - Rendu **meilleur** → mettre `IMAGE_MODEL=gpt-image-1.5` comme défaut (`.env`) + MAJ `rates.ts`
