@@ -16,3 +16,4 @@ node_modules/
 # Logs et temporaires
 *.log
 **/_font.ttf
+tmp/
