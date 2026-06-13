@@ -2,6 +2,18 @@
 
 Toute modification systémique (presets, pipeline, structure) se note ici. Une ligne par changement, datée.
 
+## 2026-06-13
+
+- **Capture durcie + garde-fou** (`scripts/lib/capture.ts`) : vrai Chrome (channel + UA réaliste,
+  `navigator.webdriver` masqué), attente `networkidle` + stabilisation + fermeture cookies. Surtout :
+  détection page bloquée (HTTP 403/429/503, signatures Cloudflare/captcha) et frame vide → retries
+  puis **échec du rendu** au lieu de livrer du déchet. Sites non capturables → `manual_asset`
+  (beacons.ai/Cloudflare, onlytraffic.co/rendu blanc).
+- **`hyperframes` = renderer par défaut des scènes GRAPHIC** (preset `references/hyperframes/` :
+  CONTRACT.md + template-ofm.html). gpt-image-1 ne sait pas écrire → un GRAPHIC IA sort avec du
+  texte cassé ; hyperframes rend du texte net animé en local, 0 $. `style.md` (ofm) mis à jour.
+  Prouvé sur beacons s20 (funnel SOURCE/BUFFER/DESTINATION) et s27 (break-even 9% vs $30, $334/mo).
+
 ## 2026-06-11
 
 - **4e source d'asset : `hyperframes`** (ROADMAP §3 « Scènes animées HTML via HyperFrames ») :
