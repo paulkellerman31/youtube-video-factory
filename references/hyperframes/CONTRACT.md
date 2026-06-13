@@ -37,11 +37,17 @@ Pas de `prompt` nécessaire. Un `textOverlay` éventuel est ignoré (le texte vi
   `project-config.json` (`audioStart`/`audioEnd`).
 - **30 fps** (doit matcher l'assemble). `quality: "standard"` par défaut, `"high"` si dégradés/glow lourds.
 
-## Charte (cohérence chaîne — voir profils)
-- **ofm** : fond navy sombre (`#05080f` → dégradé radial `#0a1424`), accent `#00C8FF`, texte blanc,
-  Arial/Helvetica bold, glow bleu discret, gros chiffres. Pas de vert/Matrix.
-- Autres chaînes : reprendre la palette de `references/profiles/<chaîne>/style.md`.
-- Base de départ : `references/hyperframes/template-ofm.html` (copier puis adapter le contenu).
+## Charte = DA du PROJET (jamais en dur)
+La DA dépend de la chaîne. **Chaque compo démarre par le bloc `:root` de sa chaîne**, copié depuis
+`references/profiles/<chaîne>/hyperframes-tokens.css` (compo autonome → on inline les tokens, pas
+d'import externe au rendu). On style ensuite avec les variables (`var(--bg)`, `var(--accent)`…) — JAMAIS
+de HEX en dur. Changer de chaîne = changer le bloc tokens, la structure reste.
+
+- **ofm** : dark luxury tech, navy + bleu `#00C8FF`, glow discret, gros chiffres. Texte clair sur sombre.
+- **corps-humain** : cartoon plat TED-Ed, fond crème clair + teal/corail, **aucun glow**. Texte sombre sur clair.
+- **rome-antique** : marbre/bronze, or chaud sur ombre, serif gravé, frises/parchemin (HEX provisoires).
+
+Base de départ : `references/hyperframes/template-ofm.html` (exemple ofm) + les tokens de la chaîne visée.
 
 ## Règle dure
 - Le texte/chiffre affiché doit être **exact** (issu du script/voiceover de la scène). Pas de chiffre inventé.
