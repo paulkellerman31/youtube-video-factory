@@ -50,8 +50,10 @@ silhouette only, no visible face, high contrast, photorealistic, 8k, 16:9
 - **Hero object oversized** for mobile readability.
 
 ## By scene type
-- **GRAPHIC** (data / numbers / comparison / mécanique technique): clean infographic, dark navy,
-  large legible bold text, oversized numbers. Préféré dès qu'on explique un système.
+- **GRAPHIC** (data / numbers / comparison / mécanique technique): rendu via **`hyperframes`**
+  (compo HTML/CSS+GSAP animée, texte NET, $0) — PAS en AI_IMAGE (gpt-image-1 ne sait pas écrire,
+  un GRAPHIC IA sort avec du texte cassé). Préféré dès qu'on explique un système. Voir le preset
+  `references/hyperframes/` (contrat + template). Routage décidé au PLAN comme les autres sources.
 - **AI_IMAGE** (concept / narration): global string, rule-of-thirds, subject left, negative space right.
 - **AI_VIDEO**: hors scope v1 (Kling/FAL désactivé).
 
