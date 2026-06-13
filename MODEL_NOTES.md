@@ -22,6 +22,14 @@ Le code (`scripts/generate-images.ts`) lit `process.env.IMAGE_MODEL ?? "gpt-imag
 4. Comparer le `final.mp4` au rendu gpt-image-1 : netteté, fidélité au prompt, lisibilité du texte,
    cohérence personnage.
 
+## ⚠️ Piège idempotence (à connaître pour tester)
+
+Le hash d'image (`scripts/generate-images.ts`) = `[prompt, size, quality]` — **il n'inclut PAS le
+modèle**. Donc changer `IMAGE_MODEL` puis relancer une vidéo **déjà rendue** ne régénère rien
+(scènes « up to date », sautées). C'est VOULU : on évite de re-payer le backlog le jour du switch.
+Pour tester gpt-image-1.5, il faut des **prompts neufs** : une nouvelle vidéo, OU un mini-projet de
+test dédié (voir ci-dessous), OU supprimer les `.png` des scènes à retester.
+
 ## À vérifier / verrouiller pendant le test
 
 - **Paliers qualité** : confirmer que `low | medium | high` sont acceptés par gpt-image-1.5.
