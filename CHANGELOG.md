@@ -4,6 +4,17 @@ Toute modification systémique (presets, pipeline, structure) se note ici. Une l
 
 ## 2026-06-13
 
+- **Prompt négatif INVERSÉ (data 2026)** : gpt-image-1 ignore les négations et le mot « text/logo »
+  attire l'artefact. On arrête de coller « no text, no logos… » ; on décrit les surfaces en positif
+  (« plain blank surfaces, unmarked screens ») et on ne nomme plus text/logo/sign. Appliqué à
+  `script-director.md` (règle + prompt thumbnail), `image-prompt-style.md` et aux 3 `style.md`.
+  Écrit par le skill par-prompt → pas de régénération payante du backlog.
+- **Règles de rétention encodées** (`script-director.md` §VISUAL CADENCE, data 2026) : aucun plan
+  figé (motion obligatoire Ken Burns/hyperframes), cap ~7 s par visuel, cuts synchronisés aux beats,
+  open loop payé avant 50 %, reveal fort à 60-70 %, [PI] toutes les 20-30 s.
+- **Lead modèle** : OpenAI **gpt-image-1.5** dispo (texte/prompt-adherence best-in-class, coût
+  comparable). Candidat upgrade drop-in (`model:` dans generate-images.ts) — à valider sur 1 render
+  avant flip (vérifier noms de paliers qualité + tarif exact, MAJ rates.ts).
 - **Capture durcie + garde-fou** (`scripts/lib/capture.ts`) : vrai Chrome (channel + UA réaliste,
   `navigator.webdriver` masqué), attente `networkidle` + stabilisation + fermeture cookies. Surtout :
   détection page bloquée (HTTP 403/429/503, signatures Cloudflare/captcha) et frame vide → retries
