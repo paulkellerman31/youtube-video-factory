@@ -12,9 +12,11 @@ Toute modification systémique (presets, pipeline, structure) se note ici. Une l
 - **Règles de rétention encodées** (`script-director.md` §VISUAL CADENCE, data 2026) : aucun plan
   figé (motion obligatoire Ken Burns/hyperframes), cap ~7 s par visuel, cuts synchronisés aux beats,
   open loop payé avant 50 %, reveal fort à 60-70 %, [PI] toutes les 20-30 s.
-- **Lead modèle** : OpenAI **gpt-image-1.5** dispo (texte/prompt-adherence best-in-class, coût
-  comparable). Candidat upgrade drop-in (`model:` dans generate-images.ts) — à valider sur 1 render
-  avant flip (vérifier noms de paliers qualité + tarif exact, MAJ rates.ts).
+- **Modèle image paramétrable par env** (`IMAGE_MODEL`, défaut `gpt-image-1` inchangé) :
+  `generate-images.ts` lit `process.env.IMAGE_MODEL`, rollback instantané. Permet l'A/B de
+  **gpt-image-1.5** (texte/prompt best-in-class, coût comparable) sans toucher au code. Protocole
+  de test + points à verrouiller (paliers qualité, tarif → rates.ts) dans `MODEL_NOTES.md`.
+  Défaut non changé tant que le test render n'a pas validé.
 - **Capture durcie + garde-fou** (`scripts/lib/capture.ts`) : vrai Chrome (channel + UA réaliste,
   `navigator.webdriver` masqué), attente `networkidle` + stabilisation + fermeture cookies. Surtout :
   détection page bloquée (HTTP 403/429/503, signatures Cloudflare/captcha) et frame vide → retries
