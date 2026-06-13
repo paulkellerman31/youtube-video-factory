@@ -1,0 +1,13 @@
+/* Tokens DA hyperframes — chaîne OFM. Copier ce bloc :root dans le <style> de chaque compo
+   GRAPHIC d'un projet ofm (compo autonome : on inline, pas d'import externe au rendu). */
+:root {
+  --bg:      #05080f;   /* fond navy profond */
+  --bg-glow: #0a1424;   /* halo radial centre */
+  --accent:  #00c8ff;   /* bleu signature */
+  --accent2: #0077aa;   /* bleu secondaire (dégradés, flèches) */
+  --ink:     #ffffff;   /* texte principal */
+  --muted:   #9fb6c6;   /* labels secondaires */
+  --dim:     #1d3b55;   /* bordures/éléments inactifs */
+  --font:    Arial, Helvetica, sans-serif;
+}
+/* Feel : dark luxury tech, glow bleu DISCRET, gros chiffres, contraste fort. Texte clair sur sombre. */

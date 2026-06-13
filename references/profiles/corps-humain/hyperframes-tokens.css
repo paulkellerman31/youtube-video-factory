@@ -1,0 +1,15 @@
+/* Tokens DA hyperframes — chaîne CORPS HUMAIN. Copier ce bloc :root dans le <style> de chaque
+   compo GRAPHIC d'un projet corps-humain. DA OPPOSÉE à ofm : fond CLAIR, cartoon plat, AUCUN glow. */
+:root {
+  --bg:      #FFF4E0;   /* fond crème doux */
+  --bg-glow: #FFFAF0;   /* halo très léger (rester clair) */
+  --accent:  #2EC4B6;   /* teal santé (positif) */
+  --accent2: #FF6B6B;   /* corail (alerte/chaleur) */
+  --accent3: #2EC4D6;   /* bleu eau */
+  --ink:     #2B2B2B;   /* texte SOMBRE sur fond clair */
+  --muted:   #7A8A88;   /* labels secondaires */
+  --dim:     #CFE9E5;   /* aplats/bordures douces */
+  --font:    "Trebuchet MS", Verdana, Geneva, sans-serif;
+}
+/* Feel : 2D plat TED-Ed, formes arrondies, pictos simples, JAMAIS de glow/ombre dramatique.
+   Texte sombre sur crème. Corail = danger, teal = bénéfice. Lumineux et accueillant. */

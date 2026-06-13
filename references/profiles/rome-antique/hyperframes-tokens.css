@@ -1,0 +1,14 @@
+/* Tokens DA hyperframes — chaîne ROME ANTIQUE. PROVISOIRE : HEX à verrouiller avant prod
+   (style.md = stub). Copier ce bloc :root dans le <style> de chaque compo GRAPHIC rome-antique. */
+:root {
+  --bg:      #1A1208;   /* ombre profonde */
+  --bg-glow: #2A1D0E;   /* halo terre cuite chaud */
+  --accent:  #D4AF37;   /* or chaud */
+  --accent2: #C0703A;   /* bronze / terre cuite */
+  --ink:     #F3E7CF;   /* texte ivoire/parchemin */
+  --muted:   #B89A6A;   /* labels secondaires ocre */
+  --dim:     #5A4326;   /* bordures/éléments inactifs */
+  --font:    Georgia, "Times New Roman", serif;  /* serif gravé (système, rendu déterministe) */
+}
+/* Feel : marbre/bronze, or chaud sur ombre, frises/parchemin, gravé. Cartes & frises chronologiques.
+   ⚠️ Valeurs provisoires — aligner sur les HEX de marque une fois verrouillés (style.md §À VERROUILLER). */
