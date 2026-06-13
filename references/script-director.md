@@ -70,7 +70,7 @@ Output is valid when:
 * ✗ No digits in audio (write ninety-nine not 99)
 * ✗ No filler words (basically, essentially)
 * ✗ No multiple visual types per scene
-* ✗ No readable text in ANY AI image (model can't write) — every AI_IMAGE prompt ends with: "no text, no words, no letters, no numbers, no labels, no logos, no readable seals or stamps". Scenes that MUST show words/data are routed at PLAN time to screen_capture / manual_asset / GRAPHIC / abstract image + text overlay — never to ai_image
+* ✗ No readable text in ANY AI image (model can't write) — INVERTED METHOD (2026 data): gpt-image-1 IGNORES negations and the word "text/logo" ATTRACTS the artifact. So NEVER write `text, word, letter, label, logo, sign` in a prompt. Instead describe surfaces positively ("plain blank surfaces, unmarked screens, smooth featureless background"); a wordless mark = "icon/emblem/symbol", never "logo". Scenes that MUST show words/data/a real logo are routed at PLAN time to screen_capture / manual_asset / GRAPHIC(hyperframes) / abstract image + text overlay — never to ai_image
 * ✗ STRIP ≠ ROUTE: only strip DECORATIVE text (fake burning invoice, bogus seal). If the text CARRIES the meaning (calendar = the months, dashboard = data, sign = a number, clock = the time) do NOT blank it — a blank box guts the scene. ROUTE it instead (overlay with the real words / GRAPHIC / capture)
 * ✗ No full table before PLAN is confirmed
 * ✗ No "OnlyFans" in video title — use in tags/description only
