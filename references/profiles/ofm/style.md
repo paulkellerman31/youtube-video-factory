@@ -24,16 +24,17 @@ silhouette only, no visible face, high contrast, photorealistic, 8k, 16:9
 - **No visible faces** — silhouettes, hands, or objects only.
 - **Palette:** blue `#00C8FF` + white. No green / "Matrix" look.
 - **Human touch:** when a hand appears, specify "visible skin texture" (avoid the CGI look).
-- **ZERO texte dans les images IA — règle dure.** gpt-image-1 ne sait pas écrire (limite du
-  modèle : 'ANOURT', 'RANDM SUPERHERO'). Chaque prompt **AI_IMAGE** se termine par le négatif
-  canonique, mot pour mot :
-  `no text, no words, no letters, no numbers, no labels, no logos, no readable seals or stamps`
-  Objets pièges à neutraliser dans le prompt lui-même : facture→papiers vierges, document à
-  sceau→dossier uni, carte bancaire→carte vierge, calendrier→panneaux vides, écran→lueurs
-  abstraites, étiquette de prix→étiquette vierge.
-  ⚠️ Le négatif vit dans CHAQUE prompt AI_IMAGE écrit par le skill — PAS dans la chaîne de
-  style globale : la globale est hashée (la modifier régénère tout) et elle s'applique aussi
-  aux GRAPHIC, qui ont le droit à leurs 2-4 labels courts.
+- **ZÉRO texte parasite — méthode INVERSÉE (data 2026).** gpt-image-1 ne sait pas écrire ET
+  **ignore les négations** : écrire « no text / no logo » ATTIRE le mot et fait APPARAÎTRE
+  l'artefact. Donc on n'écrit **JAMAIS** les mots `text, word, letter, label, logo, sign,
+  billboard, screen text` dans un prompt. À la place :
+  - décrire les surfaces en **positif** : « plain blank surfaces, unmarked walls, empty clean
+    screens, smooth featureless background, abstract glowing panels ».
+  - pictogramme sans lettrage → « icon / emblem / symbol », jamais « logo ».
+  - objets pièges décrits vides : facture→papiers vierges, écran→lueurs abstraites,
+    étiquette→forme unie, calendrier→panneaux nus.
+  ⚠️ Consigne écrite par le skill dans CHAQUE prompt AI_IMAGE — pas dans la chaîne globale
+  (hashée). Texte porteur de sens → routé (overlay / GRAPHIC-hyperframes / capture), jamais en image IA.
 - **Une scène qui DOIT montrer des mots/chiffres/un document/un écran ne passe JAMAIS en
   AI_IMAGE.** Routage obligatoire, décidé au PLAN (jamais après rendu) : `screen_capture`
   (page réelle), `manual_asset` (fourni par l'humain), GRAPHIC (infographie, 2-4 labels), ou
