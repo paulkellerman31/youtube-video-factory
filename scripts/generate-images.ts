@@ -74,8 +74,10 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
   const stylePath = profileFile(projectDir, "style.md", "image-prompt-style.md");
   const style = extractGlobalStyle(stylePath);
   log("INFO", `images: channel=${getChannel(projectDir)} style=${stylePath}`);
-  const size = "1536x1024"; // gpt-image-1 landscape; assemble scales to 1920x1080
+  const size = "1536x1024"; // landscape; assemble scales to 1920x1080
   const defaultQuality = (process.env.IMAGE_QUALITY ?? "medium") as "low" | "medium" | "high";
+  // Modèle paramétrable pour A/B sans toucher au code (ex: gpt-image-1.5). Défaut = prod actuelle.
+  const imageModel = process.env.IMAGE_MODEL ?? "gpt-image-1";
 
   const outDir = join(projectDir, "assets", "images");
   const manifest = readManifest(projectDir);
