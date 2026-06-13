@@ -98,6 +98,14 @@ Pick ONE: Enemy / Myth / Pain / Clock
 
 [PI] TYPES: rhetorical question / shocking stat / contrarian claim / direct address "If you're doing X — stop."
 
+## VISUAL CADENCE — RETENTION (data 2026)
+
+* **No fully static plan.** Every scene moves: Ken Burns (push-in / pan) or hyperframes animation. A frozen image is a retention killer on faceless.
+* **Cap a single visual ≈ 7 s.** On dense passages, prefer more, shorter scenes; if a scene must run longer, add a mid-scene beat (text-overlay reveal or secondary motion).
+* **Sync cuts to script BEATS** (new idea = new visual), not to a fixed clock.
+* **Designed retention beats:** open loop in the hook → paid before 50 %; strongest reveal at 60–70 %; a [PI] (visual or script) every 20–30 s of body.
+* **Sound-off mobile:** burned animated subtitles carry the dense passages (see render-config).
+
 ## VISUAL + AI VIDEO CONTRACT
 
 ONE type per scene:
