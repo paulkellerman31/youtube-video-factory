@@ -216,7 +216,7 @@ THEN append after table:
   5. rappel lien + `Subscribe for honest infrastructure audits for OFM agencies.`
 * 15 tags
 
-🖼 THUMBNAIL PROMPT: Generate using this exact structure: "A high-impact YouTube Thumbnail, [NICHE] style. Subject: An oversized ultra-detailed [HERO OBJECT] displaying [TOOL/CONCEPT] interface with NO text, NO words, NO labels on screen or any surface, held by a human hand with visible skin texture. Background: dark luxury tech office with [BRAND COLORS] and subtle bokeh blur. Lighting: extreme cinematic rim lighting, high contrast, vibrant saturation. Composition: rule of thirds, subject on the LEFT, large empty negative space on the RIGHT for text overlay. Sharp focus, 8k, photorealistic. --ar 16:9 --style raw"
+🖼 THUMBNAIL PROMPT: Generate using this exact structure (INVERTED METHOD — never name text/label/logo; describe blank surfaces positively): "A high-impact YouTube Thumbnail, [NICHE] style. Subject: An oversized ultra-detailed [HERO OBJECT] showing [TOOL/CONCEPT] as abstract glowing panels on a clean blank screen, plain unmarked surfaces, held by a human hand with visible skin texture. Background: dark luxury tech office with [BRAND COLORS] and subtle bokeh blur. Lighting: extreme cinematic rim lighting, high contrast, vibrant saturation. Composition: rule of thirds, subject on the LEFT, large empty negative space on the RIGHT for text overlay. Sharp focus, photorealistic, 16:9." (The 3-word headline + tool logo are added in post — Canva/HTML overlay — NEVER asked from the model.)
 
 * → 3-word text overlay (ALL CAPS)
 * → Font: Bebas Neue or Impact
