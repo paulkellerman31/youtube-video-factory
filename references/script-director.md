@@ -269,8 +269,13 @@ text overlay contract (max 4, trigger words), thumbnail prompt structure, format
 ]
 ```
 
-Routing for tool reviews: `screen_capture` = public pages (pricing, homepage, comparatif) ;
-`manual_asset` = dashboard connecté fourni par l'humain ; `ai_image` = tout le reste.
+Routing for REVIEW / tool-centric videos — **TOOL FOOTAGE FIRST** : voir l'outil = la substance
+d'une review. Les scènes feature/preuve partent **par défaut** en `screen_capture` de pages
+**publiques** (homepage, pricing, features, comparatif, demo — qui montrent souvent l'UI et des
+mockups du dashboard). À utiliser **généreusement**. `manual_asset` = vue derrière login fournie
+par l'humain, **au cas par cas** (NON automatisable — jamais d'automatisation de login). `ai_image`
+= seulement hook / concept / transition / émotion. Garder le mix (footage + IA/hyperframes + motion,
+cap ~7 s/plan) pour ne pas endormir ; le packaging (titre/thumbnail) reste **problème-first**.
 
 Subtitles: profile `render-config.json` → `subtitles: burned | cc | none` (override par projet
 via `project-config.json`). `subs.srt` toujours produit pour les CC YouTube. En `burned` :
