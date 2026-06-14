@@ -15,11 +15,12 @@ export function getRates(): Rates {
   return {
     // ~ElevenLabs Creator-tier effective rate; adjust to your plan.
     elevenlabsPerCharUSD: num(process.env.RATE_ELEVENLABS_PER_CHAR, 0.00011),
-    // gpt-image-1 landscape 1536x1024, approximate per-image cost by quality.
+    // gpt-image-1.5 (défaut prod depuis 2026-06-13) landscape 1536x1024, coût/image par palier.
+    // Tarif doc OpenAI ; confirmer via usage facturé. Override possible par env RATE_GPTIMAGE_*.
     gptImage1PerImageUSD: {
       low: num(process.env.RATE_GPTIMAGE_LOW, 0.02),
-      medium: num(process.env.RATE_GPTIMAGE_MEDIUM, 0.07),
-      high: num(process.env.RATE_GPTIMAGE_HIGH, 0.19),
+      medium: num(process.env.RATE_GPTIMAGE_MEDIUM, 0.05),
+      high: num(process.env.RATE_GPTIMAGE_HIGH, 0.2),
     },
   };
 }
