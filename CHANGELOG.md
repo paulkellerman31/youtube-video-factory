@@ -4,6 +4,11 @@ Toute modification systémique (presets, pipeline, structure) se note ici. Une l
 
 ## 2026-06-13
 
+- **Routage review « tool footage first »** (`script-director.md`) : sur une vidéo review/outil, les
+  scènes feature/preuve partent par défaut en `screen_capture` de pages publiques (homepage/pricing/
+  features/demo — montrent souvent l'UI), à utiliser généreusement. `manual_asset` = vue login au cas
+  par cas (login NON automatisé, par règle). `ai_image` réservé hook/concept/transition. Dashboard
+  derrière login = pas de système d'auto-capture (non automatisable proprement).
 - **Prompt négatif INVERSÉ (data 2026)** : gpt-image-1 ignore les négations et le mot « text/logo »
   attire l'artefact. On arrête de coller « no text, no logos… » ; on décrit les surfaces en positif
   (« plain blank surfaces, unmarked screens ») et on ne nomme plus text/logo/sign. Appliqué à
