@@ -92,7 +92,7 @@ async function genScene(s) {
 
 console.log(`\n=== A/B image — model=${MODEL} quality=${QUALITY} prefix=${PREFIX} ===`);
 const results = [];
-for (const s of scenes) {
+for (const s of activeScenes) {
   process.stdout.write(`  ${s.id} (n=${s.n})… `);
   const r = await genScene(s);
   results.push({ model: MODEL, quality: QUALITY, prefix: PREFIX, size: SIZE, ...r });
