@@ -49,11 +49,15 @@ estimation actuelle gpt-image-1 (`rates.ts` medium = 0,07 $) — donc potentiell
 ET coût plus bas. Le runner A/B le confirme côté usage réel.
 Paliers `quality` confirmés côté doc : `low | medium | high | auto` (comme gpt-image-1).
 
-## Décision
+## Décision — PRISE le 2026-06-13 : ✅ gpt-image-1.5 adopté
 
-- Rendu **meilleur** → mettre `IMAGE_MODEL=gpt-image-1.5` comme défaut (`.env`) + MAJ `rates.ts`
-  + entrée CHANGELOG (date + version).
-- Rendu **égal/pire** → revenir à `gpt-image-1`, rien à logger.
+A/B réel (3 scènes, `scripts/ab-test/`, medium) : 1.5 gagne sur hero (cinématographique), texte
+court « RED FLAG » (les 2 corrects, 1.5 plus léché), cohérence mascotte ; `quality=medium` OK ;
+moins cher (0,05 $ vs 0,07 $). **Défaut basculé en `gpt-image-1.5`** (`generate-images.ts`), `rates.ts`
+MAJ. Rollback : `IMAGE_MODEL=gpt-image-1` dans `.env`.
+
+Reste à confirmer un jour : coût facturé exact via le dashboard OpenAI usage (le tarif dans rates.ts
+est doc-based) ; et tester `high` si une scène premium le justifie.
 
 > Note : le tarif/estimation par défaut reste calé sur gpt-image-1 tant que `rates.ts` n'est pas
 > mis à jour — ça n'empêche pas le rendu, ça fausse juste le coût affiché.
