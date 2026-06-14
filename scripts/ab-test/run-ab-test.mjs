@@ -56,6 +56,9 @@ const scenes = [
   },
 ];
 
+const only = process.env.SCENE; // optionnel : ne générer qu'une scène (concept_hero|character_consistency|short_text)
+const activeScenes = only ? scenes.filter((s) => s.id === only) : scenes;
+
 const outDir = join(repoRoot, "tmp", "ab-tests", PREFIX);
 mkdirSync(outDir, { recursive: true });
 
