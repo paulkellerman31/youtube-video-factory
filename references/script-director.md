@@ -10,7 +10,7 @@
 ## STEP 0 — PARAMETERS (fill before starting)
 
 ```
-FORMAT:         per video — drawn from the mix (40%B / 30%C / 20%D / 10%A)
+FORMAT:         S — SHORT TOOL BRIEF (2 min 30)  ← locked default depuis 2026-08-01
 SOURCE:         per video — whatever Théo drops
 OBJECTIVE:      GROW            ← locked default
 CTA:            AFFILIATE — lien /go/<tool> (Stratégie A) si la vidéo cible une intention d'achat ; SUBSCRIBE sinon ← locked default
@@ -27,12 +27,13 @@ BRAND COLORS:   blue + white, neon blue #00C8FF (see image-prompt-style.md)
 
 **FORMATS:**
 
+* **S — SHORT TOOL BRIEF → le format par défaut depuis le 2026-08-01. 2 min 30, ~375 mots, 13-15 scènes.** Structure verrouillée en §SHORT TOOL BRIEF ci-dessous. Tous les autres formats deviennent l'exception, à justifier au PLAN.
 * A — Tool Review → Problem→Tool→Proof→CTA | Ceiling: medium — **packaging confirmé faible** (Bright Data Review : CTR 0,65 %, data 2026-06). Format A garde sa structure mais son TITRE/THUMBNAIL est toujours packagé comme un B (problème d'abord).
 * B — Problem First → Problem→Solutions→Tool→CTA | Ceiling: high
 * C — Myth Buster → Belief→Why wrong→Fix→CTA | Ceiling: very high
 * D — Case Study → Story→Fail→Fix→Results→CTA | Ceiling: very high
 * E — System Reveal → System→Components→Tool→CTA | Ceiling: high
-* Mix: 40%B / 30%C / 20%D / 10%A
+* Mix **périmé** (40B/30C/20D/10A) : il répartissait des vidéos de 7-10 min que personne ne regarde au-delà de 85 s. Nouveau défaut : **S pour tout ce qui vise un clic affilié**, B ou C uniquement pour un sujet qui ne porte aucun outil.
 
 **HIGH-CTR ANGLES (data chaîne OFM, 90 j au 2026-06-12 — échantillon faible, directionnel) :**
 
@@ -52,7 +53,9 @@ YouTube Automation Script Director. Faceless B2B content specialist. Every audio
 
 ## MISSION
 
-Transform input into production-ready faceless YouTube script: 7–10 min / 1100–1500 words / 150 wpm. Hook in first 20 sec. Real value. Match OBJECTIVE and CTA.
+Transform input into a production-ready faceless YouTube script. **Format S par défaut : 2 min 20 à 2 min 40 / 350-400 mots / 150 wpm.** Hook dans les 8 premières secondes. Chaque phrase gagne sa place ou saute. Match OBJECTIVE and CTA.
+
+**Pourquoi si court — mesuré, pas supposé** (chaîne OFM, 90 j au 2026-08-01) : durée vue moyenne **85 s**, pourcentage moyen regardé **31,7 %**. Une vidéo de 6 minutes est abandonnée aux quatre cinquièmes ; elle coûte le double à produire et n'apporte rien de plus. Second constat de la même mesure : les vidéos informationnelles (« How to X », « Best X ») font 120 vues quand les reviews mono-outil en font 20-35, avec des durées vues trois fois plus faibles. **Le packaging vend un problème, jamais un outil.**
 
 ## SUCCESS CRITERIA
 
@@ -62,7 +65,9 @@ Output is valid when:
 * ✓ Every scene has phrase start + phrase end
 * ✓ Storyboard executable without clarifying questions
 * ✓ Antagonist named in hook, defeated at end
-* ✓ 30-sec viewer wants to watch the rest
+* ✓ À 30 secondes, le spectateur a déjà vu l'outil à l'écran
+* ✓ Un spectateur qui part à 1 min 30 a quand même eu le prix et la limite — le script est ordonné
+  pour que l'abandon moyen (85 s mesurées) n'ampute pas l'information qui fait cliquer
 
 ## DO NOT
 
@@ -81,23 +86,44 @@ Output is valid when:
 
 ## CONTENT SELECTION
 
-Extract 5–8 strongest insights only. Test: "Would someone pause the video for this?" No → cut. Most shocking point → always in HOOK.
+**Exactement 3 insights**, pas 5-8 : c'est ce que le bloc 3 peut porter en 50 secondes. Test de
+sélection, dans cet ordre — (1) est-ce que ça change la décision d'acheter ? (2) est-ce que ça se
+MONTRE à l'écran ? (3) est-ce que ça se dit en quinze secondes ? Trois non-réponses = coupé.
+Le point le plus fort ne va PAS dans le hook : il va dans le bloc 3, où le spectateur est déjà
+engagé. Le hook porte le problème, pas la solution.
 
 ## NARRATIVE ANTAGONIST
 
 Pick ONE: Enemy / Myth / Pain / Clock
 
-* → Named in HOOK (0–20 sec)
-* → Referenced 2–3× in BODY
-* → Defeated at END
+* → Nommé dans le HOOK (0-8 s)
+* → Repris **une fois** au bloc 3, quand l'outil le règle
+* → Vaincu au CTA. Sur 150 secondes, trois rappels seraient du remplissage.
 
-## SCRIPT STRUCTURE
+## SCRIPT STRUCTURE — format S (verrouillée)
 
-1. HOOK 0:00–0:20 — Pain + antagonist. No intro. VISUAL PACING: 2–3 image changes in the first 8 seconds (hook scenes ≤ 4 s each); never one static zoomed image across the whole hook.
-2. PROMISE 0:20–0:40 — What they learn + why now.
-3. BODY 0:40–7:30 — 5–8 blocks / 40–80 sec each. [PI] every 60–90 sec. Strongest point at 60–70%. Open loop → payoff before 50%.
-4. PROOF 7:30–8:10 — Delivers hook promise.
-5. CTA 8:10–end — Single action. CTA TYPE from params.
+Le but de chaque seconde : donner au spectateur ce qu'il lui faut pour décider, puis lui donner
+le lien. Pas de mise en jambes, pas de récapitulatif, pas de « dans cette vidéo on va voir ».
+
+| # | Fenêtre | Bloc | Ce qui s'y passe | Source visuelle |
+|---|---|---|---|---|
+| 1 | 0:00-0:08 | **HOOK** | Le problème chiffré, ou la perte concrète. Antagoniste nommé. Aucune intro. | ai_image ou hyperframe |
+| 2 | 0:08-0:25 | **L'OUTIL EN UNE PHRASE** | Ce que c'est, pour qui, ce qu'il remplace. | `screen_recording` homepage |
+| 3 | 0:25-1:15 | **LES 3 CHOSES QUI COMPTENT** | Le mécanisme cœur (filmé, pas raconté), le différenciateur, le chiffre qui tranche. Un bloc = une chose = ~15 s. | `screen_recording` parcours + hyperframe pour le chiffre |
+| 4 | 1:15-1:40 | **PRIX** | La vraie grille, lue à l'écran. Le plan qui convient à l'audience, nommé. | `screen_capture` pricing |
+| 5 | 1:40-2:05 | **LA LIMITE** | Pour qui ce n'est PAS, et pourquoi. Une page réelle qui l'atteste. | `screen_capture` docs/CGU/comparatif |
+| 6 | 2:05-2:30 | **CTA** | Une action. Le lien. Rien d'autre. | `screen_recording` de la page d'inscription ou de l'article |
+
+**Ce que ce format supprime :** PROMISE, les 5-8 blocs de BODY, PROOF séparée, les [PI] toutes
+les 60-90 s, l'open loop payé avant 50 %. Sur 150 secondes, ces dispositifs de rétention longue
+n'ont pas le temps d'exister — et c'est justement leur absence qui rend le format tenable.
+
+**Le bloc 5 n'est pas optionnel.** Dire pour qui l'outil ne convient pas est ce qui rend
+crédibles les blocs 3 et 4, donc ce qui fait cliquer. Une vidéo qui ne dit que du bien se lit
+comme une plaquette et le spectateur le sent en dix secondes.
+
+**Cadence :** 13-15 scènes, 8-12 s chacune. Aucun plan figé (§VISUAL CADENCE). Le cap de ~7 s
+ne s'applique pas aux scènes filmées, qui portent leur mouvement.
 
 [PI] TYPES: rhetorical question / shocking stat / contrarian claim / direct address "If you're doing X — stop."
 
@@ -334,36 +360,40 @@ A, B, E, et tout D dont la résolution passe par un outil nommé).
 Aucun n'est optionnel. Chacun est routé vers du footage RÉEL — `screen_recording` (défaut),
 `screen_capture` (si une image fixe suffit) ou `manual_asset` (derrière login).
 
-1. **HOMEPAGE / HERO — dans les 90 premières secondes.** Établit que l'outil existe et à quoi
-   il ressemble. Faute de ça, les 90 premières secondes parlent d'un produit fantôme.
-2. **LE PARCOURS CŒUR — en `screen_recording`, jamais en image fixe.** La fonctionnalité dont
-   parle la vidéo, en train de fonctionner : on scrolle, on survole, on ouvre. C'est LA scène qui
-   prouve qu'un humain a ouvert l'outil. Placée sur le point fort (60-70 % de la vidéo).
-3. **PRICING — page réelle, avant le CTA.** Les chiffres viennent de la page, pas de la mémoire
-   du modèle. Bonus : c'est la scène la plus proche de l'intention d'achat.
-4. **PREUVE CONTRADICTOIRE — une page réelle qui nuance.** La limite, ce qui est moins bien que
-   promis : documentation, CGU, changelog, page de statut, comparatif d'un concurrent, un fil
-   de discussion. C'est ce qui fait lire la vidéo comme une review honnête et pas comme une
-   plaquette affiliée. **Ce beat est le plus souvent sauté et c'est le plus rentable.**
+Ils correspondent un pour un aux blocs de la §SCRIPT STRUCTURE — le format S est construit
+autour d'eux, ce ne sont pas des ajouts à caser.
 
-### Le quota
+1. **HOMEPAGE — bloc 2, dès la 8ᵉ seconde.** `screen_recording`. Établit que l'outil existe et à
+   quoi il ressemble avant toute affirmation à son sujet.
+2. **LE PARCOURS CŒUR — bloc 3, en `screen_recording`, jamais en image fixe.** La fonctionnalité
+   dont parle la vidéo, en train de fonctionner : on scrolle, on survole, on ouvre. C'est LA
+   scène qui prouve qu'un humain a ouvert l'outil, et celle qui fait cliquer.
+3. **PRICING — bloc 4.** `screen_capture` de la vraie grille. Les chiffres viennent de la page,
+   pas de la mémoire du modèle. C'est la scène la plus proche de l'intention d'achat : elle
+   arrive AVANT l'abandon moyen (85 s), pas après.
+4. **PREUVE CONTRADICTOIRE — bloc 5.** Une page réelle qui nuance : documentation, CGU,
+   changelog, page de statut, comparatif d'un concurrent. C'est ce qui fait lire la vidéo comme
+   un avis honnête et pas comme une plaquette affiliée. **Le beat le plus souvent sauté et le
+   plus rentable.**
 
-Les quatre chiffres sont cohérents entre eux sur le gabarit réel (≈ 30 scènes, ≈ 5-6 min) —
-vérifier qu'ils le restent avant d'en changer un seul.
+### Le quota — recalibré pour le format S (13-15 scènes, 150 s)
 
-- **≥ 10 scènes de footage réel** sur une vidéo d'environ 30 scènes, et **≥ 90 s cumulées**.
-- **`ai_image` ≤ 65 % des scènes** d'une vidéo tool-centric.
-- **≥ 3 scènes en `screen_recording`** (mouvement réel), dont obligatoirement le beat n° 2.
-- Durée par scène filmée : **6-12 s**. **Exception explicite au cap ~7 s** de §VISUAL CADENCE :
-  une scène filmée porte son propre mouvement interne (curseur, scroll, hover), elle n'est pas
-  un plan figé et ne tombe donc pas sous la règle anti-diaporama. Un plan IA de 12 s reste
-  interdit.
-- **Jamais plus de deux scènes filmées consécutives** sans casser avec une image ou un
-  hyperframe — trois captures à la file redeviennent un tunnel, juste d'une autre nature.
+Sur 150 secondes, le footage réel n'est plus un complément : c'est la matière. Les quatre
+chiffres sont cohérents entre eux — vérifier qu'ils le restent avant d'en changer un seul.
 
-> **Contrôle arithmétique** (à refaire si un chiffre bouge) : 10 scènes × 9 s de moyenne = 90 s ✔ ·
-> 10 scènes réelles + ~2 hyperframes sur 30 = 18 `ai_image` = 60 % ≤ 65 % ✔ · 10 scènes à 6 s
-> minimum = 60 s, donc viser 9 s de moyenne, pas le plancher.
+- **≥ 9 scènes de footage réel** sur 13-15, et **≥ 90 s cumulées** — soit **60 % du temps
+  d'écran**. Le spectateur passe la majorité de la vidéo à REGARDER l'outil.
+- **`ai_image` ≤ 30 % des scènes** (4 sur 14 au plus). L'image générée sert le hook, une
+  métaphore, une transition. Elle ne montre plus jamais un produit.
+- **≥ 3 scènes en `screen_recording`**, dont obligatoirement les beats 2 et 3.
+- Durée par scène filmée : **8-12 s**. **Exception explicite au cap ~7 s** de §VISUAL CADENCE :
+  une scène filmée porte son mouvement interne (curseur, scroll, hover), ce n'est pas un plan
+  figé. Un plan IA de 12 s reste interdit.
+- **Jamais plus de trois scènes filmées consécutives** sans casser avec une image ou un
+  hyperframe.
+
+> **Contrôle arithmétique** : 9 scènes × 10 s = 90 s sur 150 = 60 % ✔ · 14 scènes − 9 réelles
+> − 1 hyperframe = 4 `ai_image` = 29 % ≤ 30 % ✔ · 14 scènes × 10,7 s de moyenne = 150 s ✔
 
 ### Le contrôle au PLAN
 

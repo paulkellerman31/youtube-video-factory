@@ -86,14 +86,20 @@ To raise quality, change a preset — never re-decide per video.
      (standard). `textOverlay` is ignored on these scenes — the text lives in the HTML.
      Local render only, never the CLI's cloud commands.
 
-   **Tool-centric videos are under a binding footage quota** (`script-director.md` §TOOL
-   FOOTAGE, 2026-08-01): 4 mandatory beats sourced from real footage — homepage in the first
-   90 s, the core journey as a `screen_recording` at the 60-70 % peak, real pricing before the
-   CTA, and a contradictory-proof page — plus ≥ 10 real-footage scenes / ≥ 90 s cumulative and
-   `ai_image` ≤ 65 % of scenes. The audit that produced this rule measured 79 % to 97 %
-   `ai_image` across the six OFM plans, and one review of a CRM built on a single screenshot.
-   A plan that doesn't list the 4 beats sourced is invalid — rewrite before the gate.
-   `hyperframes` for data/number scenes, `ai_image` for hook / concept / transition only.
+   **FORMAT S — SHORT TOOL BRIEF is the default since 2026-08-01** (`script-director.md`):
+   2 min 30, ~375 words, 13-15 scenes, six locked blocks — hook, the tool in one sentence,
+   the 3 things that matter, price, the limit, CTA. Measured on the channel over 90 days:
+   average view duration **85 s**, average percentage viewed **31,7 %**; informational packaging
+   pulls ~120 views where single-tool reviews pull 20-35. A six-minute video is abandoned four
+   fifths of the way through, costs twice as much and adds nothing. The script is ordered so the
+   average drop-off still gets the price and the limit — the two things that decide the click.
+
+   **Binding footage quota, recalibrated for the short format**: 4 mandatory beats mapped one
+   to one onto blocks 2-5, plus **≥ 9 real-footage scenes / ≥ 90 s = 60 % of screen time**,
+   `ai_image` **≤ 30 %** of scenes, ≥ 3 `screen_recording`. The viewer spends most of the video
+   WATCHING the tool. A plan that doesn't list the 4 beats sourced is invalid — rewrite before
+   the gate. `hyperframes` for data/number scenes, `ai_image` for hook / metaphor / transition
+   only — never to show a product.
 
    **Thumbnail = a pipeline entry, not a manual step — and the art direction is LOCKED.** The
    plan ALWAYS appends to `image-prompts.json` an entry `sceneId: "thumbnail"` (never

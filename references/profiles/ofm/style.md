@@ -58,15 +58,15 @@ connaît rien ». Mesure sur les 6 plans OFM (relevé 2026-08-01) : **79 % à 97
 `ai_image`** — de 23/29 (beacons) à 29/30 (inro, onlytraffic). Le correctif n'est pas esthétique,
 il est structurel — **du footage réel, avec un curseur qui bouge**.
 
-- Sur une vidéo tool-centric : `ai_image` **≤ 65 % des scènes**, **≥ 10 scènes de footage réel**
-  (≥ 90 s cumulées), dont **≥ 3 en `screen_recording`**. Quota, beats obligatoires et contrôle
-  arithmétique : `script-director.md` §TOOL FOOTAGE. Contrat de la source filmée :
-  `references/screen-recording-contract.md`.
+- Format S (défaut, 13-15 scènes / 150 s) : `ai_image` **≤ 30 % des scènes**, **≥ 9 scènes de
+  footage réel** (≥ 90 s = 60 % du temps d'écran), dont **≥ 3 en `screen_recording`**. Quota,
+  beats obligatoires et contrôle arithmétique : `script-director.md` §TOOL FOOTAGE. Contrat de
+  la source filmée : `references/screen-recording-contract.md`.
 - `ai_image` reste le bon outil pour le hook, le concept, la métaphore, la transition, l'émotion.
   Il n'est plus le bon outil pour montrer un produit.
-- Ne pas enchaîner plus de deux scènes filmées d'affilée : trois captures à la suite redeviennent
+- Ne pas enchaîner plus de trois scènes filmées d'affilée : au-delà, ça redevient
   un tunnel, juste d'une autre nature. Le mix (réel + IA + hyperframes + motion) reste la règle ;
-  le cap ~7 s/plan vaut pour les plans IA, **pas pour les scènes filmées** (6-12 s), qui portent
+  le cap ~7 s/plan vaut pour les plans IA, **pas pour les scènes filmées** (8-12 s), qui portent
   leur propre mouvement interne.
 
 ## Palette et police — VERROUILLÉES pour la chaîne OFM (2026-08-01)

@@ -2,6 +2,36 @@
 
 Toute modification systémique (presets, pipeline, structure) se note ici. Une ligne par changement, datée.
 
+## 2026-08-01 (soir) — le format passe en court, sur données de la chaîne
+
+Analytics YouTube, 90 jours : **1 236 vues / 22 vidéos = 56 par vidéo**, durée vue moyenne
+**85 s**, pourcentage moyen regardé **31,7 %**, 22 abonnés. Comparatif par cohorte : les vidéos
+informationnelles de janvier (Anti-Freeze Banking 124 vues, Recruit Models 121, Start Agency 44)
+écrasent les reviews mono-outil de juin (Anti-Detect 36, Bright Data 25, Inrō 19), avec des
+durées vues trois fois supérieures. Conclusion : la factory produisait un format de 5-6 min que
+personne ne regarde, sur un packaging qui ne clique pas.
+
+- **Nouveau format par défaut : S — SHORT TOOL BRIEF.** 2 min 30, 350-400 mots, 13-15 scènes,
+  six blocs verrouillés : hook (8 s) · l'outil en une phrase (homepage filmée) · les 3 choses qui
+  comptent (parcours filmé + le chiffre qui tranche) · le prix (vraie grille) · **la limite**
+  (page réelle qui l'atteste) · CTA. Le mix 40B/30C/20D/10A est périmé.
+- **Ordre pensé pour l'abandon réel** : prix et limite arrivent avant la 85ᵉ seconde. Un
+  spectateur qui part à la moyenne a quand même eu les deux informations qui décident du clic.
+- **Le bloc « limite » n'est pas optionnel** : dire pour qui l'outil ne convient PAS est ce qui
+  rend crédibles les blocs précédents. Une vidéo qui ne dit que du bien se lit comme une
+  plaquette en dix secondes.
+- **Supprimé du contrat de script** : PROMISE, les 5-8 blocs de BODY, PROOF séparée, les [PI]
+  toutes les 60-90 s, l'open loop payé avant 50 %. Sur 150 s, ces dispositifs de rétention longue
+  n'ont pas le temps d'exister.
+- **CONTENT SELECTION passe de 5-8 insights à exactement 3**, filtrés par : ça change la décision
+  d'achat / ça se MONTRE à l'écran / ça se dit en quinze secondes. Et le point le plus fort quitte
+  le hook pour le bloc 3 — le hook porte le problème, pas la solution.
+- **Quota de footage recalibré** : ≥9 scènes réelles sur 13-15 et ≥90 s, soit **60 % du temps
+  d'écran** ; `ai_image` **≤30 %** (contre 65 % sur l'ancien gabarit) ; ≥3 `screen_recording`,
+  dont les beats 2 et 3 ; 8-12 s par scène filmée. Les 4 beats obligatoires ne sont plus des
+  ajouts à caser : ils SONT les blocs 2 à 5.
+- Coût de production divisé par deux (13-15 images au lieu de 30, voix deux fois plus courte).
+
 ## 2026-08-01 — retour terrain : cohérence, légitimité, substance
 
 Trois griefs remontés par des personnes extérieures après visionnage de la chaîne. Chacun avait
