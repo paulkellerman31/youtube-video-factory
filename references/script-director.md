@@ -79,8 +79,23 @@ Output is valid when:
 * ✗ STRIP ≠ ROUTE: only strip DECORATIVE text (fake burning invoice, bogus seal). If the text CARRIES the meaning (calendar = the months, dashboard = data, sign = a number, clock = the time) do NOT blank it — a blank box guts the scene. ROUTE it instead (overlay with the real words / GRAPHIC / capture)
 * ✗ No full table before PLAN is confirmed
 * ✗ No "OnlyFans" in video title — use in tags/description only
-* ✗ No "<Tool> Review" as title (CTR mort : 0,65 % vs 13,3 % problem-first, data 2026-06). Le titre vend le problème résolu ou le bénéfice ("Stop the Shadowban…") ; le nom de l'outil va dans la vidéo, les tags, la description — jamais seul en titre.
-  **⚠️ Règle massivement violée en production. Audit du 2026-08-01, source : YouTube Data API (`youtube_list_videos`, 22 vidéos publiées sur la chaîne) — 9 titres sur 22 contiennent `Review`** : Inrō, OnlyTraffic, OnlySpoofer, NodeMaven, Bright Data, ProxyWing, Dolphin Anty, GoLogin, OnlySpoofer 2026. (Ces vidéos ne sont pas toutes dans `projects/` : la chaîne est plus ancienne que la factory, et `STATE.md` est périmé sur ce point.) Le preset existait, il n'a simplement pas été appliqué. **Contrôle obligatoire au PLAN** (les 3 titres candidats y remontent, cf. STEP 1) : un titre contenant le mot `Review`, ou commençant par le nom de l'outil, est rejeté et réécrit avant le gate. Les titres déjà publiés se corrigent à chaud via `youtube_update_video` — gratuit et rétroactif
+* ✗ **Un titre qui ne commence pas par le mot-clé visé.** Le titre EST la requête. Tout ce qui vient après les deux-points est de l'angle, et l'angle ne se cherche pas.
+  **⚠️ Règle « pas de Review dans le titre » — RETIRÉE le 2026-08-01.** Elle venait d'un écart de CTR (0,65 % contre 13,3 %) lu comme un problème de packaging. C'était une erreur de lecture : `<Outil> Review` EST le mot-clé de la vidéo, et le renommer en bénéfice (« The $175 Setup That Protects $150K ») aurait supprimé la seule requête sur laquelle la vidéo pouvait se positionner. Un titre de review se corrige sur sa SECONDE moitié — l'angle après les deux-points — jamais sur le mot-clé.
+  **Ce que l'écart de CTR mesurait réellement : un écart de VOLUME de recherche.** « NodeMaven Review » est du bas de funnel — forte intention, audience minuscule (25 vues). « Best Bank Account for OnlyFans » est du haut de funnel — 124 vues. Les deux titres sont bons ; ils ne jouent pas le même rôle.
+
+## MIX ÉDITORIAL — la vraie correction (2026-08-01)
+
+Le problème de la chaîne n'était pas ses titres, c'était de ne produire **que** du bas de funnel : 9 reviews mono-outil sur 22 vidéos, toutes sur des requêtes à faible volume.
+
+| Type | Requête visée | Rôle | Se juge sur |
+|---|---|---|---|
+| **LARGE** — « Best X for Y (2026) », « How to X » | gros volume, intention floue | apporte les vues et les abonnés, alimente les reviews en liens internes | vues, abonnés, watch-time |
+| **REVIEW** — « <Outil> Review » | faible volume, forte intention d'achat | convertit | **clics `/go/` ÷ vues**, jamais les vues |
+
+**Ratio cible : 2 LARGE pour 1 REVIEW.** Aujourd'hui c'est l'inverse.
+
+**Ne jamais juger une review sur ses vues.** Une review à 25 vues qui envoie 4 clics affiliés bat une vidéo large à 300 vues qui n'en envoie aucun. C'est l'erreur qui a failli faire renommer les 9 titres.
+
 * ✗ No tool-centric video without its 4 mandatory footage beats (§TOOL FOOTAGE) — un PLAN qui ne les affiche pas sourcés est invalide
 * ✗ No per-video thumbnail art direction — la DA miniature est verrouillée au niveau chaîne (`profiles/<channel>/thumbnail-playbook.md`). Pas d'archétype à choisir, pas de décor à inventer, pas de palette à décider
 

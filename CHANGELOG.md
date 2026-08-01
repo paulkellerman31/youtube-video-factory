@@ -11,6 +11,18 @@ informationnelles de janvier (Anti-Freeze Banking 124 vues, Recruit Models 121, 
 durées vues trois fois supérieures. Conclusion : la factory produisait un format de 5-6 min que
 personne ne regarde, sur un packaging qui ne clique pas.
 
+- **RETRAIT de la règle « pas de Review dans le titre »** — c'était une erreur d'analyse de ma
+  part, corrigée après objection de Théo. L'écart de CTR (0,65 % vs 13,3 %) avait été lu comme un
+  problème de packaging ; c'est un écart de **volume de recherche**. `<Outil> Review` EST le
+  mot-clé de la vidéo : le renommer en bénéfice aurait supprimé la seule requête sur laquelle
+  elle peut se positionner. Les 9 titres concernés restent en l'état. Nouvelle règle : le titre
+  commence toujours par le mot-clé visé, et seul l'angle après les deux-points se retravaille.
+- **Nouvelle §MIX ÉDITORIAL.** Le vrai défaut n'était pas les titres mais le mix : 9 reviews
+  mono-outil sur 22, toutes sur des requêtes à faible volume. Deux types désormais distingués —
+  LARGE (« Best X for Y », « How to X » : gros volume, apporte vues et abonnés) et REVIEW
+  (faible volume, forte intention : convertit). **Ratio cible 2 LARGE pour 1 REVIEW**, l'inverse
+  d'aujourd'hui. Et une review **ne se juge jamais sur ses vues** mais sur ses clics `/go/` ÷
+  vues : 25 vues qui envoient 4 clics battent 300 vues qui n'en envoient aucun.
 - **Nouveau format par défaut : S — SHORT TOOL BRIEF.** 2 min 30, 350-400 mots, 13-15 scènes,
   six blocs verrouillés : hook (8 s) · l'outil en une phrase (homepage filmée) · les 3 choses qui
   comptent (parcours filmé + le chiffre qui tranche) · le prix (vraie grille) · **la limite**
