@@ -25,20 +25,22 @@
     "viewport": "1920x1080",
     "cursor": true,
     "hideSelectors": ["#cookie-banner"],
+    "startAt": { "selector": ".pricing-grid" },
     "beats": [
-      { "do": "settle",   "ms": 600 },
+      { "do": "settle",   "ms": 900 },
       { "do": "moveTo",   "selector": ".plan--pro",        "ms": 900 },
-      { "do": "dwell",    "ms": 700 },
-      { "do": "scrollTo", "selector": ".comparison-table", "ms": 1800 },
-      { "do": "moveTo",   "x": 1100, "y": 620,             "ms": 700 },
-      { "do": "dwell",    "ms": 1200 }
+      { "do": "dwell",    "ms": 2400 },
+      { "do": "scrollTo", "selector": ".comparison-table", "ms": 1600 },
+      { "do": "dwell",    "ms": 2600 }
     ]
   }
 }
 ```
 
-**Champs.** `url` (requis, http(s) public) · `viewport` (défaut `1920x1080`) · `cursor` (défaut
-`true`) · `hideSelectors` (en plus des sélecteurs cookies génériques) · `beats` (requis, ≥ 2).
+**Champs.** `url` (requis, http(s) public) · `viewport` (défaut `1920x1080`, à garder égal à la
+résolution de sortie) · `cursor` (défaut `true`) · `hideSelectors` (en plus des sélecteurs
+cookies génériques) · `startAt` (`{ selector }` ou `{ y }` — position de départ appliquée hors
+caméra, voir §2) · `beats` (requis, ≥ 2).
 
 **Verbes de beat :**
 
@@ -46,7 +48,7 @@
 |---|---|---|
 | `settle` | — | ne rien faire, laisser la page respirer |
 | `moveTo` | `selector` **ou** `x`/`y` | déplace le curseur en courbe amortie |
-| `scrollTo` | `selector` **ou** `y` | défile en douceur jusqu'à la cible |
+| `scrollTo` | `selector` **ou** `y` | défile par à-coups de molette jusqu'à la cible — un seul par scène, ≤ 600 px |
 | `dwell` | — | curseur immobile, la scène se lit |
 | `hover` | `selector` | `moveTo` + maintien, déclenche les états `:hover` |
 | `click` | `selector` | clic — **usage restreint, voir §4** |
@@ -79,12 +81,41 @@ l'autre). Vitesse en ease-in-out, jamais constante.
 8 px, marquer ~120 ms, revenir. Idem sur un `scrollTo` : dépasser de 3 à 6 px et corriger. C'est
 le geste le plus reconnaissablement humain qui existe et il est trivial à coder.
 
-**Le défilement est amorti et lent.** Plafond ~900 px/s, courbe ease-in-out, jamais de saut. Un
-`scrollTo` instantané ressemble à un rechargement de page, pas à une lecture. Si la distance
-demandée dépasse `0,9 × ms`, **allonger automatiquement le beat** et logguer — ne jamais tronquer
-en silence. Piège annexe : les sites en `scroll-behavior: smooth` ou en scroll-jacking (Lenis,
+**Le défilement se fait par à-coups, pas d'un seul glissement.** ⚠️ **Corrigé le 2026-08-01
+après visionnage — la première version était fausse.** Elle animait toute la distance en une
+seule courbe ease-in-out plafonnée à 900 px/s : fluide, continue, et produite par aucun humain.
+Une molette avance la page par crans — trois ou quatre en rafale, puis la main s'arrête pendant
+que l'œil lit, puis une autre rafale. **Ce qui trahit l'automate n'est pas la vitesse, c'est
+l'absence de pauses** : une page à vitesse constante est aussi robotique qu'un curseur à vitesse
+constante.
+
+Implémentation (`humanScrollTo`) : rafales de 180 à 420 px, chacune en décélération (ease-out,
+comme une molette qui s'arrête), séparées par de courtes hésitations, avec une pause de lecture
+plus longue toutes les trois ou quatre rafales. **Le temps de beat non consommé par le mouvement
+part dans les pauses, jamais dans un glissement plus lent** — c'est l'immobilité qui se lit comme
+humaine, donc c'est elle qu'on achète avec les millisecondes restantes. Aléa déterministe (LCG
+semé sur la distance) : le même spec filme deux fois pareil, contrairement à `Math.random`.
+
+Piège annexe : les sites en `scroll-behavior: smooth` ou en scroll-jacking (Lenis,
 ScrollSmoother) se battront contre le script — dans ce cas neutraliser le CSS via
 `addStyleTag`, ou basculer la scène en `manual_asset`.
+
+**Une scène ne s'ouvre pas sur un trajet — elle s'ouvre sur son sujet.** Champ `startAt`
+(`{ selector }` ou `{ y }`) : la page est positionnée pendant le pré-roll, donc AVANT la
+frontière de rognage, donc jamais à l'écran. Sans lui, toute scène parlant d'une section à
+4 000 px devait commencer par cinq secondes de transit — sur une fenêtre de huit secondes,
+l'essentiel du plan passe à voyager, et ça se lit comme une machine qui cherche, pas comme
+quelqu'un qui lit. Le pré-positionnement descend par paliers de ~1 400 px pour déclencher le
+lazy-load : atterrir à froid sur un offset profond filme une page à moitié construite.
+
+**Budget d'immobilité — règle de composition, pas d'implémentation.**
+
+- **Un seul beat `scrollTo` par scène**, et **≤ 600 px** à l'écran. Au-delà, c'est un `startAt`
+  qu'il fallait écrire.
+- **Le curseur est au repos au moins la moitié de la scène.** Enchaîner les `moveTo` produit un
+  curseur qui balaie sans raison ; une main pose la souris et la laisse.
+- Sur un `dwell` de plus de 2,2 s, un micro-déplacement unique et lent (une dizaine de pixels)
+  vaut mieux qu'une immobilité au pixel près, qui est son propre tell.
 
 Le curseur lui-même est un élément DOM injecté (flèche SVG blanche, ombre portée douce,
 `position: fixed`, `pointer-events: none`, `z-index` max) — le vrai curseur système n'apparaît

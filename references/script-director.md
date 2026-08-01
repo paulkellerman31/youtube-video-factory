@@ -10,7 +10,7 @@
 ## STEP 0 — PARAMETERS (fill before starting)
 
 ```
-FORMAT:         S — SHORT TOOL BRIEF (2 min 30)  ← locked default depuis 2026-08-01
+FORMAT:         S — SHORT TOOL BRIEF / PAGE DE VENTE (2 min 15)  ← locked default depuis 2026-08-01
 SOURCE:         per video — whatever Théo drops
 OBJECTIVE:      GROW            ← locked default
 CTA:            AFFILIATE — lien /go/<tool> (Stratégie A) si la vidéo cible une intention d'achat ; SUBSCRIBE sinon ← locked default
@@ -27,7 +27,7 @@ BRAND COLORS:   blue + white, neon blue #00C8FF (see image-prompt-style.md)
 
 **FORMATS:**
 
-* **S — SHORT TOOL BRIEF → le format par défaut depuis le 2026-08-01. 2 min 30, ~375 mots, 13-15 scènes.** Structure verrouillée en §SHORT TOOL BRIEF ci-dessous. Tous les autres formats deviennent l'exception, à justifier au PLAN.
+* **S — SHORT TOOL BRIEF / PAGE DE VENTE → le format par défaut depuis le 2026-08-01. 2 min 15, ~460 mots, 13-15 scènes.** Structure verrouillée en §SHORT TOOL BRIEF ci-dessous. Tous les autres formats deviennent l'exception, à justifier au PLAN.
 * A — Tool Review → Problem→Tool→Proof→CTA | Ceiling: medium — **packaging confirmé faible** (Bright Data Review : CTR 0,65 %, data 2026-06). Format A garde sa structure mais son TITRE/THUMBNAIL est toujours packagé comme un B (problème d'abord).
 * B — Problem First → Problem→Solutions→Tool→CTA | Ceiling: high
 * C — Myth Buster → Belief→Why wrong→Fix→CTA | Ceiling: very high
@@ -53,7 +53,7 @@ YouTube Automation Script Director. Faceless B2B content specialist. Every audio
 
 ## MISSION
 
-Transform input into a production-ready faceless YouTube script. **Format S par défaut : 2 min 20 à 2 min 40 / 350-400 mots / 150 wpm.** Hook dans les 8 premières secondes. Chaque phrase gagne sa place ou saute. Match OBJECTIVE and CTA.
+Transform input into a production-ready faceless YouTube script. **Format S par défaut : 2 min 00 à 2 min 20 / 410-475 mots / 205 wpm — débit MESURÉ sur la voix OFM, voir §SCRIPT STRUCTURE.** Hook dans les 8 premières secondes. Chaque phrase gagne sa place ou saute. Match OBJECTIVE and CTA.
 
 **Pourquoi si court — mesuré, pas supposé** (chaîne OFM, 90 j au 2026-08-01) : durée vue moyenne **85 s**, pourcentage moyen regardé **31,7 %**. Une vidéo de 6 minutes est abandonnée aux quatre cinquièmes ; elle coûte le double à produire et n'apporte rien de plus. Second constat de la même mesure : les vidéos informationnelles (« How to X », « Best X ») font 120 vues quand les reviews mono-outil en font 20-35, avec des durées vues trois fois plus faibles. **Le packaging vend un problème, jamais un outil.**
 
@@ -122,25 +122,101 @@ Pick ONE: Enemy / Myth / Pain / Clock
 Le but de chaque seconde : donner au spectateur ce qu'il lui faut pour décider, puis lui donner
 le lien. Pas de mise en jambes, pas de récapitulatif, pas de « dans cette vidéo on va voir ».
 
+> **Réécrit le 2026-08-01 — la vidéo est une PAGE DE VENTE, pas un article filmé.**
+> Demande de Théo, mot pour mot : *« il faut aussi que la vidéo soit une genre de page de vente
+> dont l'objectif est de convertir le visionneur en donnant les fonctionnalités & avantages
+> (à la différence d'un article plus poussé) ».* L'ancien ordre des blocs était celui d'un
+> article — exhaustif, équilibré, la limite juste avant le lien. L'ordre ci-dessous est celui
+> d'une page de vente, et il vient des mêmes chiffres que le skill `conversion-cro`.
+
 | # | Fenêtre | Bloc | Ce qui s'y passe | Source visuelle |
 |---|---|---|---|---|
-| 1 | 0:00-0:08 | **HOOK** | Le problème chiffré, ou la perte concrète. Antagoniste nommé. Aucune intro. | `screen_recording` — page « use case » / support / hero. **Jamais `ai_image`** |
-| 2 | 0:08-0:25 | **L'OUTIL EN UNE PHRASE** | Ce que c'est, pour qui, ce qu'il remplace. | `screen_recording` homepage |
-| 3 | 0:25-1:15 | **LES 3 CHOSES QUI COMPTENT** | Le mécanisme cœur (filmé, pas raconté), le différenciateur, le chiffre qui tranche. Un bloc = une chose = ~15 s. | `screen_recording` parcours + hyperframe pour le chiffre |
-| 4 | 1:15-1:40 | **PRIX** | La vraie grille, lue à l'écran. Le plan qui convient à l'audience, nommé. | `screen_recording` pricing (curseur de carte en carte) |
-| 5 | 1:40-2:05 | **LA LIMITE** | Pour qui ce n'est PAS, et pourquoi. Une page réelle qui l'atteste. | `screen_recording` docs/CGU/add-ons/comparatif |
-| 6 | 2:05-2:30 | **CTA** | Une action. Le lien. Rien d'autre. | `screen_recording` de la page d'inscription ou de l'article |
+| 1 | 0:00-0:10 | **PROMESSE** | Le problème concret, puis en une phrase ce que l'outil en fait. Aucune intro, aucun « dans cette vidéo ». | `screen_recording` — page « use case » / support / hero. **Jamais `ai_image`** |
+| 2 | 0:10-0:25 | **CE QUE C'EST + VERDICT** | Ce que c'est, pour qui, et le verdict tout de suite. Le spectateur sait à la 25ᵉ seconde si ça le concerne. | `screen_recording` homepage |
+| 3 | 0:25-0:55 | **BÉNÉFICES 1 et 2** | Deux bénéfices, chacun énoncé AVANT la fonctionnalité qui le produit (§COPYWRITING). | `screen_recording` du parcours qui produit le bénéfice |
+| 4 | 0:55-1:05 | **CTA INTERMÉDIAIRE** | Une phrase, les MÊMES mots que le CTA final. Le lien existe, on le dit à mi-parcours. | `screen_recording` — le bouton d'inscription, survolé |
+| 5 | 1:05-1:25 | **BÉNÉFICE 3** | Le différenciateur : ce que les concurrents ne font pas. | `screen_recording` de la fonctionnalité en question |
+| 6 | 1:25-1:40 | **LA LIMITE** | Pour qui ce n'est PAS, une seule, honnête, en prose. **Placée AVANT le prix.** | `screen_recording` docs / add-ons / grille tarifaire détaillée |
+| 7 | 1:40-2:00 | **LE PRIX** | La vraie grille, lue à l'écran. Le plan qui convient à l'audience, nommé, avec son chiffre. | `screen_recording` pricing (curseur de carte en carte) |
+| 8 | 2:00-2:15 | **CTA FINAL** | Verbe + action précise + offre réelle → levée de risque. Rien d'autre. | `screen_recording` de la page d'inscription |
+
+**Pourquoi la limite passe AVANT le prix — et non plus juste avant le lien.** Une critique
+visible dans la zone de conversion fait chuter la probabilité d'achat de **41,8 %** (Varga &
+Albuquerque, *Journal of Marketing Research* 2024, 121 391 consommateurs). L'ancien ordre plaçait
+deux scènes entières de limite entre le prix et le CTA : exactement le motif que cette étude
+mesure. La limite reste obligatoire — c'est elle qui rend crédibles les bénéfices — mais elle
+s'énonce pendant qu'on construit la confiance, pas pendant qu'on demande l'action.
+
+**Pourquoi le prix juste avant le CTA.** Le pic d'intention se situe immédiatement après le prix :
+un CTA placé là gagne **19 à 26 %** (synthèses A/B 2021-2026, cf. `conversion-cro` §2). Prix puis
+lien, dans cet ordre, sans rien entre les deux.
+
+**Pourquoi un CTA à mi-parcours.** Répéter le MÊME appel à l'action sur une page longue est
+neutre à positif ; montrer trois actions différentes coûte 22 à 25 % de conversion. En vidéo,
+l'équivalent du « CTA au-dessus de la flottaison » est une mention unique vers 45-50 % — le
+spectateur qui part à 85 secondes (durée vue moyenne mesurée sur la chaîne) doit avoir entendu
+le lien au moins une fois.
+
+**Le bloc 6 n'est pas optionnel.** Dire pour qui l'outil ne convient pas est ce qui rend
+crédibles les bénéfices, donc ce qui fait cliquer. Une vidéo qui ne dit que du bien se lit comme
+une plaquette et le spectateur le sent en dix secondes.
 
 **Ce que ce format supprime :** PROMISE, les 5-8 blocs de BODY, PROOF séparée, les [PI] toutes
-les 60-90 s, l'open loop payé avant 50 %. Sur 150 secondes, ces dispositifs de rétention longue
-n'ont pas le temps d'exister — et c'est justement leur absence qui rend le format tenable.
-
-**Le bloc 5 n'est pas optionnel.** Dire pour qui l'outil ne convient pas est ce qui rend
-crédibles les blocs 3 et 4, donc ce qui fait cliquer. Une vidéo qui ne dit que du bien se lit
-comme une plaquette et le spectateur le sent en dix secondes.
+les 60-90 s, l'open loop payé avant 50 %. Ces dispositifs de rétention longue n'ont pas le temps
+d'exister sur deux minutes — et c'est justement leur absence qui rend le format tenable.
 
 **Cadence :** 13-15 scènes, 8-12 s chacune. Aucun plan figé (§VISUAL CADENCE). Le cap de ~7 s
 ne s'applique pas aux scènes filmées, qui portent leur mouvement.
+
+### Débit réel de la voix — 205 mots/minute, pas 150 (mesuré le 2026-08-01)
+
+Constante fausse depuis l'origine du preset. Mesure sur la voix OFM réellement rendue
+(`voiceover.txt` de 358 mots → `voice.mp3` de 103,979 s) : **206,6 mots/minute**.
+
+Conséquence de l'erreur : un script écrit pour 2 min 30 sort à **1 min 44**, et `assemble`
+rééchelonne silencieusement TOUTES les fenêtres de scène d'un facteur 0,73. Les beats de
+tournage, eux, ont été écrits pour les fenêtres du plan : ils se retrouvent comprimés d'un tiers,
+et une scène pensée pour huit secondes de lecture posée en devient une de cinq et demie.
+
+**Règle : calculer le nombre de mots à 205 wpm.** Pour une vidéo de 2 min 15 (135 s) : **≈ 460
+mots**. Vérifier l'arithmétique dans le PLAN, et re-mesurer le débit à chaque changement de voix
+ou de `voice-config.json` — c'est une constante d'instrument, elle se relève, elle ne se suppose
+pas.
+
+---
+
+## COPYWRITING — bénéfices, pas fonctionnalités
+
+Le spectateur n'achète pas ce que fait l'outil, il achète ce que ça change pour lui. La règle
+tient en une inversion de l'ordre des mots.
+
+**Motif obligatoire : bénéfice d'abord, fonctionnalité ensuite, dans la même phrase.**
+
+| ✗ Fonctionnalité seule | ✓ Bénéfice puis fonctionnalité |
+|---|---|
+| « Il se connecte à WhatsApp, Instagram, Facebook et Telegram. » | « Tes clients écrivent où ils veulent et c'est la même conversation — WhatsApp, Instagram, Facebook, Telegram, une seule boîte. » |
+| « Le constructeur est en no-code, par blocs. » | « Tu changes une réponse en direct sans attendre un développeur : chaque étape est un bloc que tu déplaces. » |
+| « Plan gratuit : mille messages par mois. » | « Tu testes sur de vrais clients avant de payer quoi que ce soit — mille messages offerts par mois. » |
+
+**Le CTA suit un motif fixe** (`conversion-cro` §2) :
+`[verbe + action précise + offre réelle] → [levée de risque, chiffre vérifié]`
+> *Start the King plan free for seven days — the link is in the description. No card.*
+
+**Test de spécificité d'un CTA — deux critères sur quatre minimum**, sinon il est générique et se
+réécrit : le nom de la marque · un chiffre (durée, prix, quantité) · une levée de risque
+explicite (« no card », « cancel anytime ») · un objet précis (« the King plan », pas « the tool »).
+⚠️ Contenir le mot « free » ou « trial » ne suffit pas — « Get your free trial » passe ce
+faux-test et ne dit rien.
+
+**Interdits de copie :**
+
+* ✗ Aucun chiffre dans un CTA qui ne vienne pas d'une page relevée et datée (§STEP 0-bis RECON).
+  Un prix périmé à côté d'un appel à l'action détruit exactement la confiance qu'on construit.
+* ✗ Aucune fausse urgence, aucune fausse rareté. L'urgence vraie gagne 29-30 % ; l'urgence
+  inventée coûte la chaîne.
+* ✗ Aucun superlatif non tenu par un chiffre de la page (« le meilleur », « révolutionnaire »).
+* ✗ Aucune énumération de fonctionnalités sans son bénéfice — c'est le défaut par défaut, il
+  revient à chaque script si on ne le traque pas.
 
 [PI] TYPES: rhetorical question / shocking stat / contrarian claim / direct address "If you're doing X — stop."
 

@@ -43,6 +43,18 @@ export interface RecordingSpec {
   cursor?: boolean; // draw the synthetic cursor (default true)
   hideSelectors?: string[];
   beats: Beat[];
+  /**
+   * Where the page ALREADY IS when filming starts — applied during the pre-roll, so it is cut
+   * off by the head trim and never appears on screen.
+   *
+   * WHY THIS EXISTS (retour terrain 2026-08-01 : « il ne faut pas scroller en permanence »).
+   * Without it, every scene about a section 4 000 px down had to OPEN with a long transit: five
+   * seconds of scrolling before reaching the thing the voice is talking about. On a scene window
+   * of eight seconds that is most of the shot spent travelling, and it reads as a machine
+   * seeking, not as someone reading. With `startAt`, the scene opens ON the section, and the
+   * only scroll left on camera is the short one a real reader would do next.
+   */
+  startAt?: { selector?: string; y?: number };
   /** planned scene length; the clip is filmed longer and conformed at assembly */
   plannedDurationSec?: number;
 }
@@ -54,6 +66,7 @@ export function recordingHashInput(spec: RecordingSpec): string {
     viewport: spec.viewport ?? "1920x1080",
     cursor: spec.cursor !== false,
     hideSelectors: spec.hideSelectors ?? [],
+    startAt: spec.startAt ?? null,
     beats: spec.beats,
   });
 }
@@ -170,32 +183,101 @@ async function setCursor(page: any, x: number, y: number): Promise<void> {
   await page.mouse.move(Math.round(x), Math.round(y)).catch(() => {});
 }
 
-/** Damped scroll: ease-in-out, capped speed, small overshoot correction at the stop. */
-async function smoothScrollTo(page: any, targetY: number, ms: number): Promise<number> {
+/** Deterministic jitter in [0,1) — same spec films the same way twice, unlike Math.random. */
+function lcg(seed: number): () => number {
+  let s = (Math.abs(Math.round(seed)) % 2147483646) + 1;
+  return () => {
+    s = (s * 16807) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+/**
+ * Scroll the way a hand does: in FLICKS, not in one glide.
+ *
+ * WHY THIS WAS REWRITTEN (retour terrain 2026-08-01 : « le scroll et le mouvement n'ont pas
+ * l'air naturel »). The first version animated the whole distance as a single ease-in-out sweep
+ * at up to 900 px/s. It is smooth, it is continuous, and it is exactly what no human produces:
+ * a mouse wheel moves the page in discrete notches, three or four in quick succession, then the
+ * hand stops while the eye reads, then another burst. The giveaway is not the speed, it is the
+ * ABSENCE OF PAUSES — a constant-velocity page is as robotic as a constant-velocity cursor.
+ *
+ * So: bursts of ~180-420 px, each decelerating (ease-out, like a wheel spinning down), separated
+ * by short pauses, with a longer read-pause every third or fourth burst. Spare time left over
+ * from the beat budget goes into those pauses rather than into a slower glide — stillness is the
+ * thing that reads as human, so it is what we buy with the extra milliseconds.
+ */
+async function humanScrollTo(page: any, targetY: number, ms: number): Promise<number> {
   const startY = (await page.evaluate(() => window.scrollY).catch(() => 0)) as number;
   const dist = targetY - startY;
-  if (Math.abs(dist) < 2) return startY;
-
-  // Speed cap: a scroll faster than this reads as a page reload, not as reading.
-  const MAX_PX_PER_SEC = 900;
-  const needed = (Math.abs(dist) / MAX_PX_PER_SEC) * 1000;
-  let dur = ms;
-  if (needed > ms) {
-    dur = Math.round(needed);
-    log("WARN", `recording: scroll de ${Math.round(Math.abs(dist))}px trop long pour ${ms}ms — beat allongé à ${dur}ms (plafond ${MAX_PX_PER_SEC}px/s)`);
+  if (Math.abs(dist) < 8) {
+    await page.waitForTimeout(ms);
+    return startY;
   }
 
-  const over = Math.sign(dist) * (3 + (Math.abs(Math.round(dist)) % 4));
-  const fps = 60;
-  const steps = Math.max(2, Math.round((dur / 1000) * fps));
-  for (let i = 1; i <= steps; i++) {
-    const t = easeInOut(i / steps);
-    await page.evaluate((y: number) => window.scrollTo(0, y), Math.round(startY + (dist + over) * t)).catch(() => {});
-    await page.waitForTimeout(Math.round(dur / steps));
+  const dir = Math.sign(dist);
+  const total = Math.abs(dist);
+  const rnd = lcg(total * 31 + Math.round(startY));
+
+  // Plan the bursts first, so we know how much time the movement itself needs.
+  const bursts: number[] = [];
+  let planned = 0;
+  while (planned < total) {
+    const step = Math.min(total - planned, 180 + Math.round(rnd() * 240));
+    bursts.push(step);
+    planned += step;
   }
-  await page.evaluate((y: number) => window.scrollTo(0, y), Math.round(targetY)).catch(() => {});
-  await page.waitForTimeout(90);
+  // A burst decelerates over ~1.6 px/ms; below 130 ms it reads as a jump cut.
+  const burstMs = bursts.map((d) => Math.max(130, Math.round(d / 1.6)));
+  const moveTime = burstMs.reduce((a, b) => a + b, 0);
+  const minPause = 70 * (bursts.length - 1);
+
+  let budget = ms;
+  if (moveTime + minPause > ms) {
+    budget = moveTime + minPause;
+    log("WARN", `recording: scroll de ${Math.round(total)}px impossible en ${ms}ms sans accélérer de façon non naturelle — beat allongé à ${budget}ms`);
+  }
+  // Everything not spent moving is spent NOT moving. That is the point.
+  const spare = budget - moveTime;
+  const gaps = Math.max(1, bursts.length - 1);
+
+  let y = startY;
+  for (let i = 0; i < bursts.length; i++) {
+    const from = y;
+    const to = y + dir * bursts[i];
+    const steps = Math.max(3, Math.round(burstMs[i] / 16));
+    for (let k = 1; k <= steps; k++) {
+      const t = 1 - Math.pow(1 - k / steps, 3); // ease-out: a wheel spinning down
+      await page.evaluate((v: number) => window.scrollTo(0, v), Math.round(from + (to - from) * t)).catch(() => {});
+      await page.waitForTimeout(Math.round(burstMs[i] / steps));
+    }
+    y = to;
+    if (i < bursts.length - 1) {
+      // Every 3rd-4th gap is a read-pause; the rest are the short hesitations between notches.
+      const isRead = i % (3 + Math.round(rnd())) === 2;
+      const share = (spare / gaps) * (isRead ? 2.1 : 0.55);
+      await page.waitForTimeout(Math.max(70, Math.round(share + rnd() * 60)));
+    }
+  }
+  // Land exactly, then let the eye settle before the next beat starts.
+  await page.evaluate((v: number) => window.scrollTo(0, v), Math.round(targetY)).catch(() => {});
+  await page.waitForTimeout(120);
   return targetY;
+}
+
+/**
+ * Jump the page to its starting position BEFORE filming begins (see RecordingSpec.startAt).
+ * Descends in a few big hops so lazy-loaded images and reveal-on-scroll sections have fired by
+ * the time the first frame is kept — landing cold on a deep offset films a half-built page.
+ */
+async function preScroll(page: any, targetY: number): Promise<void> {
+  const hops = Math.min(6, Math.max(1, Math.ceil(targetY / 1400)));
+  for (let i = 1; i <= hops; i++) {
+    await page.evaluate((v: number) => window.scrollTo(0, v), Math.round((targetY * i) / hops)).catch(() => {});
+    await page.waitForTimeout(220);
+  }
+  await page.evaluate((v: number) => window.scrollTo(0, v), Math.round(targetY)).catch(() => {});
+  await page.waitForTimeout(450);
 }
 
 /** Viewport-space centre of a selector, or null if it isn't there. */
@@ -282,6 +364,20 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
     let pos = { x: viewport.width * 0.5, y: viewport.height * 0.62 };
     if (withCursor) await setCursor(page, pos.x, pos.y);
 
+    // startAt — position the page OFF CAMERA, before the head-trim boundary below.
+    if (spec.startAt) {
+      let y = spec.startAt.y;
+      if (spec.startAt.selector) {
+        const top = await documentTopOf(page, spec.startAt.selector);
+        if (top == null) {
+          log("WARN", `recording: startAt "${spec.startAt.selector}" introuvable — la scène s'ouvrira en haut de page`);
+        } else {
+          y = Math.max(0, top - viewport.height * 0.22);
+        }
+      }
+      if (y != null) await preScroll(page, y);
+    }
+
     const beatsStart = Date.now();
     headOffsetSec = (beatsStart - t0) / 1000;
 
@@ -290,9 +386,23 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
       const ms = Math.max(0, b.ms ?? 0);
       switch (b.do) {
         case "settle":
-        case "dwell":
-          await page.waitForTimeout(ms);
+        case "dwell": {
+          /**
+           * A cursor frozen to the pixel for four seconds is its own tell — a hand resting on a
+           * mouse drifts a few pixels. On long holds only: nudge once, slowly, mid-dwell. Short
+           * holds stay perfectly still, because that is also what hands do.
+           */
+          if (withCursor && ms > 2200) {
+            const head = Math.round(ms * 0.45);
+            await page.waitForTimeout(head);
+            const drift = { x: pos.x + (sign > 0 ? 11 : -14), y: pos.y + 7 };
+            pos = await moveCursor(page, pos, drift, 520, sign);
+            await page.waitForTimeout(Math.max(0, ms - head - 520));
+          } else {
+            await page.waitForTimeout(ms);
+          }
           break;
+        }
         case "scrollTo": {
           let y = b.y;
           if (b.selector) {
@@ -305,7 +415,7 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
             y = Math.max(0, top - viewport.height * 0.25);
           }
           if (y == null) { await page.waitForTimeout(ms); break; }
-          await smoothScrollTo(page, y, ms);
+          await humanScrollTo(page, y, ms);
           break;
         }
         case "moveTo":
