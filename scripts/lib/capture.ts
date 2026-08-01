@@ -83,10 +83,22 @@ export const BLOCK_PATTERNS = [
   /captcha/i,
   /ddos protection/i,
   /unusual traffic/i,
+  // Pages d'erreur du NAVIGATEUR (site injoignable, DNS, connexion refusée). Vécu : le serveur
+  // de test s'était arrêté et la sonde a cartographié « This site can't be reached » comme
+  // trois pages valides — le défaut penchait du côté du succès.
+  /this site can.?t be reached/i,
+  /page isn.?t working/i,
+  /err_connection/i,
+  /err_name_not_resolved/i,
+  /err_address_unreachable/i,
+  /404 not found/i,
+  /page not found/i,
 ];
 
-// Statuts HTTP qui trahissent un blocage / rate-limit.
-export const BLOCK_STATUSES = new Set([401, 403, 405, 429, 451, 503]);
+// Statuts HTTP qui rendent une page inexploitable : blocage, rate-limit, page absente, panne.
+// 404/410 sont dedans par principe : capturer une page absente est toujours une erreur, et sans
+// eux un chemin deviné (le filet de sécurité du repérage) produit une carte crédible et fausse.
+export const BLOCK_STATUSES = new Set([401, 403, 404, 405, 410, 429, 451, 500, 502, 503, 504]);
 
 export interface PageProbe {
   status: number;
@@ -99,8 +111,11 @@ export interface PageProbe {
  * Décide si la capture est exploitable. Renvoie une raison d'échec, ou null si OK.
  */
 export function diagnoseCapture(p: PageProbe): string | null {
+  if (p.status === 0) {
+    return "aucune réponse HTTP — site injoignable (DNS, connexion refusée, ou navigation échouée)";
+  }
   if (BLOCK_STATUSES.has(p.status)) {
-    return `page de blocage (HTTP ${p.status})`;
+    return `page inexploitable (HTTP ${p.status})`;
   }
   const haystack = `${p.title}\n${p.text}`;
   const hit = BLOCK_PATTERNS.find((re) => re.test(haystack));

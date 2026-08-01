@@ -168,10 +168,11 @@ interface MapResult {
 
 export async function reconSite(
   rootUrl: string,
-  opts: { viewport?: string; maxPages?: number } = {},
+  opts: { viewport?: string; maxPages?: number; maxPerKind?: number } = {},
 ): Promise<ReconResult> {
   if (!/^https?:\/\//i.test(rootUrl)) throw new Error(`recon: URL invalide "${rootUrl}"`);
-  const maxPages = opts.maxPages ?? 6;
+  const maxPages = opts.maxPages ?? 8;
+  const maxPerKind = opts.maxPerKind ?? 2;
   const viewport = parseViewportSpec(opts.viewport ?? "1440x810");
   const origin = new URL(rootUrl).origin;
 
@@ -209,32 +210,74 @@ export async function reconSite(
       await page.waitForTimeout(250);
 
       const m = (await page.evaluate(MAP_PAGE_SRC)) as MapResult;
+      // La page d'entrée EST la home, quelle que soit son URL (`/`, `/index.html`, `/fr/`…).
+      const kind = result.pages.length === 0 ? "home" : classify(url, m.title);
       result.pages.push({
-        url, title: m.title, kind: classify(url, m.title),
+        url, title: m.title, kind,
         height: m.height, sections: m.sections, prices: m.prices,
       });
       log("INFO", `recon: ${url} — ${m.sections.length} sections, ${m.prices.length} prix`);
       return m.links;
     };
 
+    /**
+     * COUVERTURE D'ABORD, pas priorité brute.
+     *
+     * Constaté sur un vrai site : la file triée par KIND_PRIORITY a consommé tout son budget
+     * sur cinq pages « features » quasi identiques (une par canal) et n'a JAMAIS atteint le
+     * pricing — c'est-à-dire le beat 3, obligatoire. Un tri par priorité empile les pages du
+     * type le mieux classé ; ce qu'il faut, c'est couvrir chaque type une fois avant d'en
+     * reprendre un deuxième.
+     */
+    const countByKind = (): Map<string, number> => {
+      const m = new Map<string, number>();
+      for (const p of result.pages) m.set(p.kind, (m.get(p.kind) ?? 0) + 1);
+      return m;
+    };
+
     while (queue.length && result.pages.length < maxPages) {
+      const counts = countByKind();
+      // on prend en premier une page d'un type PAS ENCORE couvert ; à défaut, le mieux classé
+      queue.sort((a, b) => {
+        const ka = classify(a, ""), kb = classify(b, "");
+        const na = counts.get(ka) ?? 0, nb = counts.get(kb) ?? 0;
+        if (na !== nb) return na - nb;
+        return KIND_PRIORITY.indexOf(ka) - KIND_PRIORITY.indexOf(kb);
+      });
       const url = queue.shift()!;
       const norm = url.split("#")[0].replace(/\/$/, "");
       if (seen.has(norm)) continue;
+      const kind = classify(url, "");
+      if ((counts.get(kind) ?? 0) >= maxPerKind) continue; // plafond par type
       seen.add(norm);
 
       const links = await visit(url);
 
-      // On ne suit que les liens internes, et on privilégie ce dont le format S a besoin.
       const candidates = links
         .filter((h) => { try { return new URL(h).origin === origin; } catch { return false; } })
         .filter((h) => !/\.(pdf|zip|png|jpe?g|svg|mp4|webm)(\?|$)/i.test(h))
-        .filter((h) => !seen.has(h.split("#")[0].replace(/\/$/, "")));
-      const scored = candidates
-        .map((h) => ({ h, k: classify(h, "") }))
-        .filter((c) => c.k !== "other")
-        .sort((a, b) => KIND_PRIORITY.indexOf(a.k) - KIND_PRIORITY.indexOf(b.k));
-      for (const c of scored) if (!queue.includes(c.h)) queue.push(c.h);
+        .filter((h) => !seen.has(h.split("#")[0].replace(/\/$/, "")))
+        .filter((h) => classify(h, "") !== "other");
+      for (const h of candidates) if (!queue.includes(h)) queue.push(h);
+    }
+
+    // Filet de sécurité : si un type indispensable au format S manque encore, on tente les
+    // chemins usuels avant d'abandonner. Coût nul si la page n'existe pas (elle est écartée).
+    const have = new Set(result.pages.map((p) => p.kind));
+    const FALLBACKS: Array<[ReconPage["kind"], string[]]> = [
+      ["pricing", ["/pricing", "/chatbot-pricing", "/plans", "/tarifs"]],
+      ["docs", ["/docs", "/help", "/documentation"]],
+    ];
+    for (const [kind, paths] of FALLBACKS) {
+      if (have.has(kind) || result.pages.length >= maxPages) continue;
+      for (const p of paths) {
+        const u = origin + p;
+        if (seen.has(u.replace(/\/$/, ""))) continue;
+        seen.add(u.replace(/\/$/, ""));
+        log("INFO", `recon: ${kind} absent — tentative sur ${u}`);
+        await visit(u);
+        if (result.pages.some((x) => x.kind === kind)) break;
+      }
     }
 
     await context.close();
