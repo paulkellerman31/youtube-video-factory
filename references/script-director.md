@@ -236,6 +236,29 @@ PRIORITY SCENES FOR OVERLAYS (max 4 per video):
 
 ## OUTPUT — 2 STEPS
 
+**STEP 0-bis — REPÉRAGE (obligatoire avant d'écrire quoi que ce soit sur une vidéo tool-centric) :**
+
+`npx tsx scripts/recon.ts <url-de-l-outil>` → `tool-maps/<domaine>.md` + `.json`.
+
+La carte liste les pages réelles (home, features, pricing, docs), leurs sections avec un
+**sélecteur CSS stable**, leur position de scroll, les boutons voisins et **les prix tels
+qu'écrits sur la page**.
+
+Deux conséquences, et c'est tout l'intérêt de l'étape :
+
+1. **Le script s'écrit EN FACE de la carte.** Chaque bloc parle d'une section qui existe
+   vraiment. Aucune fonctionnalité inventée, aucun prix de mémoire — s'il n'est pas dans la
+   carte, il ne se dit pas.
+2. **Les beats visent des sélecteurs, pas des pixels.** `{ "do": "hover", "selector":
+   "[data-testid=\"choose-pro\"]" }` au lieu de `{ "x": 460, "y": 500 }`. Le curseur atteint
+   vraiment le bouton du plan Pro, et le survol s'allume.
+
+Si la carte ne contient ni `home`, ni `features`, ni `pricing`, le format S n'est pas tenable
+en l'état : relancer avec `--pages 10`, ou donner les URLs à la main, ou basculer les beats
+manquants en `manual_asset`. **Ne jamais écrire un plan tool-centric sans carte** — c'est
+exactement ce qui produit une vidéo qui montre « une page » pendant que la voix parle d'autre
+chose.
+
 **STEP 1 — PLAN (output first, wait for "go"):**
 
 * → Format chosen + reason

@@ -2,6 +2,27 @@
 
 Toute modification systémique (presets, pipeline, structure) se note ici. Une ligne par changement, datée.
 
+## 2026-08-01 (nuit) — repérage du site avant écriture
+
+- **Nouvelle étape STEP 0-bis : REPÉRAGE** (`scripts/recon.ts` + `lib/recon.ts`, `recon.bat`).
+  Avant d'écrire une vidéo tool-centric, la pipeline visite le site de l'outil et en dresse la
+  carte : pages réelles classées (home/features/pricing/docs/blog), sections avec **sélecteur CSS
+  stable** et position de scroll, boutons voisins, **prix tels qu'écrits sur la page**. Sortie
+  dans `tool-maps/<domaine>.{json,md}`. Public uniquement, lecture seule, même trousse
+  anti-blocage que la capture ; une page bloquée est écartée avec son motif.
+- **Ce que ça change :** le script s'écrit en face de la carte (plus de fonctionnalité ni de prix
+  inventés) et les beats visent des sélecteurs réels au lieu de coordonnées à l'aveugle — le
+  curseur atteint vraiment le bouton dont parle la voix. C'était la pièce manquante pour que
+  l'image et le script soient synchronisés par construction.
+- **Piège corrigé au passage, valable pour tout code passé à `page.evaluate`** : `tsx`/esbuild
+  réécrit les fonctions nommées en y injectant un helper `__name` qui n'existe pas dans le
+  navigateur → « __name is not defined » à l'exécution, jamais à la compilation. Le code
+  navigateur est donc écrit en **chaîne**, avec les antislashs doublés (dans un littéral de
+  gabarit, `\s` vaut `s` — les deux pannes se sont produites en séquence au premier test).
+- Vérifié de bout en bout sur un site à 5 pages : 4 pages cartographiées, 12 sections, 3 prix
+  relevés, sélecteurs `data-testid` préférés aux chemins CSS quand ils existent, page vide
+  écartée avec son motif.
+
 ## 2026-08-01 (soir) — le format passe en court, sur données de la chaîne
 
 Analytics YouTube, 90 jours : **1 236 vues / 22 vidéos = 56 par vidéo**, durée vue moyenne
