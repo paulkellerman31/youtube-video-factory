@@ -1,6 +1,6 @@
 {
   "root": "https://botpenguin.com/",
-  "capturedAt": "2026-08-01T18:36:09.894Z",
+  "capturedAt": "2026-08-01T18:44:34.965Z",
   "pages": [
     {
       "url": "https://botpenguin.com/",
@@ -697,688 +697,611 @@
       "prices": []
     },
     {
-      "url": "https://botpenguin.com/platform/chatbot-for-website",
-      "title": "Free AI Chatbot for Website — No Code Builder | BotPenguin",
-      "kind": "features",
-      "height": 7812,
+      "url": "https://botpenguin.com/pricing",
+      "title": "AI Chatbot Pricing Plans | Start Free | BotPenguin",
+      "kind": "pricing",
+      "height": 9565,
       "sections": [
         {
-          "label": "AI Chatbot for Website That Captures Leads, Answers Questions and Books Meetings 24/7",
-          "selector": "h1.font-morrison-semibold",
-          "top": 136,
+          "label": "Honest, Transparent & Affordable Pricing",
+          "selector": "h1.heading-one",
+          "top": 144,
+          "targets": []
+        },
+        {
+          "label": "Omnichannel",
+          "selector": "div.rounded-\\[6px\\]:nth-of-type(1) > div.flex > h2.text-xl",
+          "top": 497,
+          "targets": []
+        },
+        {
+          "label": "WhatsApp",
+          "selector": "div.rounded-\\[6px\\]:nth-of-type(2) > div.flex > h2.text-xl",
+          "top": 497,
+          "targets": []
+        },
+        {
+          "label": "FREE Forever",
+          "selector": "div.flex:nth-of-type(1) > div.pricing-plan:nth-of-type(3) > div.flex > h2.font-morrison-bold",
+          "top": 897,
+          "targets": []
+        },
+        {
+          "label": "AI Features",
+          "selector": "div.flex:nth-of-type(2) > div.w-full > div.flex > h3.text-black",
+          "top": 1711,
+          "targets": []
+        },
+        {
+          "label": "$29 /month",
+          "selector": "div.flex:nth-of-type(2) > div.pricing-plan:nth-of-type(3) > div.flex > h2.font-morrison-bold",
+          "top": 897,
+          "targets": []
+        },
+        {
+          "label": "AI Features",
+          "selector": "div.flex:nth-of-type(2) > div.w-full > div.flex > h3.text-black",
+          "top": 1749,
+          "targets": []
+        },
+        {
+          "label": "$99 /month",
+          "selector": "div.flex:nth-of-type(3) > div.pricing-plan:nth-of-type(3) > div.flex > h2.font-morrison-bold",
+          "top": 887,
+          "targets": []
+        },
+        {
+          "label": "AI Features",
+          "selector": "div.flex:nth-of-type(2) > div.w-full > div.flex > h3.text-black",
+          "top": 1605,
+          "targets": []
+        },
+        {
+          "label": "Emperor Plan",
+          "selector": "h3.font-morrison-regular",
+          "top": 2064,
+          "targets": []
+        },
+        {
+          "label": "Add-On's Pricing",
+          "selector": "h2.m-0",
+          "top": 2805,
           "targets": [
             {
-              "text": "Get Started Free",
-              "selector": "[aria-label=\"Get\\ Started\\ Free\"]",
-              "kind": "link"
+              "text": "View More",
+              "selector": "div.flex:nth-of-type(1) > button.mt-1",
+              "kind": "button"
             },
             {
-              "text": "Book a Demo",
-              "selector": "[aria-label=\"Book\\ a\\ Demo\"]",
-              "kind": "link"
-            }
-          ]
-        },
-        {
-          "label": "Powering conversations for 80k+ users across 190+ countries, in 30+ languages.",
-          "selector": "#web-trust-heading",
-          "top": 854,
-          "targets": [
-            {
-              "text": "G24.4",
-              "selector": "app-trust-bars > div.flex > a.inline-flex:nth-of-type(1)",
-              "kind": "link"
+              "text": "View More",
+              "selector": "div.flex:nth-of-type(2) > button.mt-1",
+              "kind": "button"
             },
             {
-              "text": "Capterra4.8",
-              "selector": "app-trust-bars > div.flex > a.inline-flex:nth-of-type(2)",
-              "kind": "link"
+              "text": "View More",
+              "selector": "article.flex:nth-of-type(2) > button.mt-3",
+              "kind": "button"
             },
             {
-              "text": "Trustpilot4.5",
-              "selector": "a.inline-flex:nth-of-type(3)",
-              "kind": "link"
-            }
-          ]
-        },
-        {
-          "label": "Your Website's AI Assistant for Leads, Support, and Sales",
-          "selector": "#web-value-prop-heading",
-          "top": 1132,
-          "targets": []
-        },
-        {
-          "label": "Capture More Leads",
-          "selector": "div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1376,
-          "targets": []
-        },
-        {
-          "label": "Support Customers Instantly",
-          "selector": "div.flex:nth-of-type(2) > h3.font-morrison-medium",
-          "top": 1376,
-          "targets": []
-        },
-        {
-          "label": "Book Meetings and Close Sales",
-          "selector": "div.flex:nth-of-type(3) > h3.font-morrison-medium",
-          "top": 1376,
-          "targets": []
-        },
-        {
-          "label": "Let AI Do the Work. You Keep the Revenue.",
-          "selector": "#footer-cta-heading",
-          "top": 6208,
-          "targets": [
-            {
-              "text": "Sign up",
-              "selector": "#cta-footer-signup",
+              "text": "View More",
+              "selector": "article.flex:nth-of-type(3) > button.mt-3",
               "kind": "button"
             }
           ]
         },
         {
-          "label": "BotPenguin",
-          "selector": "#footer-primary-botpenguin",
-          "top": 6696,
+          "label": "Messages Pack",
+          "selector": "article.flex:nth-of-type(1) > header.mb-5 > h3.m-0",
+          "top": 2887,
           "targets": [
             {
-              "text": "Contact Us",
-              "selector": "div:nth-of-type(1) > ul.space-y-2 > li:nth-of-type(1) > a.footer-link",
-              "kind": "link"
+              "text": "View More",
+              "selector": "div.flex:nth-of-type(1) > button.mt-1",
+              "kind": "button"
             },
             {
-              "text": "Partner Programs",
-              "selector": "div:nth-of-type(1) > ul.space-y-2 > li:nth-of-type(2) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Security",
-              "selector": "div:nth-of-type(1) > ul.space-y-2 > li:nth-of-type(3) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Write for us",
-              "selector": "div:nth-of-type(1) > ul.space-y-2 > li:nth-of-type(4) > a.footer-link",
-              "kind": "link"
+              "text": "View More",
+              "selector": "div.flex:nth-of-type(2) > button.mt-1",
+              "kind": "button"
             }
           ]
         },
         {
-          "label": "Product",
-          "selector": "#footer-primary-product",
-          "top": 6696,
+          "label": "Data Training & Other Integrations",
+          "selector": "article.flex:nth-of-type(2) > header.mb-5 > h3.m-0",
+          "top": 2887,
           "targets": [
             {
-              "text": "WhatsApp",
-              "selector": "div:nth-of-type(2) > ul.space-y-2 > li:nth-of-type(1) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Websites",
-              "selector": "div:nth-of-type(2) > ul.space-y-2 > li:nth-of-type(2) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Instagram",
-              "selector": "div:nth-of-type(2) > ul.space-y-2 > li:nth-of-type(3) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Facebook",
-              "selector": "div:nth-of-type(2) > ul.space-y-2 > li:nth-of-type(4) > a.footer-link",
-              "kind": "link"
+              "text": "View More",
+              "selector": "article.flex:nth-of-type(2) > button.mt-3",
+              "kind": "button"
             }
           ]
         },
         {
-          "label": "Resources",
-          "selector": "#footer-primary-resources",
-          "top": 6696,
+          "label": "Additional Team Members",
+          "selector": "article.flex:nth-of-type(3) > header.mb-5 > h3.m-0",
+          "top": 2887,
           "targets": [
             {
-              "text": "Blogs",
-              "selector": "div:nth-of-type(3) > ul.space-y-2 > li:nth-of-type(1) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Case Studies",
-              "selector": "div:nth-of-type(3) > ul.space-y-2 > li:nth-of-type(2) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Help Center",
-              "selector": "div:nth-of-type(3) > ul.space-y-2 > li:nth-of-type(3) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Product Updates",
-              "selector": "div:nth-of-type(3) > ul.space-y-2 > li:nth-of-type(4) > a.footer-link",
-              "kind": "link"
-            }
-          ]
-        },
-        {
-          "label": "Compare",
-          "selector": "#footer-primary-compare",
-          "top": 6696,
-          "targets": [
-            {
-              "text": "BotPenguin vs Manychat",
-              "selector": "div:nth-of-type(4) > ul.space-y-2 > li:nth-of-type(1) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "BotPenguin vs Intercom",
-              "selector": "div:nth-of-type(4) > ul.space-y-2 > li:nth-of-type(2) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "BotPenguin vs Tidio",
-              "selector": "div:nth-of-type(4) > ul.space-y-2 > li:nth-of-type(3) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "BotPenguin vs Tawk.to",
-              "selector": "div:nth-of-type(4) > ul.space-y-2 > li:nth-of-type(4) > a.footer-link",
-              "kind": "link"
-            }
-          ]
-        },
-        {
-          "label": "Support",
-          "selector": "#footer-primary-support",
-          "top": 6696,
-          "targets": [
-            {
-              "text": "Help Center",
-              "selector": "div:nth-of-type(5) > ul.space-y-2 > li:nth-of-type(1) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Contact Us",
-              "selector": "div:nth-of-type(5) > ul.space-y-2 > li:nth-of-type(2) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Pricing",
-              "selector": "div:nth-of-type(5) > ul.space-y-2 > li:nth-of-type(3) > a.footer-link",
-              "kind": "link"
-            }
-          ]
-        },
-        {
-          "label": "Industries",
-          "selector": "#footer-primary-industries",
-          "top": 6696,
-          "targets": [
-            {
-              "text": "Healthcare",
-              "selector": "div:nth-of-type(6) > ul.space-y-2 > li:nth-of-type(1) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Education",
-              "selector": "div:nth-of-type(6) > ul.space-y-2 > li:nth-of-type(2) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Ecommerce",
-              "selector": "div:nth-of-type(6) > ul.space-y-2 > li:nth-of-type(3) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Real Estate",
-              "selector": "div:nth-of-type(6) > ul.space-y-2 > li:nth-of-type(4) > a.footer-link",
-              "kind": "link"
-            }
-          ]
-        },
-        {
-          "label": "Tools",
-          "selector": "#footer-secondary-tools",
-          "top": 7036,
-          "targets": [
-            {
-              "text": "WhatsApp Link Generator",
-              "selector": "div:nth-of-type(1) > ul.space-y-2 > li:nth-of-type(1) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "WhatsApp QR Code Generator",
-              "selector": "div:nth-of-type(1) > ul.space-y-2 > li:nth-of-type(2) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "OpenAI API Pricing Calculator",
-              "selector": "div:nth-of-type(1) > ul.space-y-2 > li:nth-of-type(3) > a.footer-link",
-              "kind": "link"
-            },
-            {
-              "text": "Chatbot ROI Calculator",
-              "selector": "div:nth-of-type(1) > ul.space-y-2 > li:nth-of-type(4) > a.footer-link",
-              "kind": "link"
+              "text": "View More",
+              "selector": "article.flex:nth-of-type(3) > button.mt-3",
+              "kind": "button"
             }
           ]
         }
       ],
-      "prices": []
+      "prices": [
+        "$29 /month",
+        "$99 /month",
+        "$\n1,000\n/month",
+        "$5 /month",
+        "$10 /month",
+        "$15 /month",
+        "$60 /month",
+        "$68 /month",
+        "$7 /month",
+        "$30 /month",
+        "$20 /month",
+        "$100 /month"
+      ]
     },
     {
-      "url": "https://botpenguin.com/platform/chatbot-for-microsoft-teams",
-      "title": "Make AI-Driven Microsoft Teams Chatbot & Boost Collaboration",
-      "kind": "features",
-      "height": 18486,
+      "url": "https://botpenguin.com/features/mobile-app",
+      "title": "BotPenguin's AI Chatbot Mobile Application",
+      "kind": "integrations",
+      "height": 9313,
       "sections": [
         {
-          "label": "Create AI-Driven Microsoft Teams Chatbot for Peak Collaboration & Productivity",
-          "selector": "h1.hr-banner-heading",
-          "top": 134,
+          "label": "Connect with your Customers at every touchpoint using BotPenguin’s Mobile Application",
+          "selector": "h1.heading-one",
+          "top": 160,
           "targets": [
             {
               "text": "Get Started FREE",
-              "selector": "div.mt-12 > app-cta-button > a.bp-button",
+              "selector": "div.content-wrapper > div.w-fit > app-cta-button > a.bp-button",
               "kind": "link"
             }
           ]
         },
         {
-          "label": "Create a Microsoft Teams Chatbot to Automate Project Management",
+          "label": "Manage Customer Support effortlessly from anywhere using your mobile",
           "selector": "app-heading-template-one > header > div.container > h2.mx-auto",
-          "top": 810,
+          "top": 1777,
           "targets": []
         },
         {
-          "label": "Auto-Reply to Messages",
-          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(1) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1272,
+          "label": "Live Chat & Unified Inbox",
+          "selector": "div.dropdown-wrapper:nth-of-type(1) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 2259,
           "targets": []
         },
         {
-          "label": "Organize Group Meetings",
-          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(2) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1424,
+          "label": "Filter Contacts",
+          "selector": "div.dropdown-wrapper:nth-of-type(2) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 2387,
           "targets": [
             {
-              "text": "Auto-Reply to Messages Streamline communication and keep conversations organized within yo",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "text": "Live Chat & Unified Inbox Effortlessly communicate with customers through live chat and ma",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
               "kind": "button"
             },
             {
-              "text": "Organize Group Meetings Enable your MS Teams chatbot to schedule and send invites to your ",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "text": "Filter Contacts Categorize your customers based on tags, statuses, bots, agents, etc., to ",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
               "kind": "button"
             },
             {
-              "text": "Permission-Based Actions Manage team tasks and control access based on user permissions, e",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "text": "Team Management Build and assign roles to team members for collaborative chatbot managemen",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
               "kind": "button"
             },
             {
-              "text": "Resource Allocation Assistance Optimize resource allocation with intelligent suggestions, ",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "text": "Chatbot Analytics Monitor and analyze chatbot interactions, metrics, and performance to op",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
               "kind": "button"
             }
           ]
         },
         {
-          "label": "Permission-Based Actions",
-          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(3) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1496,
+          "label": "Team Management",
+          "selector": "div.dropdown-wrapper:nth-of-type(3) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 2459,
           "targets": [
             {
-              "text": "Auto-Reply to Messages Streamline communication and keep conversations organized within yo",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "text": "Live Chat & Unified Inbox Effortlessly communicate with customers through live chat and ma",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
               "kind": "button"
             },
             {
-              "text": "Organize Group Meetings Enable your MS Teams chatbot to schedule and send invites to your ",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "text": "Filter Contacts Categorize your customers based on tags, statuses, bots, agents, etc., to ",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
               "kind": "button"
             },
             {
-              "text": "Permission-Based Actions Manage team tasks and control access based on user permissions, e",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "text": "Team Management Build and assign roles to team members for collaborative chatbot managemen",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
               "kind": "button"
             },
             {
-              "text": "Resource Allocation Assistance Optimize resource allocation with intelligent suggestions, ",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "text": "Chatbot Analytics Monitor and analyze chatbot interactions, metrics, and performance to op",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
               "kind": "button"
             }
           ]
         },
         {
-          "label": "Resource Allocation Assistance",
-          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(4) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1568,
+          "label": "Chatbot Analytics",
+          "selector": "div.dropdown-wrapper:nth-of-type(4) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 2531,
           "targets": [
             {
-              "text": "Auto-Reply to Messages Streamline communication and keep conversations organized within yo",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "text": "Live Chat & Unified Inbox Effortlessly communicate with customers through live chat and ma",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
               "kind": "button"
             },
             {
-              "text": "Organize Group Meetings Enable your MS Teams chatbot to schedule and send invites to your ",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "text": "Filter Contacts Categorize your customers based on tags, statuses, bots, agents, etc., to ",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
               "kind": "button"
             },
             {
-              "text": "Permission-Based Actions Manage team tasks and control access based on user permissions, e",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "text": "Team Management Build and assign roles to team members for collaborative chatbot managemen",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
               "kind": "button"
             },
             {
-              "text": "Resource Allocation Assistance Optimize resource allocation with intelligent suggestions, ",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "text": "Chatbot Analytics Monitor and analyze chatbot interactions, metrics, and performance to op",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
               "kind": "button"
             }
           ]
         },
         {
-          "label": "Answers Common Questions",
-          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(5) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1640,
+          "label": "Contact List",
+          "selector": "div.dropdown-wrapper:nth-of-type(5) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 2603,
           "targets": [
             {
-              "text": "Auto-Reply to Messages Streamline communication and keep conversations organized within yo",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "text": "Live Chat & Unified Inbox Effortlessly communicate with customers through live chat and ma",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
               "kind": "button"
             },
             {
-              "text": "Organize Group Meetings Enable your MS Teams chatbot to schedule and send invites to your ",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "text": "Filter Contacts Categorize your customers based on tags, statuses, bots, agents, etc., to ",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
               "kind": "button"
             },
             {
-              "text": "Permission-Based Actions Manage team tasks and control access based on user permissions, e",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "text": "Team Management Build and assign roles to team members for collaborative chatbot managemen",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
               "kind": "button"
             },
             {
-              "text": "Resource Allocation Assistance Optimize resource allocation with intelligent suggestions, ",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "text": "Chatbot Analytics Monitor and analyze chatbot interactions, metrics, and performance to op",
+              "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
               "kind": "button"
             }
           ]
         },
         {
-          "label": "Adaptive Cards",
-          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(6) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1712,
+          "label": "Download theBotPenguin App Today!",
+          "selector": "h3.flex",
+          "top": 3017,
           "targets": [
             {
-              "text": "Auto-Reply to Messages Streamline communication and keep conversations organized within yo",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
-              "kind": "button"
+              "text": "Download Android App",
+              "selector": "div.mt-10:nth-of-type(1) > app-cta-button > a.button-one",
+              "kind": "link"
             },
             {
-              "text": "Organize Group Meetings Enable your MS Teams chatbot to schedule and send invites to your ",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
-              "kind": "button"
-            },
-            {
-              "text": "Permission-Based Actions Manage team tasks and control access based on user permissions, e",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
-              "kind": "button"
-            },
-            {
-              "text": "Resource Allocation Assistance Optimize resource allocation with intelligent suggestions, ",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
-              "kind": "button"
-            }
-          ]
-        },
-        {
-          "label": "300Mn",
-          "selector": "div.card:nth-of-type(1) > h2.font-morrison-medium",
-          "top": 1912,
-          "targets": []
-        },
-        {
-          "label": "181",
-          "selector": "div.card:nth-of-type(2) > h2.font-morrison-medium",
-          "top": 1912,
-          "targets": []
-        },
-        {
-          "label": "Reach your customers on scale, save on cost and time",
-          "selector": "div.w-full:nth-of-type(2) > h3.font-inter-medium",
-          "top": 1924,
-          "targets": []
-        },
-        {
-          "label": "How to Create a Microsoft Teams Chatbot",
-          "selector": "div.lg\\:w-2\\/5:nth-of-type(1) > h2.heading-two",
-          "top": 2315,
-          "targets": [
-            {
-              "text": "Get Started FREE",
-              "selector": "a.bg-\\[\\#2563EB\\]",
+              "text": "Download iOS App",
+              "selector": "div.mt-5:nth-of-type(2) > app-cta-button > a.button-one",
               "kind": "link"
             }
           ]
         },
         {
-          "label": "Set Up Bot in MS Teams",
-          "selector": "div.p-3:nth-of-type(1) > div.sm\\:ms-2:nth-of-type(3) > h3.text-grey-333",
-          "top": 2225,
+          "label": "Manage your Chatbot Account directly from your Mobile",
+          "selector": "app-heading-template-one > header > div.container > h2.mx-auto",
+          "top": 3543,
           "targets": []
         },
         {
-          "label": "Configure Secrets",
-          "selector": "div.p-3:nth-of-type(2) > div.sm\\:ms-2:nth-of-type(3) > h3.text-grey-333",
-          "top": 2354,
+          "label": "Dashboard",
+          "selector": "div.content-list:nth-of-type(1) > div.flex > div > h3.font-morrison-medium",
+          "top": 3969,
+          "targets": []
+        },
+        {
+          "label": "Add Contacts",
+          "selector": "div.content-list:nth-of-type(2) > div.flex > div > h3.font-morrison-medium",
+          "top": 3969,
+          "targets": []
+        },
+        {
+          "label": "Assign Agents",
+          "selector": "div.content-list:nth-of-type(3) > div.flex > div > h3.font-morrison-medium",
+          "top": 4169,
+          "targets": []
+        },
+        {
+          "label": "Set User Roles",
+          "selector": "div.content-list:nth-of-type(4) > div.flex > div > h3.font-morrison-medium",
+          "top": 4169,
+          "targets": []
+        },
+        {
+          "label": "Manage Your Profile",
+          "selector": "div.content-list:nth-of-type(5) > div.flex > div > h3.font-morrison-medium",
+          "top": 4369,
           "targets": []
         }
       ],
       "prices": []
     },
     {
-      "url": "https://botpenguin.com/platform/chatbot-for-woocommerce",
-      "title": "WooCommerce Chatbot for 24/7 Support & Marketing Automation",
-      "kind": "features",
-      "height": 17652,
+      "url": "https://botpenguin.com/use-cases/customer-support",
+      "title": "Customer Service Chatbot | Customer Support Chatbot",
+      "kind": "docs",
+      "height": 20765,
       "sections": [
         {
-          "label": "Elevate Customer’s Shopping Experience with a WooCommerce Chatbot",
-          "selector": "h1.hr-banner-heading",
-          "top": 147,
+          "label": "Offer automated help 24/7 with a Customer Service Chatbot",
+          "selector": "h1.heading-one",
+          "top": 176,
           "targets": [
             {
               "text": "Get Started FREE",
-              "selector": "div.mt-12 > app-cta-button > a.bp-button",
+              "selector": "div.content-wrapper > div.w-fit > app-cta-button > a.bp-button",
               "kind": "link"
             }
           ]
         },
         {
-          "label": "Enhance Customers’ Shopping Journey With WooCommerce Chatbots",
+          "label": "No More Waiting. No Queues. Just Instant Query Redressal.",
           "selector": "app-heading-template-one > header > div.container > h2.mx-auto",
-          "top": 810,
+          "top": 1857,
           "targets": []
         },
         {
-          "label": "Abandoned Cart Recovery",
+          "label": "Let AI Answer Your FAQs",
           "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(1) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1272,
+          "top": 2387,
           "targets": []
         },
         {
-          "label": "Personalized Product Recommendations",
+          "label": "Live Chat for Complex Issues",
           "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(2) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1424,
+          "top": 2515,
           "targets": [
             {
-              "text": "Abandoned Cart Recovery Utilize the WhatsApp chatbot to send personalized messages and rem",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "text": "Let AI Answer Your FAQs Answer repetitive questions with By training your generative AI ch",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
               "kind": "button"
             },
             {
-              "text": "Personalized Product Recommendations Utilize data-driven insights to offer personalized pr",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "text": "Live Chat for Complex Issues Let our AI chatbot handle your customer queries effortlessly.",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
               "kind": "button"
             },
             {
-              "text": "Order Confirmation & Fulfillment Utilize data-driven insights to offer personalized produc",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "text": "Route Chats To Live Chat Agent Leave no user dissatisfied. Route the critical chats to you",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
               "kind": "button"
             },
             {
-              "text": "AI Shopping Assistant Send order confirmation messages with relevant details, updates on s",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "text": "Onboard Your Support Team Empower your support team to work alongside the chatbots. Assign",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
               "kind": "button"
             }
           ]
         },
         {
-          "label": "Order Confirmation & Fulfillment",
+          "label": "Route Chats To Live Chat Agent",
           "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(3) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1496,
+          "top": 2587,
           "targets": [
             {
-              "text": "Abandoned Cart Recovery Utilize the WhatsApp chatbot to send personalized messages and rem",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "text": "Let AI Answer Your FAQs Answer repetitive questions with By training your generative AI ch",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
               "kind": "button"
             },
             {
-              "text": "Personalized Product Recommendations Utilize data-driven insights to offer personalized pr",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "text": "Live Chat for Complex Issues Let our AI chatbot handle your customer queries effortlessly.",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
               "kind": "button"
             },
             {
-              "text": "Order Confirmation & Fulfillment Utilize data-driven insights to offer personalized produc",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "text": "Route Chats To Live Chat Agent Leave no user dissatisfied. Route the critical chats to you",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
               "kind": "button"
             },
             {
-              "text": "AI Shopping Assistant Send order confirmation messages with relevant details, updates on s",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "text": "Onboard Your Support Team Empower your support team to work alongside the chatbots. Assign",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
               "kind": "button"
             }
           ]
         },
         {
-          "label": "AI Shopping Assistant",
+          "label": "Onboard Your Support Team",
           "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(4) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1568,
+          "top": 2659,
           "targets": [
             {
-              "text": "Abandoned Cart Recovery Utilize the WhatsApp chatbot to send personalized messages and rem",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "text": "Let AI Answer Your FAQs Answer repetitive questions with By training your generative AI ch",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
               "kind": "button"
             },
             {
-              "text": "Personalized Product Recommendations Utilize data-driven insights to offer personalized pr",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "text": "Live Chat for Complex Issues Let our AI chatbot handle your customer queries effortlessly.",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
               "kind": "button"
             },
             {
-              "text": "Order Confirmation & Fulfillment Utilize data-driven insights to offer personalized produc",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "text": "Route Chats To Live Chat Agent Leave no user dissatisfied. Route the critical chats to you",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
               "kind": "button"
             },
             {
-              "text": "AI Shopping Assistant Send order confirmation messages with relevant details, updates on s",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "text": "Onboard Your Support Team Empower your support team to work alongside the chatbots. Assign",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
               "kind": "button"
             }
           ]
         },
         {
-          "label": "Return/Exchange Request",
+          "label": "Integrate With the Ticketing System",
           "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(5) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1640,
+          "top": 2731,
           "targets": [
             {
-              "text": "Abandoned Cart Recovery Utilize the WhatsApp chatbot to send personalized messages and rem",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "text": "Let AI Answer Your FAQs Answer repetitive questions with By training your generative AI ch",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
               "kind": "button"
             },
             {
-              "text": "Personalized Product Recommendations Utilize data-driven insights to offer personalized pr",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "text": "Live Chat for Complex Issues Let our AI chatbot handle your customer queries effortlessly.",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
               "kind": "button"
             },
             {
-              "text": "Order Confirmation & Fulfillment Utilize data-driven insights to offer personalized produc",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "text": "Route Chats To Live Chat Agent Leave no user dissatisfied. Route the critical chats to you",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
               "kind": "button"
             },
             {
-              "text": "AI Shopping Assistant Send order confirmation messages with relevant details, updates on s",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "text": "Onboard Your Support Team Empower your support team to work alongside the chatbots. Assign",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
               "kind": "button"
             }
           ]
         },
         {
-          "label": "24x7 Customer Support",
-          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(6) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
-          "top": 1712,
+          "label": "File Upload",
+          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(1) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 3283,
+          "targets": []
+        },
+        {
+          "label": "Provide 24*7 Customer Support",
+          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(2) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 3411,
           "targets": [
             {
-              "text": "Abandoned Cart Recovery Utilize the WhatsApp chatbot to send personalized messages and rem",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "text": "File Upload Share files with your customers & save them time. Send videos, images, PDFs, d",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
               "kind": "button"
             },
             {
-              "text": "Personalized Product Recommendations Utilize data-driven insights to offer personalized pr",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "text": "Provide 24*7 Customer Support No brakes on the support train. Keep the customer support go",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
               "kind": "button"
             },
             {
-              "text": "Order Confirmation & Fulfillment Utilize data-driven insights to offer personalized produc",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "text": "Unified Customer Profile Automatically collect & manage customer info such as page history",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
               "kind": "button"
             },
             {
-              "text": "AI Shopping Assistant Send order confirmation messages with relevant details, updates on s",
-              "selector": "div.pt-8:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "text": "Save Time with Quick Replies Too many boring, bland questions? Use our quick replies to he",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
               "kind": "button"
             }
           ]
         },
         {
-          "label": "6Mn",
-          "selector": "div.card:nth-of-type(1) > h2.font-morrison-medium",
-          "top": 1912,
-          "targets": []
-        },
-        {
-          "label": "190",
-          "selector": "div.card:nth-of-type(2) > h2.font-morrison-medium",
-          "top": 1912,
-          "targets": []
-        },
-        {
-          "label": "55+",
-          "selector": "div.card:nth-of-type(3) > h2.font-morrison-medium",
-          "top": 1912,
-          "targets": []
-        },
-        {
-          "label": "Reach your customers on scale, save on cost and time",
-          "selector": "div.w-full:nth-of-type(2) > h3.font-inter-medium",
-          "top": 1924,
-          "targets": []
-        },
-        {
-          "label": "How to Integrate the Chatbot With Your WooCommerce Store",
-          "selector": "div.lg\\:w-2\\/5:nth-of-type(1) > h2.heading-two",
-          "top": 2247,
+          "label": "Unified Customer Profile",
+          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(3) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 3483,
           "targets": [
             {
-              "text": "Get Started FREE",
-              "selector": "a.bg-\\[\\#2563EB\\]",
-              "kind": "link"
+              "text": "File Upload Share files with your customers & save them time. Send videos, images, PDFs, d",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "kind": "button"
+            },
+            {
+              "text": "Provide 24*7 Customer Support No brakes on the support train. Keep the customer support go",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "kind": "button"
+            },
+            {
+              "text": "Unified Customer Profile Automatically collect & manage customer info such as page history",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "kind": "button"
+            },
+            {
+              "text": "Save Time with Quick Replies Too many boring, bland questions? Use our quick replies to he",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "kind": "button"
             }
           ]
         },
         {
-          "label": "Download the Plugin",
-          "selector": "div.p-3:nth-of-type(1) > div.sm\\:ms-2:nth-of-type(3) > h3.text-grey-333",
-          "top": 2225,
+          "label": "Save Time with Quick Replies",
+          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(4) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 3555,
+          "targets": [
+            {
+              "text": "File Upload Share files with your customers & save them time. Send videos, images, PDFs, d",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "kind": "button"
+            },
+            {
+              "text": "Provide 24*7 Customer Support No brakes on the support train. Keep the customer support go",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "kind": "button"
+            },
+            {
+              "text": "Unified Customer Profile Automatically collect & manage customer info such as page history",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "kind": "button"
+            },
+            {
+              "text": "Save Time with Quick Replies Too many boring, bland questions? Use our quick replies to he",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "kind": "button"
+            }
+          ]
+        },
+        {
+          "label": "Set Fallback Response",
+          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(5) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 3627,
+          "targets": [
+            {
+              "text": "File Upload Share files with your customers & save them time. Send videos, images, PDFs, d",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(1)",
+              "kind": "button"
+            },
+            {
+              "text": "Provide 24*7 Customer Support No brakes on the support train. Keep the customer support go",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(2)",
+              "kind": "button"
+            },
+            {
+              "text": "Unified Customer Profile Automatically collect & manage customer info such as page history",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(3)",
+              "kind": "button"
+            },
+            {
+              "text": "Save Time with Quick Replies Too many boring, bland questions? Use our quick replies to he",
+              "selector": "div.card-height > div.card-wrapper:nth-of-type(1) > app-bp-accordion > div.dropdown-wrapper:nth-of-type(4)",
+              "kind": "button"
+            }
+          ]
+        },
+        {
+          "label": "Enhance your Customer Support Team with Generative AI Services",
+          "selector": "app-heading-template-one > header > div.container > h2.mx-auto",
+          "top": 4063,
+          "targets": []
+        },
+        {
+          "label": "Multi-Turn Conversation Handling",
+          "selector": "app-bp-accordion > div.dropdown-wrapper:nth-of-type(1) > div.flex:nth-of-type(1) > h3.font-morrison-medium",
+          "top": 4593,
           "targets": []
         }
       ],
