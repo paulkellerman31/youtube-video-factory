@@ -2,6 +2,42 @@
 
 Toute modification systémique (presets, pipeline, structure) se note ici. Une ligne par changement, datée.
 
+## 2026-08-01 (nuit, après visionnage du premier rendu) — zéro image IA, zéro Ken Burns, crf 16
+
+Trois défauts relevés par Théo sur `botpenguin-review`, le premier rendu au nouveau preset.
+Trois causes distinctes, toutes dans le preset — aucune dans l'exécution.
+
+- **Défaut 1 — « il faut aucune image IA, juste la vidéo du tool ».** Le plan était pourtant
+  conforme : 3 `ai_image` sur 14, soit 21 %, sous le quota « ≤ 30 % » écrit la veille. Le quota
+  mesurait la mauvaise chose. Une seule image générée au milieu de captures réelles ne se fond
+  pas : elle signale « généré » et contamine la lecture des plans réels autour d'elle.
+  **Nouveau seuil : `ai_image` = 0 scène dans le corps d'une vidéo tool-centric, hook compris.**
+  La miniature reste la seule image générée. Les hyperframes ne comblent plus un trou de
+  footage : un graphique HTML n'est autorisé que pour une donnée qu'aucune page ne montre.
+- **Défaut 2 — « à 0:56 jusqu'à 1:03 la vidéo est hyper zoomée super laide, pareil à 1:16 ».**
+  Ce sont exactement les deux scènes `screen_capture` en `motion: "push-in"`. Le Ken Burns
+  recadre dans le pixel : invisible sur une photo générée en 1536×1024, c'est un
+  **agrandissement d'un texte déjà à sa résolution native** sur une page web en 1920×1080.
+  **Nouvelle règle : toute scène capture/enregistrement est `motion: "static"`.** Le mouvement
+  vient du curseur et du scroll, il est DANS le clip. La règle « aucun plan totalement statique »
+  de §VISUAL CADENCE est satisfaite par ce mouvement interne — les deux ne se contredisent pas.
+- **Défaut 3 — « la vidéo de l'outil a l'air pixélisée ».** Le contenu d'écran (texte fin,
+  aplats, bordures d'un pixel) est le pire cas de x264, et la chaîne empilait **trois
+  générations** (webm du screencast → mp4 → `conformClip` → mux final) repartant chacune de
+  `crf 20 + preset veryfast`. Réglage unique désormais dans `lib/ffmpeg.ts` :
+  **`VIDEO_CRF = "16"`, `VIDEO_PRESET = "medium"`**, repris par `kenBurnsClip`, `conformClip`,
+  `normalizeClip`, `finalMux` et `lib/recording.ts`. Filmage au viewport de sortie exact
+  (`1920x1080`) pour supprimer tout rééchantillonnage. Coût : du temps CPU local, zéro dollar.
+- **Leçon transversale, à retenir avant d'écrire le prochain quota** : un seuil en pourcentage
+  autorise par construction ce qu'il plafonne. Quand le défaut est de NATURE (« ça se voit que
+  c'est généré »), seul un seuil à zéro le corrige. Le quota « ≤ 30 % » n'a pas tenu 24 heures.
+- `botpenguin-review` réécrit en conséquence : **14 scènes sur 14 en `screen_recording`**, toutes
+  en `motion: "static"`, sur 6 pages réelles du site (home, use-case support, chatbot-for-website,
+  pricing, mobile-app, chatbot-for-instagram). `voiceover.txt` inchangé au bit près — la voix
+  ElevenLabs n'est pas refacturée. Anciens assets déplacés dans `_to_delete/` pour que la sonde
+  disque d'`assemble` ne repêche pas un clip périmé (elle préfère `hyperframes/` à
+  `recordings/`).
+
 ## 2026-08-01 (nuit) — repérage du site avant écriture
 
 - **Nouvelle étape STEP 0-bis : REPÉRAGE** (`scripts/recon.ts` + `lib/recon.ts`, `recon.bat`).

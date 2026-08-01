@@ -97,6 +97,8 @@ Le problème de la chaîne n'était pas ses titres, c'était de ne produire **qu
 **Ne jamais juger une review sur ses vues.** Une review à 25 vues qui envoie 4 clics affiliés bat une vidéo large à 300 vues qui n'en envoie aucun. C'est l'erreur qui a failli faire renommer les 9 titres.
 
 * ✗ No tool-centric video without its 4 mandatory footage beats (§TOOL FOOTAGE) — un PLAN qui ne les affiche pas sourcés est invalide
+* ✗ **No `ai_image` in the body of a tool-centric video** — 0 scène, hook compris. La miniature est la seule image générée (§TOOL FOOTAGE)
+* ✗ **No Ken Burns on screen content** — toute scène capture/enregistrement est `motion: "static"` (§TOOL FOOTAGE / Mouvement)
 * ✗ No per-video thumbnail art direction — la DA miniature est verrouillée au niveau chaîne (`profiles/<channel>/thumbnail-playbook.md`). Pas d'archétype à choisir, pas de décor à inventer, pas de palette à décider
 
 ## CONTENT SELECTION
@@ -122,11 +124,11 @@ le lien. Pas de mise en jambes, pas de récapitulatif, pas de « dans cette vid�
 
 | # | Fenêtre | Bloc | Ce qui s'y passe | Source visuelle |
 |---|---|---|---|---|
-| 1 | 0:00-0:08 | **HOOK** | Le problème chiffré, ou la perte concrète. Antagoniste nommé. Aucune intro. | ai_image ou hyperframe |
+| 1 | 0:00-0:08 | **HOOK** | Le problème chiffré, ou la perte concrète. Antagoniste nommé. Aucune intro. | `screen_recording` — page « use case » / support / hero. **Jamais `ai_image`** |
 | 2 | 0:08-0:25 | **L'OUTIL EN UNE PHRASE** | Ce que c'est, pour qui, ce qu'il remplace. | `screen_recording` homepage |
 | 3 | 0:25-1:15 | **LES 3 CHOSES QUI COMPTENT** | Le mécanisme cœur (filmé, pas raconté), le différenciateur, le chiffre qui tranche. Un bloc = une chose = ~15 s. | `screen_recording` parcours + hyperframe pour le chiffre |
-| 4 | 1:15-1:40 | **PRIX** | La vraie grille, lue à l'écran. Le plan qui convient à l'audience, nommé. | `screen_capture` pricing |
-| 5 | 1:40-2:05 | **LA LIMITE** | Pour qui ce n'est PAS, et pourquoi. Une page réelle qui l'atteste. | `screen_capture` docs/CGU/comparatif |
+| 4 | 1:15-1:40 | **PRIX** | La vraie grille, lue à l'écran. Le plan qui convient à l'audience, nommé. | `screen_recording` pricing (curseur de carte en carte) |
+| 5 | 1:40-2:05 | **LA LIMITE** | Pour qui ce n'est PAS, et pourquoi. Une page réelle qui l'atteste. | `screen_recording` docs/CGU/add-ons/comparatif |
 | 6 | 2:05-2:30 | **CTA** | Une action. Le lien. Rien d'autre. | `screen_recording` de la page d'inscription ou de l'article |
 
 **Ce que ce format supprime :** PROMISE, les 5-8 blocs de BODY, PROOF séparée, les [PI] toutes
@@ -144,7 +146,7 @@ ne s'applique pas aux scènes filmées, qui portent leur mouvement.
 
 ## VISUAL CADENCE — RETENTION (data 2026)
 
-* **No fully static plan.** Every scene moves: Ken Burns (push-in / pan) or hyperframes animation. A frozen image is a retention killer on faceless.
+* **No fully static plan.** Every scene moves. Sur une vidéo tool-centric, ce mouvement est INTERNE au clip (curseur, scroll, hover) et `motion` reste `"static"` — voir §TOOL FOOTAGE / Mouvement. Le Ken Burns (push-in / pan) est réservé aux images générées, donc en pratique à la seule miniature. Une image gelée reste un retention killer.
 * **Cap a single visual ≈ 7 s.** On dense passages, prefer more, shorter scenes; if a scene must run longer, add a mid-scene beat (text-overlay reveal or secondary motion).
 * **Sync cuts to script BEATS** (new idea = new visual), not to a fixed clock.
 * **Designed retention beats:** open loop in the hook → paid before 50 %; strongest reveal at 60–70 %; a [PI] (visual or script) every 20–30 s of body.
@@ -414,24 +416,67 @@ autour d'eux, ce ne sont pas des ajouts à caser.
    un avis honnête et pas comme une plaquette affiliée. **Le beat le plus souvent sauté et le
    plus rentable.**
 
-### Le quota — recalibré pour le format S (13-15 scènes, 150 s)
+### Le quota — ZÉRO IMAGE IA dans une vidéo tool-centric (durci le 2026-08-01, après visionnage)
 
-Sur 150 secondes, le footage réel n'est plus un complément : c'est la matière. Les quatre
-chiffres sont cohérents entre eux — vérifier qu'ils le restent avant d'en changer un seul.
+> **Pourquoi le quota « ≤ 30 % » n'a pas tenu 24 h.** Premier rendu au nouveau preset
+> (`botpenguin-review`) : 3 `ai_image` sur 14 = 21 %, conforme. Retour de Théo après visionnage :
+> *« il faut aucune image IA, juste la vidéo du tool, filmé de façon naturelle comme si un humain
+> filmait son écran ».* Le défaut n'est pas la proportion, c'est la NATURE du plan. Une seule
+> image IA au milieu de captures réelles ne se fond pas : elle signale « généré » et contamine la
+> lecture des plans réels qui l'entourent. Un quota qui autorise 4 images IA autorise l'effet
+> qu'on essaie de supprimer.
 
-- **≥ 9 scènes de footage réel** sur 13-15, et **≥ 90 s cumulées** — soit **60 % du temps
-  d'écran**. Le spectateur passe la majorité de la vidéo à REGARDER l'outil.
-- **`ai_image` ≤ 30 % des scènes** (4 sur 14 au plus). L'image générée sert le hook, une
-  métaphore, une transition. Elle ne montre plus jamais un produit.
-- **≥ 3 scènes en `screen_recording`**, dont obligatoirement les beats 2 et 3.
-- Durée par scène filmée : **8-12 s**. **Exception explicite au cap ~7 s** de §VISUAL CADENCE :
+- **`ai_image` = 0 scène dans le corps de la vidéo.** Pas 30 %, pas une. Y compris le hook.
+  Seule exception : **la miniature**, qui n'est pas un plan de la vidéo et reste un `ai_image`
+  haute qualité sous DA verrouillée.
+- **100 % des scènes en footage réel** : `screen_recording` (défaut), `screen_capture` (image
+  fixe, uniquement si rien ne bouge dans le plan), `manual_asset` (derrière login).
+- **`screen_recording` est le défaut, `screen_capture` l'exception.** Une capture fixe ne
+  ressemble pas à quelqu'un qui filme son écran : elle ressemble à une capture d'écran. Un plan
+  fixe n'est justifié que si le hover et le scroll n'apportent rien.
+- **Les hyperframes ne comblent pas un trou de footage.** Un graphique HTML reste autorisé pour
+  une donnée qu'aucune page ne montre (une courbe de coût, une comparaison chiffrée), jamais
+  pour illustrer une fonctionnalité que le site montre déjà. En cas de doute : filmer la page.
+- Durée par scène filmée : **8-14 s**. **Exception explicite au cap ~7 s** de §VISUAL CADENCE :
   une scène filmée porte son mouvement interne (curseur, scroll, hover), ce n'est pas un plan
-  figé. Un plan IA de 12 s reste interdit.
-- **Jamais plus de trois scènes filmées consécutives** sans casser avec une image ou un
-  hyperframe.
+  figé.
+- **Le hook aussi est du footage.** Le plan métaphorique du hook devient une page réelle qui dit
+  la même chose : page « use case », page support, hero de la home. Le hook est porté par la
+  VOIX, pas par l'image.
 
-> **Contrôle arithmétique** : 9 scènes × 10 s = 90 s sur 150 = 60 % ✔ · 14 scènes − 9 réelles
-> − 1 hyperframe = 4 `ai_image` = 29 % ≤ 30 % ✔ · 14 scènes × 10,7 s de moyenne = 150 s ✔
+> **Contrôle arithmétique** (format S) : 14 scènes × ~10,2 s = 143 s ✔ · 14 scènes réelles / 14
+> = 100 % ✔ · 0 `ai_image` ✔ · ≥ 10 `screen_recording` ✔
+
+### Mouvement : jamais de Ken Burns sur du contenu d'écran
+
+Le Ken Burns (`push-in` / `pan`) recadre dans le pixel : sur une photo générée en 1536×1024 c'est
+invisible, sur une page web capturée en 1920×1080 c'est un **agrandissement d'un texte déjà à sa
+résolution native**. Résultat mesuré sur le premier rendu : deux passages (0:56-1:03, 1:16)
+lus comme *« hyper zoomé super laid »*.
+
+- Toute scène dont l'asset est une capture ou un enregistrement d'écran : **`motion: "static"`**,
+  sans exception. Le mouvement vient du curseur et du scroll, il est DANS le clip.
+- `push-in` / `pan` ne restent légitimes que sur une image générée — donc, depuis le quota
+  ci-dessus, sur la seule miniature. En pratique : **plus aucun Ken Burns dans une vidéo
+  tool-centric.**
+- Corollaire sur §VISUAL CADENCE (« aucun plan totalement statique ») : la règle est satisfaite
+  par le mouvement interne du clip. Un `screen_recording` en `motion: "static"` n'est PAS un plan
+  figé.
+- `textOverlay` est ignoré par `assemble` sur un clip. Ne pas en écrire un sur une scène filmée :
+  il ne s'affichera pas et le WARN au rendu fait croire à une régression.
+
+### Qualité d'encodage — le contenu d'écran est le pire cas de x264
+
+Texte fin, aplats, bordures d'un pixel : ce que `crf 20 + preset veryfast` laisse passer sur une
+photo devient visiblement pixelisé sur une page web. Et la chaîne empile **trois générations**
+(webm du screencast → mp4 → `conformClip` → mux final), chacune repartant du même crf.
+
+- `lib/ffmpeg.ts` : `VIDEO_CRF = "16"`, `VIDEO_PRESET = "medium"`, appliqués à `kenBurnsClip`,
+  `conformClip`, `normalizeClip` et `finalMux`. `lib/recording.ts` encode au même réglage.
+- Filmer au **viewport de sortie exact** (`1920x1080`) : aucun rééchantillonnage entre la page et
+  le master. Un viewport plus petit upscalé est flou quoi qu'on fasse au crf.
+- Ne jamais « rattraper » une source molle au montage. Si un plan est flou, c'est la capture
+  qu'on refait.
 
 ### Le contrôle au PLAN
 

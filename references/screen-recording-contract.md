@@ -139,7 +139,8 @@ Le déroulé, pour référence :
    est aléatoire et le chemin indisponible avant (et `page.video()` est `null` si `recordVideo`
    n'a pas été activé). Puis **une seule passe** : `ffmpeg -ss <offset> -i <webm> … conformClip`
    vers `assets/recordings/<sceneId>.mp4`. Ne pas ré-encoder deux fois : `conformClip` produit
-   déjà du libx264/veryfast/crf20/30 fps/`-an`, c'est lui qui rend le `concat -c copy` valide.
+   déjà du libx264/`VIDEO_PRESET`/`VIDEO_CRF`/30 fps/`-an`, c'est lui qui rend le
+   `concat -c copy` valide.
    Forcer `-vsync cfr -r 30` : le screencast Playwright sort en cadence variable et la durée de
    conteneur du `.webm` est peu fiable.
 8. **Idempotence** : hash sha256 du spec normalisé (`url` + `viewport` + `beats` + `cursor` +
@@ -147,9 +148,28 @@ Le déroulé, pour référence :
 9. Playwright reste un import dynamique paresseux : la pipeline tourne sans lui tant qu'aucune
    scène n'utilise `screen_capture` ni `screen_recording`.
 
-**Au montage :** pas de Ken Burns sur ces scènes (le mouvement est déjà dedans) et sous-titres
-incrustés supprimés — comme `screen_capture`, `manual_asset` et `hyperframes`. `subs.srt` reste
-produit intégralement pour les CC YouTube.
+**Au montage :** `motion: "static"` **obligatoire** sur ces scènes — le mouvement est déjà dans
+le clip, et un Ken Burns par-dessus agrandit un texte déjà à sa résolution native (défaut relevé
+au premier rendu : deux passages lus comme « hyper zoomé super laid »). Sous-titres incrustés
+supprimés — comme `screen_capture`, `manual_asset` et `hyperframes`. `subs.srt` reste produit
+intégralement pour les CC YouTube. `textOverlay` est **ignoré** sur un clip : ne pas en écrire.
+
+---
+
+## 3-bis. Qualité — le contenu d'écran est le pire cas de x264
+
+Texte fin, aplats, bordures d'un pixel : ce que `crf 20 + preset veryfast` laisse passer sur une
+photo devient visiblement pixelisé sur une page web. La chaîne empile **trois générations**
+(webm du screencast → mp4 → `conformClip` → mux final) qui repartaient chacune du même crf.
+
+- Réglage unique dans `lib/ffmpeg.ts` : **`VIDEO_CRF = "16"`**, **`VIDEO_PRESET = "medium"`**,
+  utilisés par `kenBurnsClip`, `conformClip`, `normalizeClip`, `finalMux` — et repris tels quels
+  par `lib/recording.ts`. Un seul endroit à changer, jamais quatre.
+- **Filmer au viewport de sortie exact** : `1920x1080`, la résolution du master. Tout viewport
+  plus petit est upscalé au montage et aucun crf ne le rattrape.
+- Ne jamais corriger une source molle au montage : c'est la capture qu'on refait.
+- Le coût est du temps CPU local, pas de l'argent. `medium` sur 150 s de 1080p reste de l'ordre
+  de la minute.
 
 **Local uniquement.** Chromium + ffmpeg + plafond de 45 s par commande côté assistant → ces
 scènes ne se rendent que sur la machine de Théo, via `factory.bat`.
