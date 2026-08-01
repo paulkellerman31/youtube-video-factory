@@ -249,7 +249,21 @@ export async function assemble(ctx: StepCtx): Promise<void> {
             return !windows.some(([w0, w1]) => mid >= w0 && mid <= w1);
           });
           writeFileSync(join(projectDir, "subs-burned.srt"), toSrt(short));
-          srt = "subs-burned.srt";
+          /**
+           * CAS LIMITE ATTEINT LE 2026-08-01 — ne pas retirer ce garde-fou.
+           * Depuis que le preset impose 100 % de footage réel, TOUTES les scènes sont
+           * "protégées" et il ne reste AUCUN segment à incruster : `subs-burned.srt` fait
+           * 0 octet. Le filtre `subtitles=` de ffmpeg refuse un fichier vide et fait échouer
+           * le mux final — après 8 minutes de tournage déjà payées en temps CPU. On ne passe
+           * donc le filtre que s'il reste quelque chose à afficher.
+           * `subs.srt` (les CC YouTube) reste écrit intégralement, lui : rien n'est perdu.
+           */
+          if (short.length === 0) {
+            log("INFO", "assemble: aucune sous-titre incrusté à afficher (toutes les scènes sont du footage réel) — filtre subtitles non appliqué, subs.srt CC inchangé");
+            srt = null;
+          } else {
+            srt = "subs-burned.srt";
+          }
         }
       }
     } catch (e) {
