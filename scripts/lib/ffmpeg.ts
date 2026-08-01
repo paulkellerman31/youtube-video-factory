@@ -5,6 +5,20 @@ import { fitFontSize, readFontMetrics } from "./fontmetrics.js";
 
 export type Motion = "push-in" | "pull-back" | "pan" | "static";
 
+/**
+ * QUALITÉ D'ENCODAGE — relevée le 2026-08-01 après visionnage du premier rendu.
+ *
+ * Le contenu d'écran (texte fin, aplats, bordures d'un pixel) est le pire cas pour x264 : ce que
+ * crf 20 + preset veryfast laisse passer sur une photo devient visiblement pixelisé sur une page
+ * web. Et la chaîne empile TROIS générations : webm du screencast -> mp4 -> conformClip -> mux
+ * final. Chacune reprenait à crf 20.
+ *
+ * crf 16 + preset medium coûte ~2,5x la taille de fichier et un peu de temps CPU. Sur une vidéo
+ * de 2 min 30 en local, c'est gratuit ; la netteté du texte, elle, se voit.
+ */
+export const VIDEO_CRF = "16";
+export const VIDEO_PRESET = "medium";
+
 export function ffmpegAvailable(): boolean {
   try {
     execFileSync("ffmpeg", ["-version"], { stdio: "ignore" });
@@ -259,6 +273,9 @@ export function kenBurnsClip(opts: {
 }): void {
   const { image, out, durationSec, motion, textOverlay, width = 1920, height = 1080, fps = 30, cwd } = opts;
   const frames = Math.max(2, Math.round(durationSec * fps));
+  // Amplitude du zoom. 1,14 convient à une image générée ; sur une capture d'écran, le même
+  // mouvement agrandit du texte déjà à sa résolution native et le rend flou et laid — constaté
+  // au premier rendu. Les scènes de contenu d'écran doivent être en motion "static".
   const zMax = 1.14;
   const dz = (zMax - 1).toFixed(4);
   const center = `x='iw/2-(iw/zoom)/2':y='ih/2-(ih/zoom)/2'`;
@@ -291,7 +308,7 @@ export function kenBurnsClip(opts: {
     );
   }
   run(
-    ["-i", image, "-vf", filters.join(","), "-r", String(fps), "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-an", out],
+    ["-i", image, "-vf", filters.join(","), "-r", String(fps), "-c:v", "libx264", "-preset", VIDEO_PRESET, "-crf", VIDEO_CRF, "-an", out],
     cwd,
   );
 }
@@ -322,7 +339,7 @@ export function conformClip(opts: {
     "format=yuv420p",
   ];
   run(
-    ["-i", clip, "-vf", filters.join(","), "-r", String(fps), "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-an", out],
+    ["-i", clip, "-vf", filters.join(","), "-r", String(fps), "-c:v", "libx264", "-preset", VIDEO_PRESET, "-crf", VIDEO_CRF, "-an", out],
     cwd,
   );
 }
@@ -339,7 +356,7 @@ export function normalizeClip(opts: { clip: string; out: string; fps?: number; c
       "-i", clip,
       "-vf", `fps=${fps},format=yuv420p`,
       "-r", String(fps), "-vsync", "cfr",
-      "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-an",
+      "-c:v", "libx264", "-preset", VIDEO_PRESET, "-crf", VIDEO_CRF, "-an",
       out,
     ],
     cwd,
@@ -383,7 +400,7 @@ export function finalMux(opts: {
   }
   if (srt) args.push("-vf", `subtitles=${srt}:force_style='FontName=Arial,Bold=1,FontSize=20,BorderStyle=3,Outline=3,OutlineColour=&H80000000,Shadow=0,MarginV=40,Alignment=2'`);
   args.push(
-    "-c:v", "libx264", "-preset", "veryfast", "-crf", "19",
+    "-c:v", "libx264", "-preset", VIDEO_PRESET, "-crf", VIDEO_CRF,
     "-c:a", "aac", "-b:a", "192k",
     "-shortest", "-movflags", "+faststart",
     out,

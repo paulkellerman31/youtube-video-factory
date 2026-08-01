@@ -370,7 +370,7 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
         "-i", webm,
         "-vf", "fps=30,format=yuv420p",
         "-r", "30", "-vsync", "cfr",
-        "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-an",
+        "-c:v", "libx264", "-preset", "medium", "-crf", "16", "-an",
         outFile,
       ],
       { stdio: ["ignore", "inherit", "inherit"] },
