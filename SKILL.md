@@ -49,10 +49,11 @@ To raise quality, change a preset — never re-decide per video.
 2. Load the locked presets — these ARE the engine of 20/80:
 
 ```
-□ references/script-director.md                       — V3.1 contracts (GLOBAL, all channels)
+□ references/script-director.md                       — V3.1 contracts + TOOL FOOTAGE quota (GLOBAL)
+□ references/screen-recording-contract.md             — filmed-page source (GLOBAL)
 □ references/profiles/<channel>/style.md              — aesthetic family + global style string
 □ references/profiles/<channel>/voice-config.json     — ElevenLabs voice id + settings
-□ references/profiles/<channel>/thumbnail-playbook.md — thumbnail formula + niche slots
+□ references/profiles/<channel>/thumbnail-playbook.md — LOCKED thumbnail art direction
 ```
 
 3. **Style is ADAPTIVE, anchored per channel.** The profile fixes the aesthetic *family*
@@ -67,8 +68,14 @@ To raise quality, change a preset — never re-decide per video.
      comparison). Fields: `capture.url` (required), `viewport` ("1920x1080"), `fullPage`,
      `selector`, `hideSelectors` (cookie banners…), `delayMs`. $0. **NEVER automate a login
      or credentials** — runs local with the heavy render, not in Cowork.
-   - `manual_asset` — a file the human drops at `assets/captures/<sceneId>.png` BEFORE the
-     run (logged-in dashboards). Pipeline uses it, never generates/overwrites it; missing =
+   - `screen_recording` — same page, **filmed**: real cursor motion, eased scroll, hover. This
+     is the source that carries the "a human is behind this" signal, and the answer to
+     full-AI videos reading as delegated robot content. Fields: `recording.url` (required),
+     `viewport`, `cursor`, `hideSelectors`, `beats[]`. $0, local Chromium. Full contract in
+     `references/screen-recording-contract.md`. Public URLs only, never a login.
+   - `manual_asset` — a file the human drops at `assets/captures/<sceneId>.png` **or `.mp4`**
+     BEFORE the run (logged-in dashboards — the most convincing footage there is, and the only
+     one that can't be automated). Pipeline uses it, never generates/overwrites it; missing =
      hard stop, no silent AI fallback.
    - `hyperframes` — animated HTML scene (charts, counters, kinetic text) for data/number
      scenes where a still is weak. The plan writes a self-contained composition at
@@ -79,23 +86,40 @@ To raise quality, change a preset — never re-decide per video.
      (standard). `textOverlay` is ignored on these scenes — the text lives in the HTML.
      Local render only, never the CLI's cloud commands.
 
-   Tool reviews: `screen_capture` for public pages, `manual_asset` for the connected
-   dashboard, `hyperframes` for data/number scenes, `ai_image` for the rest.
+   **Tool-centric videos are under a binding footage quota** (`script-director.md` §TOOL
+   FOOTAGE, 2026-08-01): 4 mandatory beats sourced from real footage — homepage in the first
+   90 s, the core journey as a `screen_recording` at the 60-70 % peak, real pricing before the
+   CTA, and a contradictory-proof page — plus ≥ 10 real-footage scenes / ≥ 90 s cumulative and
+   `ai_image` ≤ 65 % of scenes. The audit that produced this rule measured 79 % to 97 %
+   `ai_image` across the six OFM plans, and one review of a CRM built on a single screenshot.
+   A plan that doesn't list the 4 beats sourced is invalid — rewrite before the gate.
+   `hyperframes` for data/number scenes, `ai_image` for hook / concept / transition only.
 
-   **Thumbnail = a pipeline entry, not a manual step.** The plan ALWAYS appends to
-   `image-prompts.json` an entry `sceneId: "thumbnail"` (never referenced in
-   `project-config.json` scenes — generated, not assembled): prompt from the channel's
-   thumbnail-playbook archetype, plus `"quality": "high"` (CTR asset — the one place high
-   pays for itself; scenes stay on IMAGE_QUALITY default) and `"overlay": { "lines":
-   ["LINE1", "LINE2"], "accent": "#00C8FF" }` (≤ 2 lines, ≤ 3-4 words total, playbook §6;
-   accent = channel brand color). Pipeline outputs `assets/thumbnail.png` (text burned,
-   1280x720, ready to upload) + `assets/thumbnail-raw.png` (no text, for manual rework).
+   **Thumbnail = a pipeline entry, not a manual step — and the art direction is LOCKED.** The
+   plan ALWAYS appends to `image-prompts.json` an entry `sceneId: "thumbnail"` (never
+   referenced in `project-config.json` scenes — generated, not assembled). There is **no
+   archetype to pick**: the channel playbook fixes one skeleton (grid, seam, typography, logo
+   and channel-mark slots, background treatment, palette) and the only per-video variable is
+   the hero object plus two lines of ≤ 12 characters. Copy the playbook's DA block verbatim —
+   never reformulate it, never adapt the setting to the subject. Plus `"quality": "high"` (CTR
+   asset — the one place high pays for itself; scenes stay on IMAGE_QUALITY default) and
+   `"overlay": { "lines": ["LINE1", "LINE2"], "accent": "#00C8FF", "logo":
+   "assets/logos/<tool>.png" }`. Pipeline outputs `assets/thumbnail.png` (text burned,
+   1280x720) + `assets/thumbnail-raw.png` (no text, for manual rework).
+   ⚠️ **`overlay.logo`, the seam, the scrim and the left alignment are NOT implemented yet** —
+   `thumbnailOverlay` currently burns two right-aligned lines and nothing else. Write the field
+   anyway (it is ignored, harmlessly) and see the playbook §1 for the full implementation gap.
+   **No more `thumbnail.md`, no more Canva** — a manual per-video step cannot be coherent, and
+   that is precisely what produced 22 mismatched thumbnails (YouTube Data API, relevé 2026-08-01).
 
-   **Hard rule — text:** AI images NEVER contain readable text (model can't write). Every
-   `ai_image` prompt ends with the canonical negative: `no text, no words, no letters,
-   no numbers, no labels, no logos, no readable seals or stamps`. A scene that must show
-   words/data/a document/a screen is TAGGED at PLAN time and routed to `screen_capture`,
-   `manual_asset`, GRAPHIC, or abstract image + text overlay — never `ai_image`.
+   **Hard rule — text: INVERTED METHOD (2026 data), never the old canonical negative.**
+   The image model IGNORES negations and the words `text / logo` ATTRACT the artifact. So NEVER
+   write `text, word, letter, label, logo, sign` in a prompt. Describe surfaces positively
+   instead — "plain blank surfaces, unmarked walls, empty clean screens, smooth featureless
+   background, abstract glowing panels"; a wordless mark is an "icon / emblem / symbol", never
+   a "logo". A scene that must show words/data/a document/a screen is TAGGED at PLAN time and
+   routed to `screen_capture`, `screen_recording`, `manual_asset`, GRAPHIC (hyperframes), or
+   abstract image + text overlay — never `ai_image`.
    **STRIP ≠ ROUTE:** only strip DECORATIVE text (fake invoice, bogus seal). If the text
    carries the meaning (calendar = months, dashboard = data, sign = a number), don't blank
    it — a blank box guts the scene; ROUTE it (overlay with real words / GRAPHIC / capture).

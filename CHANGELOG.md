@@ -2,6 +2,98 @@
 
 Toute modification systémique (presets, pipeline, structure) se note ici. Une ligne par changement, datée.
 
+## 2026-08-01 — retour terrain : cohérence, légitimité, substance
+
+Trois griefs remontés par des personnes extérieures après visionnage de la chaîne. Chacun avait
+une cause identifiable dans les presets plutôt que dans l'exécution. Deux sources d'audit,
+distinguées partout ci-dessous parce qu'elles ne disent pas la même chose : le **dépôt**
+(`projects/ofm/*/image-prompts.json`, `thumbnail.md`, code) et l'**API YouTube**
+(`youtube_list_videos`, relevé 2026-08-01). Les presets réécrits ont ensuite été relus en
+vérification adversariale contre le code ; les erreurs trouvées sont corrigées dans cette même
+entrée.
+
+- **DA miniature verrouillée** (`profiles/ofm/thumbnail-playbook.md`, réécriture complète v2).
+  Cause : le playbook demandait de *choisir* un archétype parmi 7 par vidéo — une consigne de
+  variété, l'inverse d'une DA — et les miniatures étaient montées à la main dans Canva
+  (`thumbnail.md` par projet ; aucune entrée `sceneId: "thumbnail"`, aucun champ `overlay`, donc
+  aucun `thumbnail.png` jamais généré, sur aucun projet). Correctif : un
+  squelette unique en coordonnées absolues (seam cyan à x=576, titre aligné à gauche sur x=632,
+  slots marque/logo figés, zone morte sous y=576), un bloc de prompt DA recopié à l'identique
+  (fond charcoal void, une seule rim light cyan, palette #05070C/#00C8FF/blanc), police **Impact**
+  seule (« Bebas Neue ou Impact » = deux DA ; `FONT_CANDIDATES` ne liste que Impact / Arial Bold /
+  DejaVu, donc Bebas n'est de toute façon jamais rendue), rouge alarme #FF3B30 toléré à ≤15 % sur
+  les angles ban uniquement, or/vert/violet/orange/magenta bannis. Géométrie recalculée sur les
+  métriques réelles d'Impact (capitale = 0,79 em → 88,5 px à 112 ; interligne 144 ; ≈12 caractères
+  par ligne avec espaces, ≈10 pour un mot plein). La miniature redevient un livrable de pipeline.
+  **La DA ne change qu'au trimestre, jamais par vidéo.**
+- **Quota de footage réel contraignant** (`script-director.md`, nouvelle §TOOL FOOTAGE). Cause :
+  l'ancienne règle disait « à utiliser généreusement » — non contraignant. Mesure sur les 6 plans
+  OFM (`projects/ofm/*/image-prompts.json`) : **79 % à 97 % de scènes `ai_image`** — anti-detect
+  28/30, inro 29/30, onlyspoofer 28/29, onlytraffic 29/30, nodemaven 29/32, beacons 23/29. Inrō :
+  1 seule capture pour une review de CRM ; OnlyTraffic : 0 capture automatique (1 `manual_asset`,
+  site non capturable). Correctif : 4 beats obligatoires sourcés (homepage <90 s, parcours cœur en
+  `screen_recording` à 60-70 %, pricing réel avant CTA, **preuve contradictoire**), **≥10 scènes
+  réelles / ≥90 s**, `ai_image` **≤65 %**, **≥3 `screen_recording`**, 6-12 s par scène filmée
+  (exception explicite au cap ~7 s : une scène filmée n'est pas un plan figé). Les quatre chiffres
+  sont mutuellement cohérents sur le gabarit ≈30 scènes — contrôle arithmétique inclus dans le
+  preset. Contrôle au PLAN : un plan sans les 4 beats sourcés est invalide et se réécrit avant le
+  gate.
+- **Nouvelle source `screen_recording`** (`references/screen-recording-contract.md`, nouveau
+  fichier). Page publique **filmée** : curseur synthétique en courbe de Bézier avec dépassement
+  et correction, scroll amorti ≤900 px/s, `hover` réel via `page.mouse`. Playwright + Chromium
+  local déjà en place, $0. Réutilise la trousse anti-blocage et le diagnostic de blocage de
+  `lib/capture.ts` — **après refactor** : ces symboles sont module-private et le probe est inline
+  dans `screenCapture` (cf. liste d'implémentation ci-dessous). Page bloquée = échec bruyant,
+  jamais une frame Cloudflare au montage. `manual_asset` accepte désormais `.mp4`/`.mov`
+  (l'écran connecté filmé à la main — le footage le plus convaincant, et le seul non
+  automatisable).
+- **Contrôle anti-« Review » au PLAN** (`script-director.md` §DO NOT + STEP 1). Audit, source
+  **YouTube Data API** (`youtube_list_videos`, 22 vidéos publiées, relevé 2026-08-01) : **9 titres
+  sur 22 contiennent `Review`** alors que le preset l'interdit depuis juin (0,65 % vs 13,3 % de
+  CTR). Le preset existait, il n'était pas appliqué → il devient un contrôle explicite. Les
+  3 titres candidats **remontent de STEP 2 vers STEP 1** : ils étaient produits après le gate,
+  donc le contrôle n'avait rien à contrôler. Correction rétroactive gratuite via
+  `youtube_update_video`.
+- **⚠️ `STATE.md` est périmé** (daté 2026-06-10) : il annonce « 7 vidéos, 5 non rendues, blocage
+  facturation OpenAI ». L'API en montre **22 publiées**, dont les 5 dites non rendues (mises en
+  ligne du 14 au 17 juin). À reprendre — un fichier de reprise faux coûte plus cher qu'un fichier
+  absent.
+- **Palette et police déplacées vers le profil de chaîne** (`profiles/ofm/style.md`). Elles
+  avaient été écrites dans `image-prompt-style.md`, qui est le **fallback global multi-chaînes** :
+  y bannir « l'or sans exception » aurait cassé `rome-antique` (or/bronze) et `corps-humain`
+  (teal/corail). Le fichier global ne garde qu'une règle universelle : **une seule police par
+  chaîne**, jamais « X ou Y ».
+- **Corrections factuelles dans `image-prompt-style.md`** : la génération est en **1536x1024**
+  (3:2), pas 1792x1024 (taille DALL·E 3, inexistante chez gpt-image) ; les scènes GRAPHIC passent
+  par **hyperframes**, pas par une image IA « clean infographic with large legible text » — la
+  consigne inverse y traînait encore et se retrouve dans `nodemaven` s16/s27, à corriger ; le
+  banc d'essai vidéo est **fal.ai**, pas Kling.
+- **Point de vigilance modèle** : tous les presets justifient la méthode inversée et le routage
+  hyperframes par « gpt-image-1 ne sait pas écrire ». Le défaut réel est **`gpt-image-1.5`**,
+  décrit par l'A/B du 2026-06-13 comme *meilleur en texte*. Règles maintenues par prudence, mais
+  **à re-tester sur 1.5** : c'est peut-être une contrainte qu'on s'impose pour rien.
+- **À implémenter côté Claude Code** (les presets décrivent la cible, le code ne suit pas encore ;
+  liste complète et détaillée dans le playbook §1 et le contrat §3) :
+  1. `thumbnailOverlay` → `-filter_complex` à 4 entrées (scrim PNG mis en cache, seam, alignement
+     gauche, slots logo/marque), auto-fit calculé **côté TypeScript** depuis les métriques du TTF
+     (ffmpeg ne sait pas mesurer un texte), sortie **JPEG q≈92** (un PNG 1280×720 photoréaliste
+     dépasse souvent les 2 Mo de YouTube).
+  2. Champ `overlay.logo` à ajouter au type (aujourd'hui `{ lines, accent }` — le champ est
+     silencieusement ignoré).
+  3. **🔴 Exclure l'entrée `sceneId: "thumbnail"` de l'append de la chaîne de style globale.**
+     `generate-images.ts` fait `${p.prompt}. ${style}` sans exception : le bloc DA « charcoal
+     void, no environment » se ferait suivre de « dark luxury tech setting, silhouette only, no
+     visible face » — le décor que la DA bannit, plus deux négations interdites par la méthode
+     inversée. **Sans ce correctif, la DA est inapplicable.**
+  4. Source `screen_recording` — prérequis : exporter `REALISTIC_UA`, `COMMON_COOKIE_SELECTORS`,
+     `launchArgs`, `diagnoseCapture` (tous module-private aujourd'hui) et extraire le probe en
+     `probePage(page)`. Attention : `recordVideo` couvre toute la vie du contexte (pas d'API
+     start/stop) → couper la tête au `-ss` ; chemin via `page.video().path()` après
+     `context.close()` ; `-vsync cfr -r 30` (le screencast sort en cadence variable).
+  5. Extension vidéo de `manual_asset` (`.mp4`/`.mov`) et ajout de `screen_recording` à
+     `protectedSceneIds` (suppression des sous-titres incrustés).
+  Non-régression OFM en dry-run avant adoption.
+
 ## 2026-06-13
 
 - **Routage review « tool footage first »** (`script-director.md`) : sur une vidéo review/outil, les

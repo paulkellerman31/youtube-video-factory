@@ -1,0 +1,183 @@
+# Contrat — `source: "screen_recording"` (capture vidéo animée, $0)
+
+> **Pourquoi cette source existe.** Retour terrain 2026-08-01 : les vidéos 100 % IA sont lues
+> comme « délégué à quelqu'un qui n'y connaît rien ». Mesure sur les 6 plans OFM (relevé
+> 2026-08-01) : **79 % à 97 % des scènes en `ai_image`**, de 23/29 à 29/30. Un diaporama de
+> ~30 images générées avec une voix par-dessus
+> ne contient **aucune trace qu'un humain ait touché l'outil**. Un curseur qui bouge, une page
+> qui défile, une ligne de pricing qu'on survole — c'est la preuve la moins chère et la plus
+> lisible qu'il y a quelqu'un derrière. Ça règle simultanément le grief « c'est du robot » et
+> le grief « on parle d'un outil qu'on ne montre jamais ».
+>
+> `screen_capture` (existant) fige une page. `screen_recording` la **filme**. Même Playwright,
+> même Chrome local, même $0.
+
+---
+
+## 1. Format dans `image-prompts.json`
+
+```json
+{
+  "sceneId": "s14",
+  "source": "screen_recording",
+  "recording": {
+    "url": "https://nodemaven.com/pricing",
+    "viewport": "1920x1080",
+    "cursor": true,
+    "hideSelectors": ["#cookie-banner"],
+    "beats": [
+      { "do": "settle",   "ms": 600 },
+      { "do": "moveTo",   "selector": ".plan--pro",        "ms": 900 },
+      { "do": "dwell",    "ms": 700 },
+      { "do": "scrollTo", "selector": ".comparison-table", "ms": 1800 },
+      { "do": "moveTo",   "x": 1100, "y": 620,             "ms": 700 },
+      { "do": "dwell",    "ms": 1200 }
+    ]
+  }
+}
+```
+
+**Champs.** `url` (requis, http(s) public) · `viewport` (défaut `1920x1080`) · `cursor` (défaut
+`true`) · `hideSelectors` (en plus des sélecteurs cookies génériques) · `beats` (requis, ≥ 2).
+
+**Verbes de beat :**
+
+| `do` | Cible | Effet |
+|---|---|---|
+| `settle` | — | ne rien faire, laisser la page respirer |
+| `moveTo` | `selector` **ou** `x`/`y` | déplace le curseur en courbe amortie |
+| `scrollTo` | `selector` **ou** `y` | défile en douceur jusqu'à la cible |
+| `dwell` | — | curseur immobile, la scène se lit |
+| `hover` | `selector` | `moveTo` + maintien, déclenche les états `:hover` |
+| `click` | `selector` | clic — **usage restreint, voir §4** |
+
+**Durée — le piège à connaître.** La somme des `ms` vise la durée audio planifiée de la scène,
+mais ce n'est pas la fenêtre finale : `assemble.ts` rééchelonne **toutes** les scènes
+(`factor = audioDur / planEnd`) et verse en plus tout le `drift` résiduel sur la dernière. Le
+tournage a lieu à l'étape *images*, avant l'assemblage — ce facteur est donc inconnu au moment
+où l'on filme.
+
+Conséquence : enregistrer **+30 % de la durée planifiée, minimum 3 s de rab**. Si la fenêtre
+finale dépasse quand même la durée enregistrée, `conformClip` applique
+`tpad=stop_mode=clone` → **la dernière frame est gelée**, c'est-à-dire exactement le plan figé que
+§VISUAL CADENCE qualifie de « retention killer ». Dans ce cas, logguer un `WARN` explicite plutôt
+que de laisser passer silencieusement un plan mort.
+
+---
+
+## 2. Ce qui fait « humain » — le cœur du sujet
+
+Un scroll linéaire piloté par script se voit immédiatement : c'est ça qui trahit l'automate.
+Trois détails font toute la différence, et ils ne coûtent rien à l'exécution.
+
+**Le curseur suit une courbe, pas une droite.** Une main ne va jamais d'un point A à un point B
+en ligne droite. Interpoler sur une Bézier quadratique dont le point de contrôle est décalé
+perpendiculairement de 8 à 14 % de la distance parcourue (signe alterné d'un mouvement à
+l'autre). Vitesse en ease-in-out, jamais constante.
+
+**Le mouvement dépasse puis se corrige.** À l'arrivée d'un `moveTo`, dépasser la cible de 5 à
+8 px, marquer ~120 ms, revenir. Idem sur un `scrollTo` : dépasser de 3 à 6 px et corriger. C'est
+le geste le plus reconnaissablement humain qui existe et il est trivial à coder.
+
+**Le défilement est amorti et lent.** Plafond ~900 px/s, courbe ease-in-out, jamais de saut. Un
+`scrollTo` instantané ressemble à un rechargement de page, pas à une lecture. Si la distance
+demandée dépasse `0,9 × ms`, **allonger automatiquement le beat** et logguer — ne jamais tronquer
+en silence. Piège annexe : les sites en `scroll-behavior: smooth` ou en scroll-jacking (Lenis,
+ScrollSmoother) se battront contre le script — dans ce cas neutraliser le CSS via
+`addStyleTag`, ou basculer la scène en `manual_asset`.
+
+Le curseur lui-même est un élément DOM injecté (flèche SVG blanche, ombre portée douce,
+`position: fixed`, `pointer-events: none`, `z-index` max) — le vrai curseur système n'apparaît
+pas dans l'enregistrement Playwright. Déplacer **aussi** `page.mouse` aux mêmes coordonnées pour
+que les états `:hover` réels se déclenchent : c'est ce qui fait s'ouvrir les menus et s'allumer
+les boutons, et donc ce qui rend la page vivante.
+
+Deux pièges : un nœud DOM injecté est **détruit à chaque navigation** (y compris un `click`
+d'onglet qui recharge) → l'injecter via `context.addInitScript` pour qu'il soit re-posé
+automatiquement à chaque document. Et un `<dialog>` ou un élément en plein écran vit dans le
+*top layer*, au-dessus de n'importe quel `z-index` : le curseur disparaîtra derrière une modale.
+
+---
+
+## 3. Implémentation (référence pour Claude Code)
+
+0. **Prérequis de refactor — rien n'est réutilisable en l'état.** Dans `lib/capture.ts`, seuls
+   `CaptureSpec`, `captureHashInput` et `screenCapture` sont exportés : `REALISTIC_UA`,
+   `COMMON_COOKIE_SELECTORS`, `BLOCK_PATTERNS`, `BLOCK_STATUSES`, `launchArgs` et
+   `diagnoseCapture` sont **module-private**. De plus `diagnoseCapture` ne prend pas une page
+   mais un `PageProbe { status, title, text, contentScore }`, et le `page.evaluate` qui construit
+   ce probe est **inline dans `screenCapture`**. Il faut donc d'abord : exporter ces symboles et
+   extraire le probe en `probePage(page): Promise<PageProbe>`.
+1. `chromium.launch` avec la **même trousse anti-blocage** que `lib/capture.ts` : channel
+   `chrome` si dispo, `REALISTIC_UA`, `addInitScript` qui masque `navigator.webdriver`, locale
+   et timezone cohérentes, `--disable-blink-features=AutomationControlled`.
+2. `browser.newContext({ recordVideo: { dir: tmp, size: { width, height } }, … })`.
+3. `page.goto(url, { waitUntil: "networkidle" })`, fallback `load`.
+4. Masquer les bandeaux cookies (`COMMON_COOKIE_SELECTORS` + `hideSelectors`).
+5. **Sonder la page AVANT de jouer les beats** avec `probePage` + `diagnoseCapture` (statut de
+   blocage, motif Cloudflare/captcha, frame vide). Page inexploitable → **échec bruyant**, aucun
+   fichier écrit, message qui renvoie vers `manual_asset`. Jamais une frame Cloudflare au montage.
+   ⚠️ **Ne pas réutiliser le probe de `screenCapture` tel quel** : il scrolle jusqu'en bas puis
+   remonte (déclenchement du lazy-load) — inoffensif pour une capture fixe, mais ici **c'est
+   enregistré**.
+6. Injecter le curseur, **horodater `t0Beats`**, jouer les beats, puis `context.close()`.
+   ⚠️ **Playwright n'a aucune API start/stop d'enregistrement** : `recordVideo` couvre toute la
+   vie du contexte. Le `.webm` contient donc la page blanche, le chargement, le flash du bandeau
+   cookies avant masquage et le probe. **Cette tête doit être coupée** au `-ss` de l'étape 7,
+   avec `offset = t0Beats − t0Contexte`.
+7. Récupérer le fichier via `await page.video().path()` — **après** `context.close()`, le nom
+   est aléatoire et le chemin indisponible avant (et `page.video()` est `null` si `recordVideo`
+   n'a pas été activé). Puis **une seule passe** : `ffmpeg -ss <offset> -i <webm> … conformClip`
+   vers `assets/recordings/<sceneId>.mp4`. Ne pas ré-encoder deux fois : `conformClip` produit
+   déjà du libx264/veryfast/crf20/30 fps/`-an`, c'est lui qui rend le `concat -c copy` valide.
+   Forcer `-vsync cfr -r 30` : le screencast Playwright sort en cadence variable et la durée de
+   conteneur du `.webm` est peu fiable.
+8. **Idempotence** : hash sha256 du spec normalisé (`url` + `viewport` + `beats` + `cursor` +
+   `hideSelectors`). Re-tourné uniquement si le spec change — pas de retournage à chaque run.
+9. Playwright reste un import dynamique paresseux : la pipeline tourne sans lui tant qu'aucune
+   scène n'utilise `screen_capture` ni `screen_recording`.
+
+**Au montage :** pas de Ken Burns sur ces scènes (le mouvement est déjà dedans) et sous-titres
+incrustés supprimés — comme `screen_capture`, `manual_asset` et `hyperframes`. `subs.srt` reste
+produit intégralement pour les CC YouTube.
+
+**Local uniquement.** Chromium + ffmpeg + plafond de 45 s par commande côté assistant → ces
+scènes ne se rendent que sur la machine de Théo, via `factory.bat`.
+
+---
+
+## 4. Interdits — non négociables
+
+- **URLs publiques uniquement. Aucune automatisation de login, jamais.** Pas de saisie
+  d'identifiants, pas de formulaire d'authentification, pas de cookie de session rejoué.
+- `click` est réservé aux interactions **inoffensives et locales à la page** : onglet, accordéon,
+  bascule mensuel/annuel d'une grille tarifaire, carrousel. Interdit : tout ce qui soumet un
+  formulaire, crée un compte, lance un paiement, un essai, ou navigue hors du domaine.
+- Pas de proxy résidentiel, pas de solveur de captcha. Un site vraiment blindé → `manual_asset`.
+- Ne jamais filmer une page contenant des données personnelles de tiers.
+
+---
+
+## 5. `manual_asset` accepte désormais une vidéo
+
+Le dashboard derrière login est le footage le plus convaincant qui existe — et il n'est pas
+automatisable. Extension : si `assets/captures/<sceneId>.mp4` (ou `.mov`) existe, il est conformé
+comme un clip ; sinon `<sceneId>.png` est utilisé comme aujourd'hui. Aucun des deux = **arrêt
+dur**, jamais de repli silencieux sur `ai_image`. Hash = hash des octets du fichier.
+
+Ce que Théo enregistre lui-même, à la souris, dans son propre compte : la vue connectée qui
+prouve qu'il utilise vraiment l'outil. 6 à 10 s suffisent.
+
+---
+
+## 6. Où ces scènes vont dans une vidéo
+
+Voir le quota et les beats obligatoires dans `script-director.md` § TOOL FOOTAGE. En résumé :
+
+- **Durée par scène : 5 à 9 s**, plafond 12 s. En dessous de 5 s on n'a pas le temps de lire ce
+  qu'on montre ; au-delà de 12 s ça s'affaisse.
+- **Ne pas enchaîner plus de deux scènes filmées** sans casser avec une image ou un hyperframe.
+  Trois captures de suite redeviennent un tunnel, juste d'une autre nature.
+- **Le scroll de ton propre article de blog** (`ofm-tools.com/...`) est une source de premier
+  choix : jamais bloquée, elle prouve que le travail de recherche existe, et elle expose le site
+  au passage. Bon candidat pour la scène de preuve ou pour la transition vers le CTA.

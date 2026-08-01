@@ -1,9 +1,26 @@
-# Thumbnail Playbook — universal preset
+# Thumbnail Playbook — universal preset (BOÎTE À OUTILS, pas un preset de production)
 
-**How the skill uses this:** when producing a video's thumbnail, read this file, pick the
-archetype that fits the angle, fill the **NICHE SLOTS (§8)** for the current operation, and
-output one ready-to-generate image prompt + the text-overlay spec. Universal by design — swap
-the slots to reuse across any niche.
+> ## ⚠️ Lire ceci avant d'utiliser ce fichier (2026-08-01)
+>
+> **Ce fichier ne pilote plus aucune production.** Le preset qui s'applique à une chaîne est
+> `references/profiles/<channel>/thumbnail-playbook.md`, et pour OFM il est passé en **DA
+> verrouillée v2** : un squelette unique, zéro archétype à choisir.
+>
+> **Pourquoi :** le modèle « choisis l'archétype qui colle à l'angle » (§4 ci-dessous) est une
+> consigne de *variété*. Appliqué sur 22 vidéos, il a produit exactement ce qu'il promettait —
+> 22 miniatures qui n'ont rien en commun, donc une chaîne qu'on ne reconnaît pas dans une
+> sidebar. Le catalogue d'archétypes reste utile comme **matière de conception**, jamais comme
+> décision par vidéo.
+>
+> **Comment ouvrir une nouvelle niche à partir d'ici :** piocher dans les §2-§5 pour concevoir
+> **UN** squelette, puis le figer en coordonnées absolues dans le profil de la chaîne
+> (grille, traitement de fond, palette fermée, UNE police, slots logo/marque, zone morte) et
+> n'exposer qu'un seul emplacement variable. Voir `profiles/ofm/thumbnail-playbook.md` §2-§3
+> comme modèle de rédaction. Le choix d'archétype se fait **une fois pour la chaîne**, pas une
+> fois par vidéo.
+
+**How the skill uses this:** source material for designing a channel's locked art direction —
+read it once when opening a niche, not once per video.
 
 > Brand palette / HEX must stay in sync with `references/image-prompt-style.md`. If they ever
 > diverge, the palette has one home — fix it there, not in two places.
@@ -16,7 +33,8 @@ the slots to reuse across any niche.
 - Emotion **or** an oversized hero object. Flat = no click.
 - High contrast, vibrant colors.
 - Reserve empty space for the text overlay (usually the right third).
-- Text ≤ 3–4 words. Never in the bottom 20% (player controls cover it).
+- Text ≤ 3 words. Never in the bottom 20% (player controls cover it). Un profil de chaîne peut
+  resserrer davantage — OFM impose 2 lignes de ≤ 12 caractères.
 
 ---
 
@@ -66,8 +84,11 @@ en objet secondaire, jamais en sujet principal.
 ---
 
 ## 6. Text-overlay spec
-- ≤ 3 words, ALL CAPS.
-- Font: **Bebas Neue** or **Impact** (bold, condensed).
+- ≤ 3 words, ALL CAPS (seuil universel ; un profil de chaîne peut être plus strict).
+- Font: pick **ONE** bold condensed face and lock it in the channel profile. Ne jamais laisser
+  « X **ou** Y » dans un preset d'identité : une alternative ouverte est une divergence garantie
+  à l'échelle. `FONT_CANDIDATES` ne liste que Impact / Arial Bold / DejaVu : sur la machine de
+  rendu (Windows) il résout **Impact**. Écrire « Bebas Neue » n'entretient qu'une illusion de choix.
 - Two-tone: line 1 white / line 2 the brand accent color.
 - Never in the bottom 20%. Maximum contrast against the background.
 - Burned by the **pipeline** (ffmpeg, `overlay.lines` in the thumbnail entry of
@@ -96,15 +117,12 @@ This is what makes the playbook universal. Fill these per niche; everything abov
 - Default archetype mix:
 ```
 
-**Filled example — OFM (current niche):**
-```
-- Brand palette + HEX: blue + white (OFM codes); neon accent #00C8FF. No green / "Matrix".
-- Hero objects: glass folder/dossier, tablet or phone showing a tool UI, trophy, contract/cash.
-- Aesthetic: dark luxury tech office, bokeh blur, silhouette / no visible face, human hand
-  with visible skin texture.
-- Banned: the word "OnlyFans" anywhere on the thumbnail; visible faces.
-- Default archetype mix: Contrast Grab + Urgency/FOMO lead; Transformation for case studies.
-```
+**~~Filled example — OFM~~ — PÉRIMÉ, ne pas recopier.** L'ancien bloc rempli OFM (« dark luxury
+tech office », 4 objets héros, « no green » pour seule interdiction, mix d'archétypes) contredit
+terme à terme la DA v2. La version qui fait foi est
+**`references/profiles/ofm/thumbnail-playbook.md` §2-§3** : fond charcoal void sans décor, six
+objets héros tabulés, palette fermée (or/vert/violet/orange/magenta bannis), un seul archétype
+figé pour la chaîne. S'y référer comme modèle de rédaction pour toute nouvelle niche.
 
 ---
 
