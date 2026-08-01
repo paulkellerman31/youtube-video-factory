@@ -131,7 +131,7 @@ le lien. Pas de mise en jambes, pas de récapitulatif, pas de « dans cette vid�
 
 | # | Fenêtre | Bloc | Ce qui s'y passe | Source visuelle |
 |---|---|---|---|---|
-| 1 | 0:00-0:10 | **PROMESSE** | Le problème concret, puis en une phrase ce que l'outil en fait. Aucune intro, aucun « dans cette vidéo ». | `screen_recording` — page « use case » / support / hero. **Jamais `ai_image`** |
+| 1 | 0:00-0:10 | **PROMESSE** | Le problème concret, puis en une phrase ce que l'outil en fait. Aucune intro, aucun « dans cette vidéo ». | `screen_recording` — **la page d'accueil, obligatoirement** (voir ci-dessous). **Jamais `ai_image`** |
 | 2 | 0:10-0:25 | **CE QUE C'EST + VERDICT** | Ce que c'est, pour qui, et le verdict tout de suite. Le spectateur sait à la 25ᵉ seconde si ça le concerne. | `screen_recording` homepage |
 | 3 | 0:25-0:55 | **BÉNÉFICES 1 et 2** | Deux bénéfices, chacun énoncé AVANT la fonctionnalité qui le produit (§COPYWRITING). | `screen_recording` du parcours qui produit le bénéfice |
 | 4 | 0:55-1:05 | **CTA INTERMÉDIAIRE** | Une phrase, les MÊMES mots que le CTA final. Le lien existe, on le dit à mi-parcours. | `screen_recording` — le bouton d'inscription, survolé |
@@ -139,6 +139,16 @@ le lien. Pas de mise en jambes, pas de récapitulatif, pas de « dans cette vid�
 | 6 | 1:25-1:40 | **LA LIMITE** | Pour qui ce n'est PAS, une seule, honnête, en prose. **Placée AVANT le prix.** | `screen_recording` docs / add-ons / grille tarifaire détaillée |
 | 7 | 1:40-2:00 | **LE PRIX** | La vraie grille, lue à l'écran. Le plan qui convient à l'audience, nommé, avec son chiffre. | `screen_recording` pricing (curseur de carte en carte) |
 | 8 | 2:00-2:15 | **CTA FINAL** | Verbe + action précise + offre réelle → levée de risque. Rien d'autre. | `screen_recording` de la page d'inscription |
+
+**La scène 1 est la page d'accueil. Toujours.** Règle posée le 2026-08-01 après visionnage :
+la première version ouvrait sur une page « use case », thématiquement juste et malgré tout
+fausse — *« on n'est pas sur la homepage au début de la vidéo »*. La page d'accueil est la porte
+d'entrée du produit : c'est elle que le spectateur reverra s'il clique, c'est elle qui fixe
+l'identité visuelle de l'outil pour les deux minutes qui suivent, et l'ouvrir ailleurs donne
+l'impression d'arriver par une porte de service. Les pages secondaires viennent APRÈS
+l'établissement, jamais à sa place. Corollaire d'écriture : le `h1` de la page d'accueil dit
+souvent déjà la promesse — écrire le hook en face de lui plutôt que de chercher une page qui
+colle au hook.
 
 **Pourquoi la limite passe AVANT le prix — et non plus juste avant le lien.** Une critique
 visible dans la zone de conversion fait chuter la probabilité d'achat de **41,8 %** (Varga &
