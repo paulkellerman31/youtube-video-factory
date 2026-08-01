@@ -99,15 +99,25 @@ automatiquement à chaque document. Et un `<dialog>` ou un élément en plein é
 
 ---
 
-## 3. Implémentation (référence pour Claude Code)
+## 3. Implémentation — ✅ FAITE le 2026-08-01 (`lib/recording.ts`)
 
-0. **Prérequis de refactor — rien n'est réutilisable en l'état.** Dans `lib/capture.ts`, seuls
-   `CaptureSpec`, `captureHashInput` et `screenCapture` sont exportés : `REALISTIC_UA`,
-   `COMMON_COOKIE_SELECTORS`, `BLOCK_PATTERNS`, `BLOCK_STATUSES`, `launchArgs` et
-   `diagnoseCapture` sont **module-private**. De plus `diagnoseCapture` ne prend pas une page
-   mais un `PageProbe { status, title, text, contentScore }`, et le `page.evaluate` qui construit
-   ce probe est **inline dans `screenCapture`**. Il faut donc d'abord : exporter ces symboles et
-   extraire le probe en `probePage(page): Promise<PageProbe>`.
+Le module existe et a été vérifié de bout en bout sur une page réelle : curseur visible,
+courbe de Bézier avec dépassement-correction, scroll amorti, **états `:hover` réels déclenchés**
+(la carte tarifaire s'allume au passage du curseur dans l'enregistrement — la preuve que
+`page.mouse` bouge en plus du curseur dessiné), tête de clip coupée (2,0 s retirés sur un test),
+sortie mp4 CFR 30 fps conforme au `concat -c copy`.
+
+Champ supplémentaire au passage : **`plannedDurationSec`** — la durée prévue de la scène, qui
+sert à calculer la marge d'enregistrement (§ Durée).
+
+Le déroulé, pour référence :
+
+0. **Refactor préalable de `lib/capture.ts` — fait.** `REALISTIC_UA`,
+   `COMMON_COOKIE_SELECTORS`, `BLOCK_PATTERNS`, `BLOCK_STATUSES`, `LAUNCH_ARGS` et
+   `diagnoseCapture` étaient module-private ; ils sont désormais exportés, avec les helpers
+   `loadChromium`, `launchBrowser`, `contextOptions`, `hideAutomation`, `hideCookieBanners` et
+   `probePage`. Le sondage anti-blocage est ainsi **strictement identique** entre capture fixe
+   et enregistrement : sans ça, une page bloquée passerait d'un côté et pas de l'autre.
 1. `chromium.launch` avec la **même trousse anti-blocage** que `lib/capture.ts` : channel
    `chrome` si dispo, `REALISTIC_UA`, `addInitScript` qui masque `navigator.webdriver`, locale
    et timezone cohérentes, `--disable-blink-features=AutomationControlled`.

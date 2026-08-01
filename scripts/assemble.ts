@@ -90,12 +90,20 @@ function sceneSources(projectDir: string): Map<string, string> {
   }
 }
 
+/** Sources showing real UI or their own text — burned subtitles must never cover them. */
+const NO_BURNED_SUBS_SOURCES = new Set([
+  "screen_capture",
+  "screen_recording",
+  "manual_asset",
+  "hyperframes",
+]);
+
 /** Scene ids whose visuals must never be covered by burned subtitles (real UI, animated HTML, overlays). */
 function protectedSceneIds(projectDir: string, scenes: SceneCfg[]): Set<string> {
   const ids = new Set<string>();
   for (const s of scenes) if (s.textOverlay) ids.add(s.sceneId);
   for (const [sceneId, source] of sceneSources(projectDir)) {
-    if (source === "screen_capture" || source === "manual_asset" || source === "hyperframes") ids.add(sceneId);
+    if (NO_BURNED_SUBS_SOURCES.has(source)) ids.add(sceneId);
   }
   return ids;
 }
@@ -103,11 +111,12 @@ function protectedSceneIds(projectDir: string, scenes: SceneCfg[]): Set<string> 
 /**
  * project-config.json + manifest + assets -> final.mp4
  * Per scene: Ken Burns clip sized to its (rescaled) audio window -> concat -> voice (+ music bed).
- * hyperframes scenes use their pre-rendered clip (assets/hyperframes/<sceneId>.mp4) conformed to
- * the scene window instead of a Ken Burns still.
+ * Clip scenes (hyperframes, screen_recording, and a hand-recorded manual_asset) use their
+ * pre-rendered clip conformed to the scene window instead of a Ken Burns still.
  * Subtitles: subs.srt (CC chunking) is ALWAYS written. Burned subtitles (mode "burned") use
  * their own short-segment cut (subs-burned.srt: <=4 words, one line) and are dropped on
- * screen_capture / manual_asset / hyperframes scenes and on scenes with a text overlay.
+ * screen_capture / screen_recording / manual_asset / hyperframes scenes and on scenes with a
+ * text overlay.
  */
 export async function assemble(ctx: StepCtx): Promise<void> {
   const { projectDir, dryRun } = ctx;
@@ -121,12 +130,26 @@ export async function assemble(ctx: StepCtx): Promise<void> {
   const manifest = readManifest(projectDir);
   const voice = join(projectDir, "assets", "audio", "voice.mp3");
   const sources = sceneSources(projectDir);
-  const isHyper = (sceneId: string): boolean => sources.get(sceneId) === "hyperframes";
-  const sceneAssetPath = (sceneId: string): string =>
-    isHyper(sceneId)
-      ? join(projectDir, "assets", "hyperframes", `${sceneId}.mp4`)
-      : join(projectDir, "assets", "images", `${sceneId}.png`);
-  const missingImages = scenes.filter((s) => !existsSync(sceneAssetPath(s.sceneId)));
+  /**
+   * Resolve a scene's rendered asset by PROBING the disk rather than trusting its declared
+   * source. `manual_asset` can be either a still or a hand-recorded clip — only the file that
+   * actually landed says which. Clip wins over still if both somehow exist.
+   */
+  const sceneAsset = (sceneId: string): { path: string; isClip: boolean } => {
+    const candidates: Array<{ path: string; isClip: boolean }> = [
+      { path: join(projectDir, "assets", "hyperframes", `${sceneId}.mp4`), isClip: true },
+      { path: join(projectDir, "assets", "recordings", `${sceneId}.mp4`), isClip: true },
+      { path: join(projectDir, "assets", "images", `${sceneId}.png`), isClip: false },
+    ];
+    const found = candidates.find((c) => existsSync(c.path));
+    if (found) return found;
+    // Nothing on disk yet: report the path the declared source WOULD produce, for the error.
+    const src = sources.get(sceneId) ?? "ai_image";
+    if (src === "hyperframes") return { path: candidates[0].path, isClip: true };
+    if (src === "screen_recording") return { path: candidates[1].path, isClip: true };
+    return { path: candidates[2].path, isClip: false };
+  };
+  const missingImages = scenes.filter((s) => !existsSync(sceneAsset(s.sceneId).path));
 
   // Optional music bed: first audio file in assets/music/
   const musicDir = join(projectDir, "assets", "music");
@@ -173,19 +196,25 @@ export async function assemble(ctx: StepCtx): Promise<void> {
   const clipsDir = join(projectDir, "assets", "clips");
   mkdirSync(clipsDir, { recursive: true });
   scenes.forEach((s, i) => {
-    if (isHyper(s.sceneId)) {
-      log("INFO", `assemble: scene ${s.sceneId} — hyperframes clip, ${durations[i].toFixed(2)}s`);
-      if (s.textOverlay) log("WARN", `assemble: ${s.sceneId} textOverlay ignoré (hyperframes — le texte vit dans la composition HTML)`);
-      conformClip({
-        clip: join(projectDir, "assets", "hyperframes", `${s.sceneId}.mp4`),
-        out: join(clipsDir, `${s.sceneId}.mp4`),
-        durationSec: durations[i],
-      });
+    const asset = sceneAsset(s.sceneId);
+    if (asset.isClip) {
+      const kind = sources.get(s.sceneId) ?? "clip";
+      log("INFO", `assemble: scene ${s.sceneId} — clip ${kind}, ${durations[i].toFixed(2)}s`);
+      if (s.textOverlay) log("WARN", `assemble: ${s.sceneId} textOverlay ignoré (clip — pas de Ken Burns, le mouvement est déjà dedans)`);
+      // A clip shorter than its window gets its last frame held by conformClip — a frozen shot,
+      // which the retention rules call a killer. Warn loudly rather than ship it silently.
+      try {
+        const clipDur = ffprobeDuration(asset.path);
+        if (clipDur + 0.05 < durations[i]) {
+          log("WARN", `assemble: ${s.sceneId} clip de ${clipDur.toFixed(2)}s pour une fenêtre de ${durations[i].toFixed(2)}s — la dernière frame sera GELÉE. Rallonger les beats ou raccourcir la scène.`);
+        }
+      } catch { /* durée illisible: on laisse conformClip faire */ }
+      conformClip({ clip: asset.path, out: join(clipsDir, `${s.sceneId}.mp4`), durationSec: durations[i] });
       return;
     }
     log("INFO", `assemble: scene ${s.sceneId} — ${s.motion}, ${durations[i].toFixed(2)}s`);
     kenBurnsClip({
-      image: join(projectDir, "assets", "images", `${s.sceneId}.png`),
+      image: asset.path,
       out: join(clipsDir, `${s.sceneId}.mp4`),
       durationSec: durations[i],
       motion: s.motion,

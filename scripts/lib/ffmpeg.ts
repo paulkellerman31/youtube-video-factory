@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { copyFileSync, existsSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
+import { fitFontSize, readFontMetrics } from "./fontmetrics.js";
 
 export type Motion = "push-in" | "pull-back" | "pan" | "static";
 
@@ -43,15 +44,23 @@ const FONT_CANDIDATES = [
  * Windows drive colons break the filtergraph parser no matter the escaping.
  * Sidestep entirely: copy the font next to the output clip and reference it
  * with a colon-free RELATIVE path (relative to ffmpeg's cwd).
+ *
+ * Returns both paths: `rel` for the filtergraph, `abs` for reading the font's own metrics
+ * (thumbnailOverlay auto-fits the headline, which ffmpeg cannot do).
  */
-function fontFilePrefix(outFile: string, cwd?: string): string {
+function resolveFontFile(outFile: string, cwd?: string): { abs: string; rel: string } | null {
   const src = FONT_CANDIDATES.find((p) => existsSync(p));
-  if (!src) return "";
+  if (!src) return null;
   const cached = join(dirname(outFile), "_font.ttf");
   if (!existsSync(cached)) copyFileSync(src, cached);
   const rel = relative(cwd ?? process.cwd(), cached).split("\\").join("/");
-  if (rel.includes(":")) return ""; // different drive — give up rather than crash
-  return `fontfile='${rel}':`;
+  if (rel.includes(":")) return null; // different drive — give up rather than crash
+  return { abs: cached, rel };
+}
+
+function fontFilePrefix(outFile: string, cwd?: string): string {
+  const f = resolveFontFile(outFile, cwd);
+  return f ? `fontfile='${f.rel}':` : "";
 }
 
 /**
@@ -60,22 +69,180 @@ function fontFilePrefix(outFile: string, cwd?: string): string {
  * right-aligned in the reserved right third, never in the bottom 20%.
  * Output: 1280x720 (YouTube upload spec), center-cropped from the 1536x1024 source.
  */
+/**
+ * LOCKED THUMBNAIL ART DIRECTION — see references/profiles/<channel>/thumbnail-playbook.md §2.
+ *
+ * These values ARE the art direction. They are deliberately module constants and not
+ * configuration: making them tunable per video would reopen exactly the door the playbook
+ * closes (22 published thumbnails with nothing in common). Change them once per quarter, on
+ * CTR data, for the whole channel — never for one video.
+ */
+export const THUMBNAIL_DA = {
+  width: 1280,
+  height: 720,
+  // Seam: the channel signature — the one element still legible at postage-stamp size.
+  seamX: 576,
+  seamW: 10,
+  // Scrim: horizontal gradient, transparent at the seam -> near-opaque at 760, held to the edge.
+  // Drawn as N stacked drawbox strips: `geq` isn't in every ffmpeg build, `drawbox` always is.
+  scrimFrom: 576,
+  scrimTo: 760,
+  scrimColor: "0x05070C",
+  scrimAlpha: 0.92,
+  scrimSteps: 23,
+  // Headline: LEFT-aligned on a fixed x so every thumbnail starts at the same optical point.
+  textX: 632,
+  textMaxWidth: 600,
+  fontMax: 112,
+  fontMin: 96, // below this we do NOT shrink — the line gets rewritten (playbook §6)
+  fontStep: 8,
+  lineGap: 144, // between the two cap-tops
+  blockCenterY: 360,
+  // Fixed marks. Nothing below deadZoneY (progress bar + duration badge).
+  markX: 40,
+  markY: 40,
+  markH: 36,
+  logoRightMargin: 40,
+  logoY: 40,
+  logoH: 52,
+  deadZoneY: 576,
+} as const;
+
+/** ffmpeg drawtext escaping (backslash, quote, colon, percent are all special). */
+function escDrawtext(t: string): string {
+  return t
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "’")
+    .replace(/:/g, "\\:")
+    .replace(/%/g, "\\%");
+}
+
+/** `#00C8FF` / `00C8FF` -> `0x00C8FF`; passes through names like `white`. */
+function toFFColor(c: string): string {
+  const hex = c.replace(/^#/, "");
+  return /^[0-9a-f]{6}$/i.test(hex) ? `0x${hex.toUpperCase()}` : c;
+}
+
+/**
+ * Burn the locked art direction onto the generated thumbnail image.
+ *
+ * Composition (playbook §2): full-bleed image -> right scrim -> cyan seam -> two left-aligned
+ * headline lines (shared auto-fitted size) -> channel mark top-left -> tool logo top-right.
+ *
+ * The auto-fit is computed HERE, from the font's own metrics, because `drawtext` cannot measure
+ * a string and shrink itself. Both lines always share one size: two headlines at different
+ * sizes would break the series, which is the entire point of the locked DA.
+ *
+ * Output is JPEG (q≈92): a photoreal 1280x720 PNG routinely exceeds YouTube's 2MB limit.
+ * Returns the chosen size and whether a line still overflowed at the floor (caller warns).
+ */
 export function thumbnailOverlay(opts: {
   image: string;
   out: string;
   lines: string[];
-  accent?: string; // brand accent — default neon blue (image-prompt-style.md)
+  accent?: string; // brand accent — default neon blue (channel style.md)
+  logo?: string | null; // real PNG from the vendor press kit — NEVER an AI-drawn logo
+  channelMark?: string | null; // channel wordmark; absent = slot left empty, render still valid
   cwd?: string;
-}): void {
-  const { image, out, lines, accent = "#00C8FF", cwd } = opts;
-  const font = fontFilePrefix(out, cwd);
-  const esc = (t: string) => t.replace(/\\/g, "\\\\").replace(/'/g, "’").replace(/:/g, "\\:");
-  const draw = lines.slice(0, 2).map((l, i) => {
-    const color = i === 0 ? "white" : accent;
-    return `drawtext=${font}text='${esc(l.toUpperCase())}':fontsize=120:fontcolor=${color}:borderw=8:bordercolor=black@0.9:x=w-text_w-56:y=${72 + i * 144}`;
+}): { fontSize: number; overflow: boolean } {
+  const { image, out, lines, accent = "#00C8FF", logo, channelMark, cwd } = opts;
+  const D = THUMBNAIL_DA;
+  const fontAbs = resolveFontFile(out, cwd);
+  const fontPrefix = fontAbs ? `fontfile='${fontAbs.rel}':` : "";
+
+  const text = lines.slice(0, 2).map((l) => l.toUpperCase());
+  let fontSize: number = D.fontMax;
+  let overflow = false;
+  let capHeightEm = 0.79; // Impact fallback if the font can't be parsed
+  let ascentEm = 1.0;
+  if (fontAbs) {
+    try {
+      const m = readFontMetrics(fontAbs.abs);
+      capHeightEm = m.capHeightEm;
+      ascentEm = m.ascentEm;
+      const fit = fitFontSize(m, text, D.textMaxWidth, { max: D.fontMax, min: D.fontMin, step: D.fontStep });
+      fontSize = fit.size;
+      overflow = fit.overflow;
+    } catch {
+      /* metrics unreadable -> nominal size; the render still succeeds */
+    }
+  }
+
+  // Vertical placement: the visible block (cap top of line 1 -> cap bottom of line 2) is
+  // centred on blockCenterY.
+  // CALIBRATED, not assumed: ffmpeg's drawtext positions `y` at the top of the actual glyph
+  // ink, not at the font's ascent line. Measured on a real render — y=216 produced ink starting
+  // at exactly row 216, where an ascent-based origin would have put it 22px lower. ALL-CAPS text
+  // has nothing above the cap line, so no offset is applied. If a future ffmpeg changes this,
+  // the headline drifts vertically as a block — visible immediately on one test render.
+  const capH = capHeightEm * fontSize;
+  const capTop1 = D.blockCenterY - (D.lineGap + capH) / 2;
+  const yOf = (i: number): number => Math.round(capTop1 + i * D.lineGap);
+  void ascentEm; // kept for the fallback path below; drawtext needs no ascent correction
+
+  const filters: string[] = [
+    `scale=${D.width}:${D.height}:force_original_aspect_ratio=increase`,
+    `crop=${D.width}:${D.height}`,
+  ];
+
+  // Scrim gradient, then the solid tail. Strips must TILE, never overlap: an overlapped column
+  // gets the darkening applied twice and the ramp stops being linear (measured, not theoretical).
+  const stripW = (D.scrimTo - D.scrimFrom) / D.scrimSteps;
+  for (let i = 0; i < D.scrimSteps; i++) {
+    const a = (D.scrimAlpha * (i + 0.5)) / D.scrimSteps;
+    const x = Math.round(D.scrimFrom + i * stripW);
+    const w = Math.round(D.scrimFrom + (i + 1) * stripW) - x;
+    if (w <= 0) continue;
+    filters.push(`drawbox=x=${x}:y=0:w=${w}:h=${D.height}:color=${D.scrimColor}@${a.toFixed(3)}:t=fill`);
+  }
+  filters.push(
+    `drawbox=x=${D.scrimTo}:y=0:w=${D.width - D.scrimTo}:h=${D.height}:color=${D.scrimColor}@${D.scrimAlpha}:t=fill`,
+  );
+
+  // Seam.
+  filters.push(`drawbox=x=${D.seamX}:y=0:w=${D.seamW}:h=${D.height}:color=${toFFColor("#00C8FF")}@1:t=fill`);
+
+  // Headline — line 1 white, line 2 accent.
+  text.forEach((l, i) => {
+    const color = i === 0 ? "white" : toFFColor(accent);
+    filters.push(
+      `drawtext=${fontPrefix}text='${escDrawtext(l)}':fontsize=${fontSize}:fontcolor=${color}:` +
+        `borderw=8:bordercolor=black@0.9:x=${D.textX}:y=${yOf(i)}`,
+    );
   });
-  const filters = ["scale=1280:720:force_original_aspect_ratio=increase", "crop=1280:720", ...draw];
-  run(["-i", image, "-vf", filters.join(","), "-frames:v", "1", "-update", "1", out], cwd);
+
+  // Marks need a second input each -> filter_complex only when a file actually exists.
+  const marks: Array<{ file: string; expr: string }> = [];
+  if (channelMark && existsSync(channelMark)) {
+    marks.push({ file: channelMark, expr: `overlay=${D.markX}:${D.markY}` });
+  }
+  if (logo && existsSync(logo)) {
+    marks.push({ file: logo, expr: `overlay=W-w-${D.logoRightMargin}:${D.logoY}` });
+  }
+
+  const args: string[] = ["-i", image];
+  if (marks.length === 0) {
+    args.push("-vf", filters.join(","));
+  } else {
+    const parts: string[] = [];
+    marks.forEach((m, i) => {
+      args.push("-i", m.file);
+      // Scale each mark to its locked height, preserving aspect ratio.
+      const h = i === 0 && channelMark && existsSync(channelMark) ? D.markH : D.logoH;
+      parts.push(`[${i + 1}:v]scale=-1:${h}[m${i}]`);
+    });
+    let chain = `[0:v]${filters.join(",")}[base]`;
+    let cur = "base";
+    marks.forEach((m, i) => {
+      const next = i === marks.length - 1 ? "out" : `s${i}`;
+      chain += `;[${cur}][m${i}]${m.expr}[${next}]`;
+      cur = next;
+    });
+    args.push("-filter_complex", `${parts.join(";")};${chain}`, "-map", "[out]");
+  }
+  args.push("-frames:v", "1", "-update", "1", "-q:v", "3", out);
+  run(args, cwd);
+  return { fontSize, overflow };
 }
 
 /** Render one still image into a Ken Burns motion clip (video only, no audio). */
@@ -156,6 +323,25 @@ export function conformClip(opts: {
   ];
   run(
     ["-i", clip, "-vf", filters.join(","), "-r", String(fps), "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-an", out],
+    cwd,
+  );
+}
+
+/**
+ * Re-encode an arbitrary source clip (a hand-recorded `manual_asset`, any codec/fps/container)
+ * into the pipeline's canonical params, WITHOUT touching its duration — the scene window isn't
+ * known yet at the images step; `conformClip` fits it later at assembly.
+ */
+export function normalizeClip(opts: { clip: string; out: string; fps?: number; cwd?: string }): void {
+  const { clip, out, fps = 30, cwd } = opts;
+  run(
+    [
+      "-i", clip,
+      "-vf", `fps=${fps},format=yuv420p`,
+      "-r", String(fps), "-vsync", "cfr",
+      "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-an",
+      out,
+    ],
     cwd,
   );
 }

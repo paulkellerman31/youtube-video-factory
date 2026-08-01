@@ -38,8 +38,11 @@ n'est pas encore validé par le CTR de CETTE chaîne. Il le sera par la §7.
 **C'était la cause racine de la dérive.** 22 miniatures montées à la main, une par une, dans
 Canva — il n'existe aucun moyen d'être cohérent comme ça. La pipeline sait déjà le faire
 (`thumbnailOverlay`, ffmpeg local, $0) : le plan écrit une entrée `sceneId: "thumbnail"` dans
-`image-prompts.json`, la pipeline sort `assets/thumbnail.png` (texte incrusté, 1280×720, prête
+`image-prompts.json`, la pipeline sort **`assets/thumbnail.jpg`** (DA incrustée, 1280×720, prête
 à uploader) et `assets/thumbnail-raw.png` (sans texte, pour retouche).
+
+Sortie en **JPEG q≈92** et pas en PNG : un PNG photoréaliste 1280×720 dépasse régulièrement la
+limite de 2 Mo de YouTube.
 
 ```json
 {
@@ -56,34 +59,39 @@ Canva — il n'existe aucun moyen d'être cohérent comme ça. La pipeline sait 
 
 - `quality: "high"` **uniquement ici** — c'est l'asset CTR, le seul endroit où le tier haut se
   rentabilise. Les scènes restent au défaut `IMAGE_QUALITY`.
-- Le champ `logo` pointe un **vrai fichier PNG** téléchargé depuis le press kit de la marque.
-  Un logo n'est **jamais** généré par IA (le modèle ne sait pas écrire → baragouin). Pas de
-  fichier = pas de logo, le reste de la miniature est rendu normalement.
+- Le champ `logo` pointe un **vrai fichier PNG** (chemin relatif au dossier du projet)
+  téléchargé depuis le press kit de la marque. Un logo n'est **jamais** généré par IA (le modèle
+  ne sait pas écrire → baragouin). Pas de fichier = pas de logo, le reste est rendu normalement.
+- La **marque de chaîne** n'est pas un champ : elle est lue une fois pour toute la chaîne dans
+  `references/profiles/<channel>/channel-mark.png`. C'est voulu — un élément d'identité ne se
+  redécide pas par vidéo.
 - **Plus aucun `thumbnail.md`** à produire. Quatre projets en contiennent encore un
   (anti-detect, inro, onlyspoofer, onlytraffic) : ils sont caducs et à supprimer.
 
-> ## ⚠️ Écarts d'implémentation à combler côté Claude Code
+> ## ✅ Implémenté le 2026-08-01 — ce que le code fait désormais
 >
-> Tant que ces cinq points ne sont pas traités, la DA n'est appliquée qu'à moitié. Ce sont les
-> seuls blocages techniques de ce preset — ils sont tous locaux, aucun ne coûte d'API.
+> `thumbnailOverlay` (`lib/ffmpeg.ts`) compose la DA complète : scrim en dégradé, seam, titre
+> aligné à gauche, slots marque et logo, sortie JPEG. Les constantes de la §2 vivent dans
+> `THUMBNAIL_DA`, **volontairement en dur et non configurables** : les rendre paramétrables par
+> vidéo rouvrirait exactement la porte que ce playbook ferme.
 >
-> 1. **`thumbnailOverlay` ne fait qu'un quart du travail.** Aujourd'hui : deux lignes alignées à
->    DROITE (`x=w-text_w-56`, `fontsize=120`, `y=72+i*144`), et rien d'autre — pas de scrim, pas
->    de seam, pas de logo, pas de marque de chaîne. Cible : §2.
-> 2. **Le champ `overlay.logo` n'existe pas** dans le type `overlay` de `generate-images.ts`
->    (`{ lines, accent }`). Écrit dans le JSON, il est silencieusement ignoré. À ajouter.
-> 3. **🔴 La chaîne de style globale est appendée à TOUS les prompts, miniature comprise.**
->    `generate-images.ts` fait `\`${p.prompt.trim()}. ${style}\`` sans exception pour
->    `sceneId: "thumbnail"`. Le modèle recevrait donc le bloc DA §3 (« charcoal void, no
->    environment ») **suivi de** « dark luxury tech setting, silhouette only, no visible face » —
->    c'est-à-dire le décor que la §2 bannit, plus deux négations interdites par la méthode
->    inversée. **L'entrée `thumbnail` doit être exclue de cet append** : le bloc DA est
->    auto-suffisant. Sans ce correctif, la §3 et la checklist §6 sont inapplicables.
-> 4. **L'auto-fit ne peut pas se faire dans ffmpeg** — `drawtext` ne sait pas mesurer un texte
->    puis réduire sa taille. La largeur se calcule côté TypeScript à partir des métriques du TTF
->    avant de composer la commande.
-> 5. **La sortie est un PNG sans contrôle de poids.** Un PNG photoréaliste 1280×720 dépasse
->    souvent les 2 Mo admis par YouTube → sortir en JPEG q≈92, ou vérifier et ré-encoder.
+> - **Auto-fit** : `lib/fontmetrics.ts` lit les métriques du TTF (cmap, hmtx, glyf) et calcule la
+>   taille avant de composer le filtergraph — `drawtext` est incapable de mesurer un texte puis
+>   de se réduire. Les deux lignes partagent toujours **une seule** taille.
+> - **Placement vertical calibré, pas supposé** : `drawtext` positionne `y` sur le haut de l'encre
+>   réelle, pas sur la ligne d'ascendante. Vérifié au pixel sur un rendu (y=216 → encre à la ligne
+>   216). Le bloc de capitales tombe à 244→477, centre 360,5 pour une cible de 360.
+> - **`overlay.logo`** existe désormais dans le type. La marque de chaîne est lue dans
+>   `references/profiles/<channel>/channel-mark.png`. **Les deux slots sont optionnels** : fichier
+>   absent → slot vide, un `WARN` au log, et le rendu reste valide.
+> - **🔴 Le correctif décisif** : l'entrée `sceneId: "thumbnail"` est maintenant **exclue** de
+>   l'ajout de la chaîne de style globale. Sans lui, le modèle recevait le bloc DA (« charcoal
+>   void, no environment ») suivi de « dark luxury tech setting, silhouette only, no visible
+>   face » — le décor que la §2 bannit, plus deux négations interdites par la méthode inversée.
+>   La DA était littéralement inapplicable.
+>
+> **Reste à ta charge :** déposer `channel-mark.png` dans le profil de la chaîne. Tant qu'il
+> manque, la DA tourne sans son élément de reconnaissance le plus fort.
 
 ---
 
@@ -96,8 +104,8 @@ Tout est en pixels absolus sur un canvas 1280×720. Rien ici ne dépend de la vi
 │ ◆ marque chaîne (40,40)      ┊            logo outil (→1240)│  ← y 40, h 36 / h 52
 │                              ┊                              │
 │                              ┊                              │
-│        OBJET HÉROS           ┊   LIGNE 1 (blanc)            │  ← haut du texte y 232
-│     (débordant à gauche)     ┊   LIGNE 2 (#00C8FF)          │  ← haut du texte y 376
+│        OBJET HÉROS           ┊   LIGNE 1 (blanc)            │  ← capitales y 244→336
+│     (débordant à gauche)     ┊   LIGNE 2 (#00C8FF)          │  ← capitales y 388→476
 │                              ┊                              │
 │                              ┊                              │
 │                          seam┊  ZONE MORTE — rien y > 576   │
@@ -283,6 +291,7 @@ Une seule case cochée = on refait. Ce sont toutes des façons de casser la sér
 - [ ] Quoi que ce soit sous y = 576
 - [ ] Le seam, la marque de chaîne ou le logo manquent
 - [ ] La miniature a été montée à la main dans Canva plutôt que sortie par la pipeline
+- [ ] Le log a émis un WARN « titre réduit à N px » ou « marque de chaîne absente »
 
 ---
 

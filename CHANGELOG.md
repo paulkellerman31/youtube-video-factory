@@ -72,8 +72,12 @@ entrée.
   hyperframes par « gpt-image-1 ne sait pas écrire ». Le défaut réel est **`gpt-image-1.5`**,
   décrit par l'A/B du 2026-06-13 comme *meilleur en texte*. Règles maintenues par prudence, mais
   **à re-tester sur 1.5** : c'est peut-être une contrainte qu'on s'impose pour rien.
-- **À implémenter côté Claude Code** (les presets décrivent la cible, le code ne suit pas encore ;
-  liste complète et détaillée dans le playbook §1 et le contrat §3) :
+- **✅ CODE IMPLÉMENTÉ le 2026-08-01** — les cinq points ci-dessous sont faits et vérifiés
+  (`tsc --noEmit` propre, rendu miniature contrôlé au pixel, enregistrement testé de bout en bout
+  sur une page réelle avec états `:hover` déclenchés). Nouveaux fichiers : `lib/fontmetrics.ts`,
+  `lib/recording.ts`. Modifiés : `lib/ffmpeg.ts`, `lib/capture.ts`, `generate-images.ts`,
+  `assemble.ts`. **Reste à fournir : `references/profiles/ofm/channel-mark.png`** (slot optionnel,
+  WARN au log tant qu'il manque). Détail :
   1. `thumbnailOverlay` → `-filter_complex` à 4 entrées (scrim PNG mis en cache, seam, alignement
      gauche, slots logo/marque), auto-fit calculé **côté TypeScript** depuis les métriques du TTF
      (ffmpeg ne sait pas mesurer un texte), sortie **JPEG q≈92** (un PNG 1280×720 photoréaliste

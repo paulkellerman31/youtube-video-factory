@@ -1,15 +1,19 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { captureHashInput, screenCapture, type CaptureSpec } from "./lib/capture.js";
+import { recordingDurationSec, recordingHashInput, screenRecording, type RecordingSpec } from "./lib/recording.js";
 import { compositionDir, hyperframesHashInput, renderHyperframes, type HyperframesSpec } from "./lib/hyperframes.js";
 import { readManifest, writeFragment, type ImageFragment } from "./lib/manifest.js";
-import { thumbnailOverlay } from "./lib/ffmpeg.js";
+import { normalizeClip, thumbnailOverlay } from "./lib/ffmpeg.js";
 import { getRates } from "./lib/rates.js";
-import { getChannel, profileFile } from "./lib/profile.js";
+import { getChannel, getProfileDir, profileFile } from "./lib/profile.js";
 import { fetchWithRetry, log, round2, sha256 } from "./lib/util.js";
 import type { StepCtx } from "./generate-audio.js";
 
-type AssetSource = "ai_image" | "screen_capture" | "manual_asset" | "hyperframes";
+type AssetSource = "ai_image" | "screen_capture" | "screen_recording" | "manual_asset" | "hyperframes";
+
+/** Video extensions accepted for a hand-recorded manual_asset (logged-in dashboards). */
+const MANUAL_VIDEO_EXT = [".mp4", ".mov", ".webm"];
 
 interface SceneAsset {
   sceneId: string;
@@ -17,31 +21,55 @@ interface SceneAsset {
   prompt?: string; // required for ai_image
   ar?: string;
   capture?: CaptureSpec; // required for screen_capture
+  recording?: RecordingSpec; // required for screen_recording — the page FILMED (cursor + scroll)
   hyperframes?: HyperframesSpec; // optional for hyperframes (composition dir defaults to hyperframes/<sceneId>)
   quality?: "low" | "medium" | "high"; // per-entry override of IMAGE_QUALITY (e.g. thumbnail -> "high")
-  overlay?: { lines: string[]; accent?: string }; // thumbnail only: text burned by ffmpeg ($0) -> assets/thumbnail.png
+  // thumbnail only: locked art direction burned by ffmpeg ($0) -> assets/thumbnail.jpg
+  // `logo` = REAL vendor PNG (never AI-drawn) relative to the project dir.
+  overlay?: { lines: string[]; accent?: string; logo?: string };
 }
 
 /**
- * Thumbnail final: burn the playbook text overlay (Impact, white + accent, right third)
- * onto assets/images/thumbnail.png -> assets/thumbnail.png + keep assets/thumbnail-raw.png.
- * Local ffmpeg, $0, ~1s: re-run unconditionally (no hash) so an overlay edit never re-bills the AI image.
+ * Thumbnail final: burn the channel's LOCKED art direction (seam, scrim, left-aligned Impact
+ * headline, channel mark, tool logo) onto the generated image
+ * -> assets/thumbnail.jpg + keep assets/thumbnail-raw.png.
+ *
+ * Output is JPEG: a photoreal 1280x720 PNG routinely blows past YouTube's 2MB limit.
+ * Local ffmpeg, $0, ~1s: re-run unconditionally (no hash) so an overlay edit never re-bills the
+ * AI image. The channel mark comes from the profile — absent, the slot is simply left empty and
+ * the render stays valid.
  */
 function applyThumbnailOverlay(p: SceneAsset, rawFile: string, projectDir: string, dryRun: boolean): void {
   if (p.sceneId !== "thumbnail" || !p.overlay?.lines?.length) return;
+  const logo = p.overlay.logo ? join(projectDir, p.overlay.logo) : null;
+  const mark = join(getProfileDir(projectDir), "channel-mark.png");
+  const hasMark = existsSync(mark);
   if (dryRun) {
-    log("DRY", `images: thumbnail overlay "${p.overlay.lines.join(" / ")}" -> assets/thumbnail.png - $0 (ffmpeg local)`);
+    log("DRY", `images: thumbnail DA "${p.overlay.lines.join(" / ")}" -> assets/thumbnail.jpg - $0 (ffmpeg local)`);
+    if (p.overlay.logo && !existsSync(logo!)) log("WARN", `images: logo outil manquant (${p.overlay.logo}) — slot laissé vide`);
+    if (!hasMark) log("WARN", `images: marque de chaîne absente (${mark}) — slot laissé vide, la DA n'est pas complète`);
     return;
   }
   if (!existsSync(rawFile)) return; // raw not generated yet (e.g. ONLY_SCENE run)
   copyFileSync(rawFile, join(projectDir, "assets", "thumbnail-raw.png"));
-  thumbnailOverlay({
+  if (p.overlay.logo && !existsSync(logo!)) {
+    log("WARN", `images: logo outil manquant (${p.overlay.logo}) — miniature rendue sans logo`);
+  }
+  if (!hasMark) log("WARN", `images: marque de chaîne absente (${mark}) — miniature rendue sans marque`);
+  const r = thumbnailOverlay({
     image: rawFile,
-    out: join(projectDir, "assets", "thumbnail.png"),
+    out: join(projectDir, "assets", "thumbnail.jpg"),
     lines: p.overlay.lines,
     accent: p.overlay.accent,
+    logo: logo && existsSync(logo) ? logo : null,
+    channelMark: hasMark ? mark : null,
   });
-  log("COST", `images: thumbnail overlay $0 (ffmpeg) -> assets/thumbnail.png + thumbnail-raw.png`);
+  if (r.overflow) {
+    log("WARN", `images: titre miniature trop long même à ${r.fontSize}px — RÉÉCRIRE la ligne (playbook §2 : <=10 caractères par mot)`);
+  } else if (r.fontSize < 112) {
+    log("WARN", `images: titre miniature réduit à ${r.fontSize}px (nominal 112) — raccourcir pour rester homogène avec la série`);
+  }
+  log("COST", `images: thumbnail DA $0 (ffmpeg, ${r.fontSize}px) -> assets/thumbnail.jpg + thumbnail-raw.png`);
 }
 
 /** Pull the global style string out of the channel profile's style.md (code fence under its heading). */
@@ -101,10 +129,21 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
     const existing = fragments.find((f) => f.sceneId === p.sceneId);
 
     // ---------- manual_asset: use, never generate, never overwrite ----------
+    // Accepts a STILL (<sceneId>.png) or a hand-recorded CLIP (<sceneId>.mp4/.mov/.webm).
+    // The logged-in dashboard filmed by hand is the most convincing footage there is, and the
+    // only one that cannot be automated — automating a login is forbidden, by rule.
     if (source === "manual_asset") {
-      const manualFile = join(projectDir, "assets", "captures", `${p.sceneId}.png`);
+      const capturesDir = join(projectDir, "assets", "captures");
+      const stillFile = join(capturesDir, `${p.sceneId}.png`);
+      const videoFile = MANUAL_VIDEO_EXT.map((e) => join(capturesDir, `${p.sceneId}${e}`)).find((f) => existsSync(f));
+      const manualFile = videoFile ?? stillFile;
+      const isVideo = Boolean(videoFile);
+      const destFile = isVideo
+        ? join(projectDir, "assets", "recordings", `${p.sceneId}.mp4`)
+        : outFile;
+
       if (!existsSync(manualFile)) {
-        const msg = `asset manuel manquant pour ${p.sceneId} (attendu: assets/captures/${p.sceneId}.png)`;
+        const msg = `asset manuel manquant pour ${p.sceneId} (attendu: assets/captures/${p.sceneId}.png ou .mp4)`;
         if (dryRun) {
           log("WARN", `images: ${p.sceneId} source=manual_asset — ${msg}`);
           continue;
@@ -112,20 +151,54 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
         throw new Error(msg);
       }
       const hash = sha256(readFileSync(manualFile).toString("base64") + "|manual");
-      if (existsSync(outFile) && existing?.hash === hash) {
+      if (existsSync(destFile) && existing?.hash === hash) {
         log("SKIP", `images: ${p.sceneId} up to date (manual, hash ${hash})`);
         skipped++;
         continue;
       }
       if (dryRun) {
-        log("DRY", `images: ${p.sceneId} source=manual_asset <- assets/captures/${p.sceneId}.png - $0`);
+        log("DRY", `images: ${p.sceneId} source=manual_asset${isVideo ? " (clip)" : ""} <- ${manualFile.replace(projectDir, "").replace(/^[\\/]/, "")} - $0`);
         generated++;
         continue;
       }
-      mkdirSync(outDir, { recursive: true });
-      copyFileSync(manualFile, outFile); // copies INTO images/; the captures/ source is never written
-      upsert({ sceneId: p.sceneId, file: `assets/images/${p.sceneId}.png`, hash, costUSD: 0, generatedAt: new Date().toISOString() });
-      log("COST", `images: ${p.sceneId} $0 (manual_asset)`);
+      mkdirSync(isVideo ? join(projectDir, "assets", "recordings") : outDir, { recursive: true });
+      if (isVideo) {
+        // Conform to the pipeline's codec params so `concat -c copy` stays valid at assembly.
+        normalizeClip({ clip: manualFile, out: destFile });
+      } else {
+        copyFileSync(manualFile, destFile); // copies INTO images/; captures/ is never written
+      }
+      upsert({
+        sceneId: p.sceneId,
+        file: isVideo ? `assets/recordings/${p.sceneId}.mp4` : `assets/images/${p.sceneId}.png`,
+        hash,
+        costUSD: 0,
+        generatedAt: new Date().toISOString(),
+      });
+      log("COST", `images: ${p.sceneId} $0 (manual_asset${isVideo ? ", clip" : ""})`);
+      generated++;
+      continue;
+    }
+
+    // ---------- screen_recording: PUBLIC page FILMED (cursor + damped scroll) ----------
+    if (source === "screen_recording") {
+      if (!p.recording?.url) throw new Error(`images: ${p.sceneId} source=screen_recording sans champ recording.url`);
+      const outClip = join(projectDir, "assets", "recordings", `${p.sceneId}.mp4`);
+      const hash = sha256(recordingHashInput(p.recording) + "|recording");
+      if (existsSync(outClip) && existing?.hash === hash) {
+        log("SKIP", `images: ${p.sceneId} up to date (recording, hash ${hash})`);
+        skipped++;
+        continue;
+      }
+      if (dryRun) {
+        log("DRY", `images: ${p.sceneId} source=screen_recording url=${p.recording.url} beats=${p.recording.beats?.length ?? 0} ~${recordingDurationSec(p.recording).toFixed(1)}s - $0 (browser NOT launched)`);
+        generated++;
+        continue;
+      }
+      mkdirSync(join(projectDir, "assets", "recordings"), { recursive: true });
+      await screenRecording(p.recording, outClip);
+      upsert({ sceneId: p.sceneId, file: `assets/recordings/${p.sceneId}.mp4`, hash, costUSD: 0, generatedAt: new Date().toISOString() });
+      log("COST", `images: ${p.sceneId} $0 (screen_recording)`);
       generated++;
       continue;
     }
@@ -187,7 +260,12 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
     if (!p.prompt) throw new Error(`images: ${p.sceneId} source=ai_image sans prompt`);
     const quality = p.quality ?? defaultQuality; // per-entry override (thumbnail -> "high")
     const perImage = getRates().gptImage1PerImageUSD[quality] ?? getRates().gptImage1PerImageUSD.medium;
-    const fullPrompt = `${p.prompt.trim()}. ${style}`;
+    // The thumbnail entry is EXCLUDED from the global style append. Its DA block
+    // ("charcoal void, no environment") is self-sufficient, and the channel string
+    // ("dark luxury tech setting, silhouette only, no visible face") would both contradict the
+    // locked art direction and smuggle back two negations the inverted method forbids.
+    const isThumbnail = p.sceneId === "thumbnail";
+    const fullPrompt = isThumbnail ? p.prompt.trim() : `${p.prompt.trim()}. ${style}`;
     // legacy entries (no quality/overlay) keep a byte-identical hash -> nothing regenerates
     const hash = sha256([fullPrompt, size, quality].join("|"));
 

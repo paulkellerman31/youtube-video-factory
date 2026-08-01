@@ -104,11 +104,11 @@ To raise quality, change a preset — never re-decide per video.
    never reformulate it, never adapt the setting to the subject. Plus `"quality": "high"` (CTR
    asset — the one place high pays for itself; scenes stay on IMAGE_QUALITY default) and
    `"overlay": { "lines": ["LINE1", "LINE2"], "accent": "#00C8FF", "logo":
-   "assets/logos/<tool>.png" }`. Pipeline outputs `assets/thumbnail.png` (text burned,
-   1280x720) + `assets/thumbnail-raw.png` (no text, for manual rework).
-   ⚠️ **`overlay.logo`, the seam, the scrim and the left alignment are NOT implemented yet** —
-   `thumbnailOverlay` currently burns two right-aligned lines and nothing else. Write the field
-   anyway (it is ignored, harmlessly) and see the playbook §1 for the full implementation gap.
+   "assets/logos/<tool>.png" }`. Pipeline outputs `assets/thumbnail.jpg` (full DA burned —
+   scrim, seam, left-aligned auto-fitted headline, marks — 1280x720, ready to upload) +
+   `assets/thumbnail-raw.png` (no text, for manual rework). The channel mark is read once per
+   channel from `references/profiles/<channel>/channel-mark.png`, NOT per video; mark and logo
+   slots are both optional — a missing file logs a WARN and leaves the slot empty.
    **No more `thumbnail.md`, no more Canva** — a manual per-video step cannot be coherent, and
    that is precisely what produced 22 mismatched thumbnails (YouTube Data API, relevé 2026-08-01).
 
