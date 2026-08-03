@@ -188,6 +188,17 @@ rééchelonne silencieusement TOUTES les fenêtres de scène d'un facteur 0,73. 
 tournage, eux, ont été écrits pour les fenêtres du plan : ils se retrouvent comprimés d'un tiers,
 et une scène pensée pour huit secondes de lecture posée en devient une de cinq et demie.
 
+> **Le débit est imprimé à chaque génération depuis le 2026-08-01.** `generate-audio.ts` termine
+> par `DÉBIT MESURÉ <n> mots/minute`. À chaque changement de voix ou de réglage ElevenLabs :
+> relever cette ligne et reporter la valeur ici. Réglages, bornes et pièges d'écriture propres à
+> la voix : **`references/voice-contract.md`**.
+>
+> ⚠️ **Aucune balise audio dans `voiceover.txt`** (`[pause]`, `[sighs]`, `[laughs]`). Elles sont
+> propres à `eleven_v3` ; si le repli sur `eleven_multilingual_v2` se déclenche, elles sont **lues
+> à voix haute** dans la vidéo. Le rythme se fait à la ponctuation, qui marche sur les deux.
+> Contractions systématiques (« it's », « you'll ») : une voix qui n'en fait jamais lit un
+> document, une voix qui en fait parle.
+
 **Règle : calculer le nombre de mots à 205 wpm.** Pour une vidéo de 2 min 15 (135 s) : **≈ 460
 mots**. Vérifier l'arithmétique dans le PLAN, et re-mesurer le débit à chaque changement de voix
 ou de `voice-config.json` — c'est une constante d'instrument, elle se relève, elle ne se suppose

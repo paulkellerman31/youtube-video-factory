@@ -2,6 +2,37 @@
 
 Toute modification systémique (presets, pipeline, structure) se note ici. Une ligne par changement, datée.
 
+## 2026-08-01 (nuit) — voix propre « Theo 2 », découpage anti-dérive, débit auto-mesuré
+
+- **Nouvelle voix** : clone Pro de Théo (« Theo 2 »), `eleven_v3`, `stability 0.40` /
+  `similarityBoost 0.65` / `style 0.05` / speaker boost activé. Réglages bas volontairement : au
+  -dessus de 0,5 de stabilité le ton devient constant, et un ton constant est le premier signal
+  « machine ». Détail et bornes à ne pas dépasser dans le nouveau **`references/voice-contract.md`**.
+- **Découpage automatique des générations** (`generate-audio.ts`, `maxCharsPerRequest: 800`). Sur
+  une longue génération le ton DÉRIVE — posé au début, plat à la fin — et **aucun réglage ne
+  corrige ça**. Le script est désormais découpé en segments de ≤ 800 caractères, **uniquement sur
+  des frontières de paragraphe** : dans cette pipeline un paragraphe est une scène, donc la coupure
+  tombe sur un silence et ne s'entend pas. Effet de bord utile : le CTA final est presque toujours
+  généré seul, donc avec un ton neuf.
+- **Piège résolu au passage** : chaque segment revient avec un alignement relatif à lui-même, et
+  `timestamps.json` alimente les sous-titres. Le décalage se mesure à l'**ffprobe du fichier
+  produit**, jamais sur la fin du dernier caractère — un segment se termine par du silence, et
+  prendre la fin du texte avancerait tous les sous-titres un peu plus à chaque segment, l'erreur
+  s'accumulant jusqu'au bout de la vidéo.
+- **Repli de modèle** : `/with-timestamps` exige un modèle qui expose l'alignement caractère par
+  caractère et la doc ElevenLabs ne le garantit pas pour tous. Si `eleven_v3` est refusé, bascule
+  unique sur `eleven_multilingual_v2` avec un `WARN` explicite — la vidéo se rend, mais la voix
+  n'est pas celle choisie. **Conséquence d'écriture : aucune balise audio (`[pause]`, `[sighs]`)
+  dans `voiceover.txt`** — elles sont propres à v3, et v2 les LIT À VOIX HAUTE.
+- **Le débit est désormais mesuré et imprimé** à chaque génération
+  (`DÉBIT MESURÉ 207 mots/minute`). C'est une constante d'instrument dont `script-director.md` se
+  sert pour dimensionner les scènes : la voix précédente tournait à 206 quand le preset supposait
+  150, et toutes les fenêtres étaient rééchelonnées d'un facteur 0,73 en silence. À relever et
+  reporter à chaque changement de voix.
+- **Ce qui ne transfère pas de l'interface web** : « génère trois fois et garde la meilleure »
+  suppose une oreille humaine. La pipeline génère une fois. Pour reprendre la main : écouter
+  `assets/audio/voice.mp3`, et si la prise ne va pas, supprimer le fichier et relancer.
+
 ## 2026-08-01 (nuit, après visionnage du premier rendu) — zéro image IA, zéro Ken Burns, crf 16
 
 Trois défauts relevés par Théo sur `botpenguin-review`, le premier rendu au nouveau preset.
