@@ -115,3 +115,37 @@ audio: done — 117.9s · 406 mots · DÉBIT MESURÉ 207 mots/minute
 
 **À chaque changement de voix ou de réglage : relever cette ligne et reporter la valeur dans
 `script-director.md` §SCRIPT STRUCTURE.** Elle se relève, elle ne se suppose pas.
+
+---
+
+## 7. Coût — pourquoi le débat « Turbo pour économiser » ne s'applique pas ici
+
+Chiffre de référence : **un script format S ≈ 2 290 caractères** (BotPenguin, 406 mots, 1 min 58).
+Les modèles qualité (`eleven_v3`, `eleven_multilingual_v2`) coûtent 1 crédit par caractère ; les
+modèles latence (`turbo_v2_5`, `flash_v2_5`) 0,5.
+
+| Plan | Prix/mois | Crédits | Vidéos/mois en v3 | en Turbo |
+|---|---|---|---|---|
+| Free | 0 $ | 10 000 | 4 | 9 |
+| Starter | 6 $ | 30 000 | 13 | 26 |
+| **Creator** | **22 $** | **121 000** | **53** | 106 |
+| Pro | 99 $ | 600 000 | 262 | 524 |
+| Scale | 299 $ | 1 800 000 | 786 | 1 572 |
+
+**Le plan Creator à 22 $ couvre 53 vidéos par mois en pleine qualité v3.** À une cadence réaliste
+de huit vidéos par mois, passer en Turbo économise 9 160 crédits sur 121 000 — soit **environ
+1,70 $ par mois**. C'est le prix qu'on paierait pour dégrader la voix qu'on vient de cloner.
+
+**Règle : le modèle se choisit sur la qualité, jamais sur le coût, tant qu'on est sous ~250
+vidéos par mois.** En dessous de ce seuil le coût de la voix n'est pas une variable de décision —
+il est déjà négligeable devant le temps de production. Ce n'est qu'au-delà que la question se
+repose.
+
+**L'option « hybride v3 pour le hook, Turbo pour le corps » est à écarter.** Deux modèles sur une
+même voix produisent deux timbres, et la couture tombe au milieu de la vidéo. Le pipeline
+n'utilise qu'un modèle par projet, et c'est volontaire : la continuité de timbre est exactement ce
+qui fait qu'une voix passe pour une personne.
+
+*Note : les modèles latence normalisent moins bien les nombres écrits en chiffres — sans effet
+ici, puisque le preset impose déjà les nombres en toutes lettres. Ce n'est donc PAS l'argument
+contre Turbo ; l'argument est l'expressivité.*
