@@ -177,8 +177,27 @@ export async function generateAudio(ctx: StepCtx): Promise<void> {
     try {
       out = await synthesizeChunk(chunks[i], vc, modelId, key);
     } catch (e) {
-      if (modelId === TIMESTAMPS_FALLBACK_MODEL) throw e;
-      log("WARN", `audio: le modèle "${modelId}" a été refusé par /with-timestamps (${(e as Error).message}). Repli sur "${TIMESTAMPS_FALLBACK_MODEL}" — la voix ne sera PAS celle configurée, corrige voice-config.json.`);
+      /**
+       * NE BASCULER QUE SUR UNE INCOMPATIBILITÉ DE MODÈLE — corrigé le 2026-08-05.
+       *
+       * La première version basculait sur N'IMPORTE QUELLE erreur. Un HTTP 401 « paiement en
+       * échec » a donc été annoncé comme « le modèle eleven_v3 a été refusé », envoyant chercher
+       * un problème dans voice-config.json alors que la facture ElevenLabs était impayée. Un
+       * repli n'a de sens que si la cause est plausiblement le modèle : 400 / 422. Une erreur
+       * d'authentification, de paiement ou de quota doit remonter TELLE QUELLE, immédiatement.
+       */
+      const msg = (e as Error).message;
+      const status = Number(/HTTP (\d{3})/.exec(msg)?.[1] ?? 0);
+      const modelCouldBeTheCause = status === 400 || status === 422;
+      if (/payment|invoice|quota|unauthor/i.test(msg) || status === 401 || status === 402 || status === 429) {
+        throw new Error(
+          `audio: ElevenLabs a refusé la requête pour une raison de COMPTE, pas de modèle — ${msg}\n` +
+          `        → vérifier l'abonnement, la facturation et le quota sur elevenlabs.io. ` +
+          `Ni voice-config.json ni le script ne sont en cause.`,
+        );
+      }
+      if (!modelCouldBeTheCause || modelId === TIMESTAMPS_FALLBACK_MODEL) throw e;
+      log("WARN", `audio: le modèle "${modelId}" a été refusé par /with-timestamps (${msg}). Repli sur "${TIMESTAMPS_FALLBACK_MODEL}" — la voix ne sera PAS celle configurée, corrige voice-config.json.`);
       modelId = TIMESTAMPS_FALLBACK_MODEL;
       out = await synthesizeChunk(chunks[i], vc, modelId, key);
     }
