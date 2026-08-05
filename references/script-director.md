@@ -27,7 +27,7 @@ BRAND COLORS:   blue + white, neon blue #00C8FF (see image-prompt-style.md)
 
 **FORMATS:**
 
-* **S — SHORT TOOL BRIEF / PAGE DE VENTE → le format par défaut depuis le 2026-08-01. 2 min 15, ~460 mots, 13-15 scènes.** Structure verrouillée en §SHORT TOOL BRIEF ci-dessous. Tous les autres formats deviennent l'exception, à justifier au PLAN.
+* **S — SHORT TOOL BRIEF / PAGE DE VENTE → le format par défaut depuis le 2026-08-01. 2 min 15 à 2 min 30, ~370-410 mots, 13-15 scènes.** Structure verrouillée en §SHORT TOOL BRIEF ci-dessous. Tous les autres formats deviennent l'exception, à justifier au PLAN.
 * A — Tool Review → Problem→Tool→Proof→CTA | Ceiling: medium — **packaging confirmé faible** (Bright Data Review : CTR 0,65 %, data 2026-06). Format A garde sa structure mais son TITRE/THUMBNAIL est toujours packagé comme un B (problème d'abord).
 * B — Problem First → Problem→Solutions→Tool→CTA | Ceiling: high
 * C — Myth Buster → Belief→Why wrong→Fix→CTA | Ceiling: very high
@@ -53,7 +53,7 @@ YouTube Automation Script Director. Faceless B2B content specialist. Every audio
 
 ## MISSION
 
-Transform input into a production-ready faceless YouTube script. **Format S par défaut : 2 min 00 à 2 min 20 / 410-475 mots / 205 wpm — débit MESURÉ sur la voix OFM, voir §SCRIPT STRUCTURE.** Hook dans les 8 premières secondes. Chaque phrase gagne sa place ou saute. Match OBJECTIVE and CTA.
+Transform input into a production-ready faceless YouTube script. **Format S par défaut : 2 min 00 à 2 min 30 / ~370-410 mots / 165 wpm — débit MESURÉ sur la voix en cours, à re-relever à chaque changement de voix, voir §SCRIPT STRUCTURE.** Hook dans les 8 premières secondes. Chaque phrase gagne sa place ou saute. Match OBJECTIVE and CTA.
 
 **Pourquoi si court — mesuré, pas supposé** (chaîne OFM, 90 j au 2026-08-01) : durée vue moyenne **85 s**, pourcentage moyen regardé **31,7 %**. Une vidéo de 6 minutes est abandonnée aux quatre cinquièmes ; elle coûte le double à produire et n'apporte rien de plus. Second constat de la même mesure : les vidéos informationnelles (« How to X », « Best X ») font 120 vues quand les reviews mono-outil en font 20-35, avec des durées vues trois fois plus faibles. **Le packaging vend un problème, jamais un outil.**
 
@@ -178,10 +178,14 @@ d'exister sur deux minutes — et c'est justement leur absence qui rend le forma
 **Cadence :** 13-15 scènes, 8-12 s chacune. Aucun plan figé (§VISUAL CADENCE). Le cap de ~7 s
 ne s'applique pas aux scènes filmées, qui portent leur mouvement.
 
-### Débit réel de la voix — 205 mots/minute, pas 150 (mesuré le 2026-08-01)
+### Débit réel de la voix — **165 mots/minute** (voix « Theo 2 », mesuré le 2026-08-05)
 
-Constante fausse depuis l'origine du preset. Mesure sur la voix OFM réellement rendue
-(`voiceover.txt` de 358 mots → `voice.mp3` de 103,979 s) : **206,6 mots/minute**.
+⚠️ **Cette constante a été fausse DEUX fois.** Elle valait 150 au départ, sans mesure. Relevée à
+206,6 sur l'ancienne voix ElevenLabs le 2026-08-01. Puis le clone « Theo 2 » est arrivé et le
+chiffre est retombé à **165** — parce que ce n'est pas une propriété du preset, c'est une
+propriété de LA VOIX. Chaque changement de voix ou de réglage la déplace.
+
+Mesure courante : `voiceover.txt` de 406 mots → `voice.mp3` de 147,88 s = **165 mots/minute**.
 
 Conséquence de l'erreur : un script écrit pour 2 min 30 sort à **1 min 44**, et `assemble`
 rééchelonne silencieusement TOUTES les fenêtres de scène d'un facteur 0,73. Les beats de
@@ -199,8 +203,8 @@ et une scène pensée pour huit secondes de lecture posée en devient une de cin
 > Contractions systématiques (« it's », « you'll ») : une voix qui n'en fait jamais lit un
 > document, une voix qui en fait parle.
 
-**Règle : calculer le nombre de mots à 205 wpm.** Pour une vidéo de 2 min 15 (135 s) : **≈ 460
-mots**. Vérifier l'arithmétique dans le PLAN, et re-mesurer le débit à chaque changement de voix
+**Règle : calculer le nombre de mots au débit MESURÉ de la voix en cours.** À 165 wpm, une vidéo
+de 2 min 15 (135 s) fait **≈ 370 mots**. Vérifier l'arithmétique dans le PLAN, et re-mesurer le débit à chaque changement de voix
 ou de `voice-config.json` — c'est une constante d'instrument, elle se relève, elle ne se suppose
 pas.
 
