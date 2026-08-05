@@ -242,7 +242,15 @@ sous-titres incrustés.
 Il sert deux fois. **Conversion** : la majorité de l'audience mobile regarde sans le son et
 n'entend jamais « le lien est en description ». **Conformité** : voir ci-dessous.
 
-### ⚠️ Divulgation d'affiliation — obligation légale, pas une option
+### ⚠️ Divulgation d'affiliation — obligation légale, traitée à la PUBLICATION
+
+> **Décision Théo, 2026-08-01 :** la divulgation n'est plus portée par le script ni par le bandeau.
+> Elle est posée **à l'upload** — description + case « cette vidéo contient une communication
+> commerciale » de YouTube Studio, gérées via le MCP YouTube. Le bandeau redevient un simple appel
+> à l'action. **Conséquence à ne pas perdre de vue : si l'étape d'upload saute la case, la vidéo
+> est en infraction.** C'est désormais un point de contrôle de la publication, pas du rendu.
+
+Ce qui suit reste vrai et explique pourquoi ce point de contrôle existe.
 
 La FTC (16 CFR Part 255, révisées le 29/06/2023) qualifie une commission d'affiliation de
 *material connection* : divulgation obligatoire, « clear and conspicuous », **dans le même média
