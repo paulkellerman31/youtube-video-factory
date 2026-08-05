@@ -75,12 +75,28 @@ export function splitForSynthesis(text: string, maxChars: number): string[] {
   return chunks;
 }
 
+/**
+ * CONTINUITÉ ENTRE SEGMENTS — corrigé le 2026-08-05 après signalement d'un changement d'accent.
+ *
+ * Défaut : « à 1:42 la voix change et prend un accent différent ». Cause exacte — le découpage
+ * envoyait chaque segment SANS lui dire ce qui le précédait. À chaque nouvelle requête le modèle
+ * ré-infère l'identité du locuteur à partir du seul texte qu'il reçoit, et comme la stabilité est
+ * volontairement basse (0,40, pour obtenir de la variation humaine), il peut atterrir sur un
+ * accent différent. Le découpage a résolu la dérive de ton et créé une dérive d'identité.
+ *
+ * ElevenLabs documente exactement le remède : `previous_text` / `next_text` — « can be used to
+ * improve the speech's continuity when concatenating together multiple generations » — et
+ * `previous_request_ids`, décrit comme spécifiquement destiné au « splitting up a large task into
+ * multiple requests ». On envoie les deux : le texte voisin toujours, l'identifiant de requête
+ * précédente quand l'API nous l'a renvoyé.
+ */
 async function synthesizeChunk(
   chunk: string,
   vc: VoiceConfig,
   modelId: string,
   key: string,
-): Promise<{ audio: Buffer; alignment: Alignment | null }> {
+  ctx: { previousText?: string; nextText?: string; previousRequestIds?: string[] } = {},
+): Promise<{ audio: Buffer; alignment: Alignment | null; requestId: string | null }> {
   const res = await fetchWithRetry(
     `https://api.elevenlabs.io/v1/text-to-speech/${vc.voiceId}/with-timestamps?output_format=mp3_44100_128`,
     {
@@ -89,6 +105,9 @@ async function synthesizeChunk(
       body: JSON.stringify({
         text: chunk,
         model_id: modelId,
+        ...(ctx.previousText ? { previous_text: ctx.previousText } : {}),
+        ...(ctx.nextText ? { next_text: ctx.nextText } : {}),
+        ...(ctx.previousRequestIds?.length ? { previous_request_ids: ctx.previousRequestIds.slice(-3) } : {}),
         voice_settings: {
           stability: vc.settings.stability,
           similarity_boost: vc.settings.similarityBoost,
@@ -108,6 +127,7 @@ async function synthesizeChunk(
   return {
     audio: Buffer.from(json.audio_base64, "base64"),
     alignment: json.alignment ?? json.normalized_alignment ?? null,
+    requestId: res.headers?.get?.("request-id") ?? null,
   };
 }
 
@@ -129,7 +149,7 @@ export async function generateAudio(ctx: StepCtx): Promise<void> {
   const maxChars = vc.maxCharsPerRequest ?? DEFAULT_MAX_CHARS;
   const chunks = splitForSynthesis(text, maxChars);
   // NOTE: le hash inclut le découpage — changer maxCharsPerRequest resynthétise, comme il se doit.
-  const hash = sha256([text, vc.voiceId, vc.modelId, JSON.stringify(vc.settings), `chunks:${maxChars}`].join("|"));
+  const hash = sha256([text, vc.voiceId, vc.modelId, JSON.stringify(vc.settings), `chunks:${maxChars}|continuity:v1`].join("|"));
   const audioDir = join(projectDir, "assets", "audio");
   const outFile = join(audioDir, "voice.mp3");
   const estCost = round2(text.length * getRates().elevenlabsPerCharUSD);
@@ -172,10 +192,17 @@ export async function generateAudio(ctx: StepCtx): Promise<void> {
   const ends: number[] = [];
   let offset = 0;
 
+  const requestIds: string[] = [];
   for (let i = 0; i < chunks.length; i++) {
-    let out: { audio: Buffer; alignment: Alignment | null };
+    // Le modèle doit savoir ce qui précède ET ce qui suit, sinon il ré-invente le locuteur.
+    const ctx = {
+      previousText: i > 0 ? chunks[i - 1] : undefined,
+      nextText: i + 1 < chunks.length ? chunks[i + 1] : undefined,
+      previousRequestIds: requestIds,
+    };
+    let out: { audio: Buffer; alignment: Alignment | null; requestId: string | null };
     try {
-      out = await synthesizeChunk(chunks[i], vc, modelId, key);
+      out = await synthesizeChunk(chunks[i], vc, modelId, key, ctx);
     } catch (e) {
       /**
        * NE BASCULER QUE SUR UNE INCOMPATIBILITÉ DE MODÈLE — corrigé le 2026-08-05.
@@ -199,8 +226,9 @@ export async function generateAudio(ctx: StepCtx): Promise<void> {
       if (!modelCouldBeTheCause || modelId === TIMESTAMPS_FALLBACK_MODEL) throw e;
       log("WARN", `audio: le modèle "${modelId}" a été refusé par /with-timestamps (${msg}). Repli sur "${TIMESTAMPS_FALLBACK_MODEL}" — la voix ne sera PAS celle configurée, corrige voice-config.json.`);
       modelId = TIMESTAMPS_FALLBACK_MODEL;
-      out = await synthesizeChunk(chunks[i], vc, modelId, key);
+      out = await synthesizeChunk(chunks[i], vc, modelId, key, ctx);
     }
+    if (out.requestId) requestIds.push(out.requestId);
 
     const part = join(tmpDir, `${String(i).padStart(2, "0")}.mp3`);
     writeFileSync(part, out.audio);
