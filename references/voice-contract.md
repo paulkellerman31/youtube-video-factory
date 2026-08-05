@@ -19,6 +19,21 @@ Les valeurs opérationnelles vivent dans `profiles/<channel>/voice-config.json` 
 | `useSpeakerBoost` | `true` | clarté, sans coût sur le naturel |
 | `maxCharsPerRequest` | **800** | voir §2 |
 
+### L'accent français est VOULU — ne pas le corriger
+
+La voix porte un accent français sur l'anglais. **C'est normal et c'est un actif.** Un Professional
+Voice Clone ne reproduit pas que le timbre : il reproduit les habitudes phonétiques du locuteur,
+donc son accent. Aucun paramètre d'accent n'existe dans la requête ; le seul levier indirect est
+`similarity_boost` — le baisser gommerait l'accent, et gommerait Théo avec.
+
+Pourquoi c'est un actif et pas un défaut : une voix anglophone neutre est le son PAR DÉFAUT de
+toutes les chaînes faceless automatisées. L'accent est la preuve qu'il y a quelqu'un derrière —
+exactement la même fonction que le curseur qui hésite, le scroll par à-coups et le footage réel.
+Et c'est la seule chose du dispositif qu'un concurrent ne peut pas copier.
+
+**Validé par Théo à l'écoute le 2026-08-05 : « en vrai j'aime bien, ça fait naturel ». Ne pas
+"réparer" dans une session future.**
+
 **Les trois erreurs à ne pas refaire :** `stability` > 0,70 · `similarityBoost` > 0,85 ·
 `style` > 0,20. Chacune éloigne du naturel dans la direction opposée à ce qu'on croit corriger.
 
