@@ -108,6 +108,33 @@ l'essentiel du plan passe à voyager, et ça se lit comme une machine qui cherch
 quelqu'un qui lit. Le pré-positionnement descend par paliers de ~1 400 px pour déclencher le
 lazy-load : atterrir à froid sur un offset profond filme une page à moitié construite.
 
+**Le curseur arrive quand la voix nomme la chose — ancrage sur le mot (2026-08-01).**
+Défaut relevé au visionnage : *« la souris n'est pas parfaitement synchro avec ce qui est dit »*,
+constaté sur la scène qui énumère les plans tarifaires. Deux causes, cumulées.
+
+1. Les beats étaient répartis « à peu près » sur la fenêtre, sans rapport avec la position des
+   mots dans le paragraphe. Le curseur passait sur la carte à vingt-neuf dollars pendant que la
+   voix parlait encore de la gratuite.
+2. `conformClip` rogne par la **fin**. Avec 15 % de marge de tournage, la dernière seconde et
+   demie disparaît — et si un déplacement de curseur s'y trouve, il n'arrive jamais à l'écran.
+
+**Méthode.** Pour chaque cible nommée par la voix, estimer sa date par la position du mot dans le
+paragraphe (`index / total × durée de la fenêtre` — les mots sont à peu près isochrones), puis
+construire les beats **à rebours** pour que le `moveTo` ATTERRISSE à cette date : on part de la
+date d'arrivée, on soustrait la durée du déplacement, et le `dwell` qui précède comble l'écart.
+
+**Et tout le surplus va dans le dwell FINAL.** C'est la partie rognable : elle ne doit jamais
+contenir autre chose qu'une attente. Un plan dont le dernier beat est un déplacement est un plan
+dont le geste final ne sera pas vu.
+
+> Exemple réel (fenêtre 10,17 s, quatre plans nommés) : voix à 0,58 / 3,49 / 6,10 / 8,43 s →
+> curseur à 0,65 / 3,49 / 6,10 / 8,43 s, queue rognable de 1,53 s en `dwell` pur.
+
+*Précision d'honnêteté : l'isochronie des mots est une approximation. `timestamps.json` contient
+l'alignement réel caractère par caractère et permettrait un ancrage exact — l'étape audio tourne
+avant l'étape images, donc rien ne s'y oppose techniquement. Non fait à ce jour ; l'approximation
+suffit tant qu'un paragraphe ne mélange pas des mots très longs et très courts.*
+
 **Budget d'immobilité — règle de composition, pas d'implémentation.**
 
 - **Un seul beat `scrollTo` par scène**, et **≤ 600 px** à l'écran. Au-delà, c'est un `startAt`

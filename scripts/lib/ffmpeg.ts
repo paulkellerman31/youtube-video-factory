@@ -332,7 +332,7 @@ export function kenBurnsClip(opts: {
       `drawtext=${font}text='${escDrawtext(textOverlay)}':fontsize=84:fontcolor=white:borderw=5:bordercolor=black@0.85:x=(w-text_w)/2:y=h-260`,
     );
   }
-  if (ctaBand) filters.push(...ctaBandFilters(ctaBand, out, height, cwd));
+  if (ctaBand) filters.push(...ctaBandFilters(ctaBand, out, height, durationSec, cwd));
   run(
     ["-i", image, "-vf", filters.join(","), "-r", String(fps), "-c:v", "libx264", "-preset", VIDEO_PRESET, "-crf", VIDEO_CRF, "-an", out],
     cwd,
@@ -383,17 +383,37 @@ const CTA_BAND = {
   arrowRight: 190,
 } as const;
 
-function ctaBandFilters(band: CtaBand, out: string, height: number, cwd?: string): string[] {
+/**
+ * FONDU DU BANDEAU — corrigé le 2026-08-01 après visionnage.
+ *
+ * Le bandeau n'existe que sur certaines scènes. Sans fondu, il APPARAÎT et DISPARAÎT sur la coupe,
+ * en une frame : à la jonction de deux plans, l'œil lit ça comme un défaut d'image, pas comme une
+ * intention. C'est ce qui a été rapporté comme « léger artefact » à la fin de la scène porteuse.
+ *
+ * Expression d'alpha en fonction de `t` (secondes depuis le début du CLIP, qui commence à zéro
+ * après le `setpts=PTS-STARTPTS` de conformClip) : montée sur FADE, plateau, descente sur FADE
+ * avant la fin. `min()`/`max()` plutôt qu'un `if()` — supportés par tous les builds ffmpeg.
+ */
+const BAND_FADE = 0.35;
+
+function bandAlpha(durationSec: number, peak: number): string {
+  const d = durationSec.toFixed(3);
+  const f = BAND_FADE.toFixed(2);
+  return `${peak}*min(1\,min(t/${f}\,(${d}-t)/${f}))`;
+}
+
+function ctaBandFilters(band: CtaBand, out: string, height: number, durationSec: number, cwd?: string): string[] {
   const font = fontFilePrefix(out, cwd);
   const top = height - CTA_BAND.height;
+  const a1 = bandAlpha(durationSec, 1);
   const f: string[] = [
     `drawbox=x=0:y=${top}:w=iw:h=${CTA_BAND.height}:color=${toFFColor(CTA_BAND.bg)}@${CTA_BAND.bgAlpha}:t=fill`,
     `drawbox=x=0:y=${top}:w=iw:h=${CTA_BAND.ruleH}:color=${toFFColor(CTA_BAND.rule)}:t=fill`,
-    `drawtext=${font}text='${escDrawtext(band.line1)}':fontsize=${CTA_BAND.size1}:fontcolor=${toFFColor(CTA_BAND.color1)}:x=${CTA_BAND.padX}:y=${top + 42}`,
+    `drawtext=${font}text='${escDrawtext(band.line1)}':fontsize=${CTA_BAND.size1}:fontcolor=${toFFColor(CTA_BAND.color1)}:alpha='${a1}':x=${CTA_BAND.padX}:y=${top + 42}`,
   ];
   if (band.line2) {
     f.push(
-      `drawtext=${font}text='${escDrawtext(band.line2)}':fontsize=${CTA_BAND.size2}:fontcolor=${toFFColor(CTA_BAND.color2)}:x=${CTA_BAND.padX}:y=${top + 118}`,
+      `drawtext=${font}text='${escDrawtext(band.line2)}':fontsize=${CTA_BAND.size2}:fontcolor=${toFFColor(CTA_BAND.color2)}:alpha='${a1}':x=${CTA_BAND.padX}:y=${top + 118}`,
     );
   }
   // Repère directionnel : la description est sous le lecteur en desktop comme en mobile portrait.
@@ -402,7 +422,7 @@ function ctaBandFilters(band: CtaBand, out: string, height: number, cwd?: string
     const sym = symbolFontPrefix(out, cwd);
     if (sym) {
       f.push(
-        `drawtext=${sym}text='↓':fontsize=${CTA_BAND.arrowSize}:fontcolor=${toFFColor(CTA_BAND.rule)}:x=w-${CTA_BAND.arrowRight}:y=${top + 40}`,
+        `drawtext=${sym}text='↓':fontsize=${CTA_BAND.arrowSize}:fontcolor=${toFFColor(CTA_BAND.rule)}:alpha='${a1}':x=w-${CTA_BAND.arrowRight}:y=${top + 40}`,
       );
     }
   }
@@ -428,7 +448,7 @@ export function conformClip(opts: {
     `tpad=stop_mode=clone:stop_duration=${d}`,
     `trim=duration=${d}`,
     "setpts=PTS-STARTPTS",
-    ...(ctaBand ? ctaBandFilters(ctaBand, out, height, cwd) : []),
+    ...(ctaBand ? ctaBandFilters(ctaBand, out, height, durationSec, cwd) : []),
     "format=yuv420p",
   ];
   run(
