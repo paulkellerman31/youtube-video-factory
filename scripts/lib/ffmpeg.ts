@@ -78,6 +78,31 @@ function fontFilePrefix(outFile: string, cwd?: string): string {
 }
 
 /**
+ * Police pour les SYMBOLES (flèche ↓ du bandeau CTA).
+ *
+ * Impact — la police de marque — ne contient pas forcément U+2193, et drawtext rend un glyphe
+ * absent en « tofu » : un rectangle vide, en plein milieu de l'appel à l'action. On résout donc
+ * une police connue pour le porter, et si aucune n'est trouvée on OMET la flèche. Un CTA sans
+ * flèche fonctionne ; un CTA avec un carré vide ne fonctionne pas.
+ */
+const SYMBOL_FONT_CANDIDATES = [
+  "C:/Windows/Fonts/arial.ttf",
+  "C:/Windows/Fonts/seguisym.ttf",
+  "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+  "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+];
+
+function symbolFontPrefix(outFile: string, cwd?: string): string | null {
+  const src = SYMBOL_FONT_CANDIDATES.find((p) => existsSync(p));
+  if (!src) return null;
+  const cached = join(dirname(outFile), "_font_sym.ttf");
+  if (!existsSync(cached)) copyFileSync(src, cached);
+  const rel = relative(cwd ?? process.cwd(), cached).split("\\").join("/");
+  if (rel.includes(":")) return null;
+  return `fontfile='${rel}':`;
+}
+
+/**
  * Burn the thumbnail text overlay per references/thumbnail-playbook.md §6:
  * ≤ 2 lines ALL CAPS, Impact (FONT_CANDIDATES), line 1 white / line 2 accent color,
  * right-aligned in the reserved right third, never in the bottom 20%.
@@ -339,6 +364,8 @@ export interface CtaBand {
   line1: string;
   /** Levée de risque et/ou divulgation d'affiliation. */
   line2?: string;
+  /** Flèche ↓ à droite du bandeau (défaut: affichée). Mettre `false` pour l'enlever. */
+  arrow?: boolean;
 }
 
 const CTA_BAND = {
@@ -352,6 +379,8 @@ const CTA_BAND = {
   size2: 34,
   color1: "white",
   color2: "#9FB3C8",
+  arrowSize: 96,
+  arrowRight: 190,
 } as const;
 
 function ctaBandFilters(band: CtaBand, out: string, height: number, cwd?: string): string[] {
@@ -366,6 +395,16 @@ function ctaBandFilters(band: CtaBand, out: string, height: number, cwd?: string
     f.push(
       `drawtext=${font}text='${escDrawtext(band.line2)}':fontsize=${CTA_BAND.size2}:fontcolor=${toFFColor(CTA_BAND.color2)}:x=${CTA_BAND.padX}:y=${top + 118}`,
     );
+  }
+  // Repère directionnel : la description est sous le lecteur en desktop comme en mobile portrait.
+  // Aucun effet mesuré — direction probable, coût nul. Omise si aucune police ne porte le glyphe.
+  if (band.arrow !== false) {
+    const sym = symbolFontPrefix(out, cwd);
+    if (sym) {
+      f.push(
+        `drawtext=${sym}text='↓':fontsize=${CTA_BAND.arrowSize}:fontcolor=${toFFColor(CTA_BAND.rule)}:x=w-${CTA_BAND.arrowRight}:y=${top + 40}`,
+      );
+    }
   }
   return f;
 }
