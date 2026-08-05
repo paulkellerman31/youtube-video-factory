@@ -18,6 +18,8 @@ interface VoiceConfig {
   settings: { stability: number; similarityBoost: number; style: number; useSpeakerBoost: boolean; speed?: number };
   /** Max characters per API call. See CHUNKING below. 0 or absent = one single call (legacy). */
   maxCharsPerRequest?: number;
+  /** Autoriser le repli sur un autre modèle si le modèle configuré est refusé. Défaut: false. */
+  allowModelFallback?: boolean;
 }
 
 /**
@@ -261,6 +263,27 @@ export async function generateAudio(ctx: StepCtx): Promise<void> {
         );
       }
       if (!modelCouldBeTheCause || modelId === TIMESTAMPS_FALLBACK_MODEL) throw e;
+      /**
+       * REPLI DÉSORMAIS OPT-IN — 2026-08-05, après qu'il ait coûté deux rendus.
+       *
+       * Le repli était activé par défaut : « mieux vaut une vidéo avec une autre voix que pas de
+       * vidéo ». C'est faux pour cette chaîne. Son identité EST la voix, et un repli silencieux a
+       * livré deux vidéos dans un autre modèle — avec, en prime, un débit différent qui a
+       * désynchronisé tout le curseur. Le WARN était dans le log ; il a été lu deux fois trop tard.
+       *
+       * Par défaut on ARRÊTE. Un échec bruyant qui coûte zéro dollar vaut mieux qu'un rendu
+       * complet qu'il faut jeter. Mettre `allowModelFallback: true` dans voice-config.json pour
+       * rétablir l'ancien comportement.
+       */
+      if (!vc.allowModelFallback) {
+        throw new Error(
+          `audio: le modèle "${modelId}" a REFUSÉ la requête — ${msg}\n` +
+          `        Le rendu est arrêté volontairement : basculer sur "${TIMESTAMPS_FALLBACK_MODEL}" changerait\n` +
+          `        la voix ET son débit, ce qui désynchroniserait le curseur de toutes les scènes.\n` +
+          `        → corriger le modèle dans voice-config.json, ou y mettre "allowModelFallback": true\n` +
+          `        si un rendu dans une autre voix est acceptable.`,
+        );
+      }
       log("WARN", `audio: le modèle "${modelId}" a été refusé par /with-timestamps (${msg}). Repli sur "${TIMESTAMPS_FALLBACK_MODEL}" — la voix ne sera PAS celle configurée, corrige voice-config.json.`);
       modelId = TIMESTAMPS_FALLBACK_MODEL;
       out = await synthesizeChunk(chunks[i], vc, modelId, key, ctx);
