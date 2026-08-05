@@ -505,11 +505,17 @@ export function finalMux(opts: {
     args.push(
       "-filter_complex",
       `[2:a]volume=${musicVolume},afade=t=in:st=0:d=2,afade=t=out:st=${fadeOutStart}:d=3[m];` +
-        `[1:a][m]amix=inputs=2:duration=first:dropout_transition=0,volume=2[a]`,
+        `[1:a]apad[v1];[v1][m]amix=inputs=2:duration=first:dropout_transition=0,volume=2[a]`,
       "-map", "0:v", "-map", "[a]",
     );
   } else {
-    args.push("-map", "0:v", "-map", "1:a");
+    /**
+     * QUEUE DE SILENCE — ajoutée le 2026-08-05 : « ça s'arrête brutalement, laisse toujours
+     * quelques secondes de blanc après que la voix ait fini ». `apad` rallonge la piste audio de
+     * silence pour qu'elle atteigne la fin de la vidéo (dont la dernière scène a été allongée
+     * d'autant côté assemble). Sans ça, `-shortest` coupe au dernier phonème.
+     */
+    args.push("-map", "0:v", "-map", "1:a", "-af", "apad");
   }
   if (srt) args.push("-vf", `subtitles=${srt}:force_style='FontName=Arial,Bold=1,FontSize=20,BorderStyle=3,Outline=3,OutlineColour=&H80000000,Shadow=0,MarginV=40,Alignment=2'`);
   args.push(

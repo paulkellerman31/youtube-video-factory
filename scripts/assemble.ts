@@ -96,6 +96,9 @@ function sceneSources(projectDir: string): Map<string, string> {
   }
 }
 
+/** Silence tenu après le dernier mot, en secondes. Voir la note dans assemble(). */
+const TAIL_SILENCE_SEC = 1.8;
+
 /** Sources showing real UI or their own text — burned subtitles must never cover them. */
 const NO_BURNED_SUBS_SOURCES = new Set([
   "screen_capture",
@@ -182,7 +185,7 @@ export async function assemble(ctx: StepCtx): Promise<void> {
   const imageHashes = (manifest.images ?? []).map((f) => `${f.sceneId}:${f.hash}`).join(",");
   // NOTE: "burned" (the historical behaviour) intentionally adds NOTHING to the hash, so every
   // project rendered before this feature keeps its hash and is never re-rendered (non-regression).
-  const hash = sha256(JSON.stringify(scenes) + "|" + (manifest.audio?.hash ?? "") + "|" + imageHashes + "|" + (musicFile ?? "") + "|v1" + (subsMode === "burned" ? "" : `|subs:${subsMode}`));
+  const hash = sha256(JSON.stringify(scenes) + "|" + (manifest.audio?.hash ?? "") + "|" + imageHashes + "|" + (musicFile ?? "") + "|v1" + `|tail:${TAIL_SILENCE_SEC}` + (subsMode === "burned" ? "" : `|subs:${subsMode}`));
   const finalPath = join(projectDir, "final.mp4");
 
   if (existsSync(finalPath) && manifest.final?.hash === hash) {
@@ -196,6 +199,13 @@ export async function assemble(ctx: StepCtx): Promise<void> {
   const durations = scenes.map((s) => (s.audioEnd - s.audioStart) * factor);
   const drift = audioDur - durations.reduce((a, b) => a + b, 0);
   durations[durations.length - 1] += drift; // absorb rounding in last scene
+  /**
+   * QUEUE DE SILENCE — 2026-08-05. Une vidéo qui s'arrête au dernier phonème se termine « d'un
+   * coup » : le spectateur n'a pas le temps de lire le bandeau ni de décider de cliquer. On tient
+   * la dernière image le temps que ça respire ; `conformClip` la gèle (tpad) et `finalMux` allonge
+   * l'audio d'autant de silence (apad).
+   */
+  durations[durations.length - 1] += TAIL_SILENCE_SEC;
   log("INFO", `assemble: audio ${audioDur}s (plan ${planEnd}s, scale x${factor.toFixed(3)}), subtitles=${subsMode}`);
 
   // 1) Scene clips
