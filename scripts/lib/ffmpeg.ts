@@ -266,12 +266,13 @@ export function kenBurnsClip(opts: {
   durationSec: number;
   motion: Motion;
   textOverlay?: string | null;
+  ctaBand?: CtaBand | null;
   width?: number;
   height?: number;
   fps?: number;
   cwd?: string;
 }): void {
-  const { image, out, durationSec, motion, textOverlay, width = 1920, height = 1080, fps = 30, cwd } = opts;
+  const { image, out, durationSec, motion, textOverlay, ctaBand, width = 1920, height = 1080, fps = 30, cwd } = opts;
   const frames = Math.max(2, Math.round(durationSec * fps));
   // Amplitude du zoom. 1,14 convient à une image générée ; sur une capture d'écran, le même
   // mouvement agrandit du texte déjà à sa résolution native et le rend flou et laid — constaté
@@ -301,12 +302,12 @@ export function kenBurnsClip(opts: {
     "format=yuv420p",
   ];
   if (textOverlay) {
-    const esc = textOverlay.replace(/\\/g, "\\\\").replace(/'/g, "’").replace(/:/g, "\\:");
     const font = fontFilePrefix(out, cwd);
     filters.push(
-      `drawtext=${font}text='${esc}':fontsize=84:fontcolor=white:borderw=5:bordercolor=black@0.85:x=(w-text_w)/2:y=h-260`,
+      `drawtext=${font}text='${escDrawtext(textOverlay)}':fontsize=84:fontcolor=white:borderw=5:bordercolor=black@0.85:x=(w-text_w)/2:y=h-260`,
     );
   }
+  if (ctaBand) filters.push(...ctaBandFilters(ctaBand, out, height, cwd));
   run(
     ["-i", image, "-vf", filters.join(","), "-r", String(fps), "-c:v", "libx264", "-preset", VIDEO_PRESET, "-crf", VIDEO_CRF, "-an", out],
     cwd,
@@ -318,6 +319,57 @@ export function kenBurnsClip(opts: {
  * duration (last frame held if the source is shorter), same codec params as kenBurnsClip so
  * concatClips' -c copy stays valid. Video only — any composition audio is dropped.
  */
+/**
+ * BANDEAU D'APPEL À L'ACTION — ajouté le 2026-08-01.
+ *
+ * Deux fonctions dans un seul objet, et c'est voulu :
+ *  1. **Conversion** — l'appel à l'action reste lisible sans le son. Un spectateur qui regarde en
+ *     sourdine (le cas majoritaire sur mobile) n'entend pas « le lien est en description ».
+ *  2. **Conformité** — la FTC (16 CFR Part 255) et le droit français (L. 121-4, 11°) imposent que
+ *     la divulgation d'une rémunération d'affiliation soit faite « clear and conspicuous » et
+ *     **dans le même média que la recommandation** : donc À L'ÉCRAN autant qu'à l'audio pour une
+ *     vidéo. La ligne 2 du bandeau porte cette divulgation.
+ *
+ * Le bandeau est dessiné DANS la passe d'encodage existante (conformClip / kenBurnsClip) : pas de
+ * génération supplémentaire, donc pas de perte de qualité — le contenu d'écran est déjà le pire cas
+ * de x264 et n'a pas besoin d'un ré-encodage de plus.
+ */
+export interface CtaBand {
+  /** L'action, verbe + offre réelle. Reste identique d'une occurrence à l'autre. */
+  line1: string;
+  /** Levée de risque et/ou divulgation d'affiliation. */
+  line2?: string;
+}
+
+const CTA_BAND = {
+  height: 190,
+  bg: "#05070C",
+  bgAlpha: 0.88,
+  rule: "#00C8FF",
+  ruleH: 6,
+  padX: 90,
+  size1: 54,
+  size2: 34,
+  color1: "white",
+  color2: "#9FB3C8",
+} as const;
+
+function ctaBandFilters(band: CtaBand, out: string, height: number, cwd?: string): string[] {
+  const font = fontFilePrefix(out, cwd);
+  const top = height - CTA_BAND.height;
+  const f: string[] = [
+    `drawbox=x=0:y=${top}:w=iw:h=${CTA_BAND.height}:color=${toFFColor(CTA_BAND.bg)}@${CTA_BAND.bgAlpha}:t=fill`,
+    `drawbox=x=0:y=${top}:w=iw:h=${CTA_BAND.ruleH}:color=${toFFColor(CTA_BAND.rule)}:t=fill`,
+    `drawtext=${font}text='${escDrawtext(band.line1)}':fontsize=${CTA_BAND.size1}:fontcolor=${toFFColor(CTA_BAND.color1)}:x=${CTA_BAND.padX}:y=${top + 42}`,
+  ];
+  if (band.line2) {
+    f.push(
+      `drawtext=${font}text='${escDrawtext(band.line2)}':fontsize=${CTA_BAND.size2}:fontcolor=${toFFColor(CTA_BAND.color2)}:x=${CTA_BAND.padX}:y=${top + 118}`,
+    );
+  }
+  return f;
+}
+
 export function conformClip(opts: {
   clip: string;
   out: string;
@@ -325,9 +377,10 @@ export function conformClip(opts: {
   width?: number;
   height?: number;
   fps?: number;
+  ctaBand?: CtaBand | null;
   cwd?: string;
 }): void {
-  const { clip, out, durationSec, width = 1920, height = 1080, fps = 30, cwd } = opts;
+  const { clip, out, durationSec, width = 1920, height = 1080, fps = 30, ctaBand, cwd } = opts;
   const d = durationSec.toFixed(3);
   const filters = [
     `scale=${width}:${height}:force_original_aspect_ratio=decrease`,
@@ -336,6 +389,7 @@ export function conformClip(opts: {
     `tpad=stop_mode=clone:stop_duration=${d}`,
     `trim=duration=${d}`,
     "setpts=PTS-STARTPTS",
+    ...(ctaBand ? ctaBandFilters(ctaBand, out, height, cwd) : []),
     "format=yuv420p",
   ];
   run(

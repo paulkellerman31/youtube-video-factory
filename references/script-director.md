@@ -206,6 +206,80 @@ pas.
 
 ---
 
+## APPEL À L'ACTION — architecture (2026-08-01)
+
+La vidéo se juge sur les clics `/go/` ÷ vues. Le CTA n'est donc pas une politesse de fin : c'est
+la fonction de la vidéo. Trois occurrences, **une seule action**, les **mêmes mots** à chaque fois.
+
+| Où | Quoi | Support |
+|---|---|---|
+| Bloc 2 (~0:10) | **Divulgation d'affiliation** + le lien existe | audio **et** bandeau à l'écran |
+| Bloc 4 (~45-50 %) | CTA, mots identiques au final | audio + bandeau |
+| Bloc 8 (fin) | CTA, mots identiques | audio + bandeau |
+
+**Une seule action, répétée — jamais trois actions différentes.** Répéter le même appel est neutre
+à positif ; afficher trois actions concurrentes coûte 22 à 25 % de conversion (`conversion-cro` §2).
+Donc pas de « abonne-toi + like + clique le lien » : le lien, et rien d'autre.
+
+**Pas de CTA à la seconde zéro.** 36,6 % de tous les abandons surviennent dans les 3 % initiaux de
+la durée (Kim et al., *L@S* 2014, 862 vidéos, 127 839 apprenants) — sur deux minutes, les quatre
+premières secondes sont la ressource la plus rare de la vidéo. On n'y demande rien : on y tient la
+promesse. Le lien s'annonce une fois la promesse posée, au bloc 2.
+
+### Le bandeau à l'écran — `ctaBand` dans `project-config.json`
+
+```json
+{ "sceneId": "s08", "ctaBand": {
+    "line1": "SEVEN DAYS FREE — KING PLAN",
+    "line2": "Link in the description. No credit card needed." } }
+```
+
+Bandeau bas d'écran (190 px, fond charbon, filet cyan), incrusté **dans la passe d'encodage
+existante** — pas de génération supplémentaire, donc pas de perte de netteté. Il s'applique aussi
+aux clips, contrairement à `textOverlay`. Une scène qui le porte est automatiquement protégée des
+sous-titres incrustés.
+
+Il sert deux fois. **Conversion** : la majorité de l'audience mobile regarde sans le son et
+n'entend jamais « le lien est en description ». **Conformité** : voir ci-dessous.
+
+### ⚠️ Divulgation d'affiliation — obligation légale, pas une option
+
+La FTC (16 CFR Part 255, révisées le 29/06/2023) qualifie une commission d'affiliation de
+*material connection* : divulgation obligatoire, « clear and conspicuous », **dans le même média
+que la recommandation** — donc à l'écran ET à l'audio pour une vidéo. En droit français,
+**L. 121-4, 11°** du Code de la consommation vise la publicité rédactionnelle non identifiée, et
+depuis la loi du 10 mai 2024 le fait de commettre la pratique **via un service en ligne** porte la
+sanction à **750 000 € (personne physique) / 3,75 M€ (personne morale)**.
+
+- **La divulgation arrive AVANT la première recommandation.** Dans le format S, le verdict tombe
+  au bloc 2 : la divulgation est donc au bloc 2 au plus tard, et le bandeau dès la scène 1.
+- **Elle ne coûte rien commercialement.** Méta-analyse Eisend, van Reijmersdal, Boerman & Tarrahi
+  2020 (*Journal of Advertising*, 61 articles, 473 tailles d'effet, 278 791 répondants) : la
+  divulgation coûte de la crédibilité **déclarée** (r = −0,132) mais son effet sur l'**intention
+  comportementale** est de **−0,023, non significatif sur 137 601 personnes**. Elle déplace ce que
+  le spectateur *dit* penser de toi, pas ce qu'il *fait*. L'argument « ça fait fuir » n'a aucune base.
+- Formulation type, à garder courte : *« Straight up — the link below is an affiliate link. I earn
+  a commission. You pay the same price. It does not change the verdict. »*
+
+### Offre exclusive — seulement si elle existe
+
+Une offre ou un code réellement négociés avec le programme sont le CTA le plus fort disponible :
+on les écrit, chiffrés et datés. **Sinon on écrit l'offre publique réelle** (« essai de sept jours,
+sans carte »), qui est déjà une levée de risque.
+
+- ✗ **Jamais d'« offre exclusive » inventée**, jamais de rareté fabriquée. 16 CFR Part 465 et
+  L. 121-4, 7° visent nommément le fait de déclarer faussement une disponibilité limitée.
+  **CA Paris, 2 avril 2025, RG 23/05696** (Tediber c/ Emma) : **2 M€** de dommages-intérêts pour
+  une promotion permanente déguisée en promotion temporaire — compte à rebours réinitialisé,
+  codes promo se succédant deux à trois fois par mois.
+- ⚠️ Et ne pas surestimer le levier même quand il est vrai : l'effet mesuré de la rareté
+  (δ = 0,31, Barton et al. 2022, 416 tailles d'effet) porte sur des **intentions déclarées** —
+  **24 effets sur 416** mesurent un comportement réel. Direction probable, pas promesse de vente.
+- **Le PLAN d'une vidéo affiliée porte un champ « offre » explicite** : le code s'il existe, sinon
+  la mention « offre publique uniquement ». Un CTA ne s'écrit pas avant que ce champ soit rempli.
+
+---
+
 ## COPYWRITING — bénéfices, pas fonctionnalités
 
 Le spectateur n'achète pas ce que fait l'outil, il achète ce que ça change pour lui. La règle

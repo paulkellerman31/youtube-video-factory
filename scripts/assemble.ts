@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { concatClips, conformClip, ffmpegAvailable, ffprobeDuration, finalMux, kenBurnsClip, type Motion } from "./lib/ffmpeg.js";
+import { concatClips, conformClip, type CtaBand, ffmpegAvailable, ffprobeDuration, finalMux, kenBurnsClip, type Motion } from "./lib/ffmpeg.js";
 import { readManifest, writeFragment } from "./lib/manifest.js";
 import { getSubtitlesMode } from "./lib/profile.js";
 import { log, round2, sha256 } from "./lib/util.js";
@@ -13,6 +13,12 @@ interface SceneCfg {
   visualType: "GRAPHIC" | "AI_IMAGE" | "AI_VIDEO";
   motion: Motion;
   textOverlay: string | null;
+  /**
+   * Bandeau d'appel à l'action incrusté sur cette scène (voir lib/ffmpeg.ts / CtaBand).
+   * Contrairement à `textOverlay`, il s'applique AUSSI aux clips — c'est même son cas principal,
+   * puisque toutes les scènes d'une vidéo tool-centric sont des enregistrements d'écran.
+   */
+  ctaBand?: CtaBand | null;
 }
 
 interface ProjectConfig {
@@ -101,7 +107,7 @@ const NO_BURNED_SUBS_SOURCES = new Set([
 /** Scene ids whose visuals must never be covered by burned subtitles (real UI, animated HTML, overlays). */
 function protectedSceneIds(projectDir: string, scenes: SceneCfg[]): Set<string> {
   const ids = new Set<string>();
-  for (const s of scenes) if (s.textOverlay) ids.add(s.sceneId);
+  for (const s of scenes) if (s.textOverlay || s.ctaBand) ids.add(s.sceneId);
   for (const [sceneId, source] of sceneSources(projectDir)) {
     if (NO_BURNED_SUBS_SOURCES.has(source)) ids.add(sceneId);
   }
@@ -209,7 +215,8 @@ export async function assemble(ctx: StepCtx): Promise<void> {
           log("WARN", `assemble: ${s.sceneId} clip de ${clipDur.toFixed(2)}s pour une fenêtre de ${durations[i].toFixed(2)}s — la dernière frame sera GELÉE. Rallonger les beats ou raccourcir la scène.`);
         }
       } catch { /* durée illisible: on laisse conformClip faire */ }
-      conformClip({ clip: asset.path, out: join(clipsDir, `${s.sceneId}.mp4`), durationSec: durations[i] });
+      conformClip({ clip: asset.path, out: join(clipsDir, `${s.sceneId}.mp4`), durationSec: durations[i], ctaBand: s.ctaBand ?? null });
+      if (s.ctaBand) log("INFO", `assemble: ${s.sceneId} — bandeau CTA incrusté`);
       return;
     }
     log("INFO", `assemble: scene ${s.sceneId} — ${s.motion}, ${durations[i].toFixed(2)}s`);
@@ -219,6 +226,7 @@ export async function assemble(ctx: StepCtx): Promise<void> {
       durationSec: durations[i],
       motion: s.motion,
       textOverlay: s.textOverlay,
+      ctaBand: s.ctaBand ?? null,
     });
   });
 
