@@ -39,6 +39,29 @@ interface VoiceConfig {
  *     sous-titres suivants un peu plus tôt à chaque segment.
  */
 const DEFAULT_MAX_CHARS = 800;
+
+/**
+ * ⚠️ `eleven_v3` REFUSE `previous_text` / `next_text` — constaté le 2026-08-05, en production.
+ *
+ * L'API répond `HTTP 400 unsupported_model : "Providing previous_text or next_text is not yet
+ * supported with the 'eleven_v3' model"`. Le repli de modèle s'est donc déclenché et DEUX rendus
+ * ont été livrés en `eleven_multilingual_v2` — voix différente ET débit différent (207 mots/minute
+ * au lieu de 165), ce qui a désynchronisé tout le curseur par-dessus le marché.
+ *
+ * Leçon : un paramètre documenté dans la référence d'API générale n'est pas forcément accepté par
+ * TOUS les modèles. Ce qui l'a rendu coûteux ici, c'est qu'un repli silencieux a transformé une
+ * erreur de paramètre en changement de voix — deux symptômes sans rapport apparent avec la cause.
+ */
+function supportsContinuity(modelId: string): boolean {
+  return !/^eleven_v3/i.test(modelId);
+}
+
+/**
+ * Et si le modèle n'accepte pas le contexte, la parade contre la dérive d'identité devient :
+ * MOINS DE RACCORDS. `eleven_v3` accepte 5 000 caractères par requête, un script format S en fait
+ * ~2 300 : il passe en une seule génération, donc zéro raccord, donc zéro dérive possible.
+ */
+const V3_MAX_CHARS = 5000;
 /** Modèle de repli si le modèle configuré n'accepte pas /with-timestamps (voir plus bas). */
 const TIMESTAMPS_FALLBACK_MODEL = "eleven_multilingual_v2";
 
@@ -105,8 +128,8 @@ async function synthesizeChunk(
       body: JSON.stringify({
         text: chunk,
         model_id: modelId,
-        ...(ctx.previousText ? { previous_text: ctx.previousText } : {}),
-        ...(ctx.nextText ? { next_text: ctx.nextText } : {}),
+        ...(supportsContinuity(modelId) && ctx.previousText ? { previous_text: ctx.previousText } : {}),
+        ...(supportsContinuity(modelId) && ctx.nextText ? { next_text: ctx.nextText } : {}),
         /**
          * `previous_request_ids` VOLONTAIREMENT NON ENVOYÉ — arbitrage du 2026-08-05.
          *
@@ -157,10 +180,14 @@ export async function generateAudio(ctx: StepCtx): Promise<void> {
   const vc: VoiceConfig = JSON.parse(readFileSync(vcPath, "utf8"));
   log("INFO", `audio: channel=${getChannel(projectDir)} voice-config=${vcPath}`);
 
-  const maxChars = vc.maxCharsPerRequest ?? DEFAULT_MAX_CHARS;
+  let maxChars = vc.maxCharsPerRequest ?? DEFAULT_MAX_CHARS;
+  if (!supportsContinuity(vc.modelId) && maxChars < V3_MAX_CHARS) {
+    maxChars = V3_MAX_CHARS;
+    log("INFO", `audio: ${vc.modelId} n'accepte pas le contexte inter-segments — découpage porté à ${V3_MAX_CHARS} car. pour supprimer les raccords (voir voice-contract.md §2)`);
+  }
   const chunks = splitForSynthesis(text, maxChars);
   // NOTE: le hash inclut le découpage — changer maxCharsPerRequest resynthétise, comme il se doit.
-  const hash = sha256([text, vc.voiceId, vc.modelId, JSON.stringify(vc.settings), `chunks:${maxChars}|continuity:v2-text-only`].join("|"));
+  const hash = sha256([text, vc.voiceId, vc.modelId, JSON.stringify(vc.settings), `chunks:${maxChars}|continuity:v3-model-aware`].join("|"));
   const audioDir = join(projectDir, "assets", "audio");
   const outFile = join(audioDir, "voice.mp3");
   const estCost = round2(text.length * getRates().elevenlabsPerCharUSD);
