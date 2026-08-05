@@ -107,7 +107,18 @@ async function synthesizeChunk(
         model_id: modelId,
         ...(ctx.previousText ? { previous_text: ctx.previousText } : {}),
         ...(ctx.nextText ? { next_text: ctx.nextText } : {}),
-        ...(ctx.previousRequestIds?.length ? { previous_request_ids: ctx.previousRequestIds.slice(-3) } : {}),
+        /**
+         * `previous_request_ids` VOLONTAIREMENT NON ENVOYÉ — arbitrage du 2026-08-05.
+         *
+         * Il existe, il est documenté pour ce cas, et il fonctionne trop bien : il ancre la
+         * génération sur l'AUDIO déjà produit, pas seulement sur le texte. Résultat mesuré à
+         * l'oreille — l'accent ne dérivait plus, mais la diction s'aplatissait, écrasant la
+         * variation qu'on achète justement avec `stability: 0.40`. Le contexte TEXTUEL suffit à
+         * garder l'identité du locuteur ; l'ancrage audio, lui, coûte le naturel.
+         *
+         * Si la dérive d'accent revient, c'est ici qu'il faut regarder — mais alors préférer
+         * réduire le NOMBRE de segments plutôt que de rétablir cet ancrage.
+         */
         voice_settings: {
           stability: vc.settings.stability,
           similarity_boost: vc.settings.similarityBoost,
@@ -149,7 +160,7 @@ export async function generateAudio(ctx: StepCtx): Promise<void> {
   const maxChars = vc.maxCharsPerRequest ?? DEFAULT_MAX_CHARS;
   const chunks = splitForSynthesis(text, maxChars);
   // NOTE: le hash inclut le découpage — changer maxCharsPerRequest resynthétise, comme il se doit.
-  const hash = sha256([text, vc.voiceId, vc.modelId, JSON.stringify(vc.settings), `chunks:${maxChars}|continuity:v1`].join("|"));
+  const hash = sha256([text, vc.voiceId, vc.modelId, JSON.stringify(vc.settings), `chunks:${maxChars}|continuity:v2-text-only`].join("|"));
   const audioDir = join(projectDir, "assets", "audio");
   const outFile = join(audioDir, "voice.mp3");
   const estCost = round2(text.length * getRates().elevenlabsPerCharUSD);
@@ -198,7 +209,6 @@ export async function generateAudio(ctx: StepCtx): Promise<void> {
     const ctx = {
       previousText: i > 0 ? chunks[i - 1] : undefined,
       nextText: i + 1 < chunks.length ? chunks[i + 1] : undefined,
-      previousRequestIds: requestIds,
     };
     let out: { audio: Buffer; alignment: Alignment | null; requestId: string | null };
     try {

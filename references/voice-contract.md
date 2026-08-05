@@ -57,8 +57,22 @@ Remède documenté par ElevenLabs, désormais appliqué à chaque segment :
 - **`previous_text` / `next_text`** — le texte voisin, *« can be used to improve the speech's
   continuity when concatenating together multiple generations »*.
 - **`previous_request_ids`** — les identifiants des générations précédentes, décrits comme
-  *« especially useful … when splitting up a large task into multiple requests »*. Récupérés dans
-  l'en-tête `request-id` de la réponse, les trois derniers sont renvoyés à chaque appel.
+  *« especially useful … when splitting up a large task into multiple requests »*.
+  **⚠️ TESTÉ PUIS RETIRÉ le 2026-08-05.** Il fonctionne — trop bien. Il ancre la génération sur
+  l'AUDIO déjà produit et non sur le seul texte : l'accent cessait de dériver, mais la diction
+  s'aplatissait, écrasant exactement la variation qu'on achète avec `stability: 0.40`. Retour de
+  Théo à l'écoute : *« on a perdu quelque chose, je saurais pas dire quoi »*. C'était ça.
+
+**Arbitrage retenu : contexte TEXTUEL seulement.** Le modèle doit savoir de quoi parlent ses
+voisins, pas comment il a sonné chez eux. Le premier suffit à tenir l'identité du locuteur ; le
+second coûte le naturel, qui est le seul objectif de tout ce chapitre.
+
+Si la dérive d'accent revenait, **ne pas rétablir l'ancrage audio** : réduire d'abord le NOMBRE de
+segments (remonter `maxCharsPerRequest`), ce qui diminue le nombre de raccords au lieu de rigidifier
+chacun d'eux.
+
+> Principe : quand deux réglages tirent en sens opposé, préférer celui qui contraint le MOINS et qui
+> résout quand même. Un défaut corrigé par sur-contrainte se paie sur la qualité qu'on cherchait.
 
 **Leçon générale, valable au-delà de la voix : découper une tâche continue crée toujours un
 problème de raccord.** On a d'abord corrigé le raccord temporel (décalage des alignements), et il
