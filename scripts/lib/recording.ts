@@ -55,6 +55,8 @@ export interface RecordingSpec {
    * only scroll left on camera is the short one a real reader would do next.
    */
   startAt?: { selector?: string; y?: number };
+  /** Mettre en pause les animations CSS infinies avant de filmer (défaut: true). Voir §anti-saccade. */
+  freezeLoops?: boolean;
   /** planned scene length; the clip is filmed longer and conformed at assembly */
   plannedDurationSec?: number;
 }
@@ -67,6 +69,7 @@ export function recordingHashInput(spec: RecordingSpec): string {
     cursor: spec.cursor !== false,
     hideSelectors: spec.hideSelectors ?? [],
     startAt: spec.startAt ?? null,
+    freezeLoops: spec.freezeLoops !== false,
     beats: spec.beats,
   });
 }
@@ -280,6 +283,43 @@ async function preScroll(page: any, targetY: number): Promise<void> {
   await page.waitForTimeout(450);
 }
 
+/**
+ * GEL DES ANIMATIONS EN BOUCLE — ajouté le 2026-08-01 après signalement d'un artefact visuel.
+ *
+ * Le screencast de Playwright sort en cadence VARIABLE ; on le ramène à 30 images/seconde fixes.
+ * Une animation CSS qui tourne en continu — bandeau de logos clients, pastille qui pulse, dégradé
+ * qui défile — n'a aucune raison d'être en phase avec 30 Hz : le rééchantillonnage produit un
+ * saccadement, voire un déchirement, que l'œil lit comme un défaut d'encodage. Et le crf 16 ne le
+ * corrige pas, puisque le défaut est dans la source, pas dans la compression.
+ *
+ * On met en pause UNIQUEMENT les animations déclarées infinies. Les animations d'apparition au
+ * scroll (une seule itération) continuent de jouer : ce sont elles qui font vivre la page, et
+ * elles se terminent, donc elles ne saccadent pas.
+ *
+ * ⚠️ Code navigateur passé en CHAÎNE : tsx/esbuild réécrit les fonctions nommées avec un helper
+ * `__name` inexistant dans la page (voir le même piège dans lib/recon.ts).
+ */
+const FREEZE_LOOPS_SRC = `(() => {
+  let n = 0;
+  for (const el of document.querySelectorAll('*')) {
+    const cs = getComputedStyle(el);
+    if (cs.animationIterationCount && cs.animationIterationCount.split(',').some(v => v.trim() === 'infinite')) {
+      el.style.animationPlayState = 'paused';
+      n++;
+    }
+  }
+  return n;
+})()`;
+
+async function freezeLoopingAnimations(page: any): Promise<void> {
+  try {
+    const n = (await page.evaluate(FREEZE_LOOPS_SRC)) as number;
+    if (n > 0) log("INFO", `recording: ${n} animation(s) en boucle mises en pause (anti-saccade)`);
+  } catch {
+    /* page hostile ou CSP stricte : on filme quand même */
+  }
+}
+
 /** Viewport-space centre of a selector, or null if it isn't there. */
 async function centerOf(page: any, selector: string): Promise<{ x: number; y: number } | null> {
   try {
@@ -344,6 +384,7 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
     }
 
     await hideCookieBanners(page, spec.hideSelectors);
+    if (spec.freezeLoops !== false) await freezeLoopingAnimations(page);
     // Sites that scroll-jack (Lenis, ScrollSmoother, CSS scroll-behavior) fight the script.
     await page
       .addStyleTag({ content: "html,body{scroll-behavior:auto !important;}" })
