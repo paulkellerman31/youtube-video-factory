@@ -71,7 +71,13 @@ Output is valid when:
 
 ## DO NOT
 
-* ✗ No generic intro (hi guys, welcome back)
+* ✗ No **EMPTY** intro (« hi guys, welcome back, today we're gonna look at… let's dive in ») — ce qui est interdit, c'est une ouverture qui ne délivre RIEN, pas le registre parlé.
+  **⚠️ Précision ajoutée le 2026-08-05, après retour de Théo.** Cette règle était lue comme « pas de ton conversationnel », et produisait des ouvertures d'anglais de rapport (« It is right for… », « That is the whole product ») que la voix rend comme un communiqué. Deux axes distincts qu'il ne faut pas confondre :
+  · **CONTENU** — chaque proposition de la première phrase porte une information. Non négociable : 36,6 % des abandons surviennent dans les 3 % initiaux de la durée (Kim et al., *L@S* 2014, 862 vidéos, 127 839 apprenants).
+  · **REGISTRE** — parlé, contracté, à la première personne. Recommandé : c'est ce qui distingue « quelqu'un qui te montre un outil » de « une plaquette lue à voix haute », et c'est tout le positionnement de la chaîne.
+  ✓ Ouverture valide : *« Okay — BotPenguin. It's a no-code chatbot builder. I went through their whole site: the features, the pricing, the small print. »* Registre parlé, outil nommé au 3ᵉ mot, trois informations en une phrase.
+  ⚠️ **La première personne ne se paie qu'avec du vrai.** « I went through their whole site » est exact — c'est ce que fait STEP 0-bis RECON et ce que montre le footage. « I tested it for six weeks » serait faux, donc interdit (§copywriting, règle 4 : ne jamais écrire ce qu'on ne peut pas prouver).
+* ✗ **No script without contractions.** « It is / that is / here is » à l'écrit deviennent « it's / that's / here's » à l'oral. Une voix qui n'en fait jamais lit un document ; une voix qui en fait parle (voir `references/voice-contract.md` §3).
 * ✗ No digits in audio (write ninety-nine not 99)
 * ✗ No filler words (basically, essentially)
 * ✗ No multiple visual types per scene
