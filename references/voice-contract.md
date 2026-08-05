@@ -43,6 +43,29 @@ codées, et elles ne sont pas cosmétiques :
 Effet de bord bienvenu : le dernier paragraphe (le CTA) est presque toujours généré seul, donc
 avec un ton neuf, non dérivé. C'est exactement la phrase qui doit sonner juste.
 
+### ⚠️ Le découpage crée une SECONDE dérive — d'identité, pas de ton (corrigé le 2026-08-05)
+
+Défaut signalé au visionnage : *« à 1:42 la voix change et prend un accent différent »*, à une
+frontière de segment. Cause exacte : chaque requête partait **sans dire au modèle ce qui la
+précédait**. À chaque nouveau segment, le modèle ré-infère l'identité du locuteur à partir du seul
+texte reçu — et comme la stabilité est volontairement basse (0,40, pour obtenir de la variation
+humaine), il peut atterrir sur un accent différent. **Le découpage a résolu la dérive de TON et
+introduit une dérive d'IDENTITÉ.**
+
+Remède documenté par ElevenLabs, désormais appliqué à chaque segment :
+
+- **`previous_text` / `next_text`** — le texte voisin, *« can be used to improve the speech's
+  continuity when concatenating together multiple generations »*.
+- **`previous_request_ids`** — les identifiants des générations précédentes, décrits comme
+  *« especially useful … when splitting up a large task into multiple requests »*. Récupérés dans
+  l'en-tête `request-id` de la réponse, les trois derniers sont renvoyés à chaque appel.
+
+**Leçon générale, valable au-delà de la voix : découper une tâche continue crée toujours un
+problème de raccord.** On a d'abord corrigé le raccord temporel (décalage des alignements), et il
+restait le raccord d'identité. Quand on scinde une génération, la question à se poser n'est pas
+seulement « les morceaux se recollent-ils » mais « chaque morceau sait-il de quoi les autres
+parlent ».
+
 ---
 
 ## 3. Écrire pour être lu — pas pour être lu à voix haute par un robot
