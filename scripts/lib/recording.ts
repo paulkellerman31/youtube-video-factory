@@ -436,6 +436,26 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
     }
 
     /**
+     * PAGE TRADUITE — arrêt dur.
+     *
+     * Google Translate marque la racine du document (`translated-ltr` / `translated-rtl`) et
+     * réécrit le texte en place. Une capture traduite est inutilisable et ne se voit qu'en lisant
+     * l'image : le clip est net, cadré, à la bonne durée, et raconte autre chose que le produit.
+     * Les flags de lancement l'empêchent ; ceci vérifie qu'ils ont bien tenu.
+     */
+    const translated = await page.evaluate(() => {
+      const c = document.documentElement.className || "";
+      return /\btranslated-(ltr|rtl)\b/.test(c) || !!document.querySelector("#goog-gt-tt, .goog-te-banner-frame");
+    });
+    if (translated) {
+      throw new Error(
+        `recording: ${spec.url} — la page a été TRADUITE automatiquement par le navigateur.\n` +
+          `        Le texte filmé ne serait pas celui du produit.\n` +
+          `        Dans le Chrome de record-profile.bat : Paramètres > Langues > décocher « Proposer de traduire ».`,
+      );
+    }
+
+    /**
      * BANDES NOIRES — contrôle, parce que le défaut est invisible au code.
      *
      * L'enregistreur préserve le rapport largeur/hauteur : si la zone de page réelle n'a pas le

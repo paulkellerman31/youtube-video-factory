@@ -135,6 +135,19 @@ export const LAUNCH_ARGS = [
   "--disable-blink-features=AutomationControlled",
   "--no-first-run",
   "--no-default-browser-check",
+  /**
+   * TRADUCTION AUTOMATIQUE — coupée net.
+   *
+   * Le profil d'enregistrement est un vrai profil Chrome : sa langue d'interface peut être le
+   * français. Chrome propose alors de traduire une page anglaise, et si « toujours traduire » a
+   * été coché une fois, il traduit SANS RIEN DEMANDER. On filmerait un dashboard anglais rendu en
+   * français approximatif — un défaut de contenu, pas d'affichage, et invisible tant qu'on ne lit
+   * pas l'image. On désactive donc la fonctionnalité au lancement plutôt que de compter sur un
+   * réglage du profil.
+   */
+  "--disable-features=Translate,TranslateUI",
+  "--lang=en-US",
+  "--disable-infobars",
 ];
 
 /** Playwright en import dynamique paresseux : la pipeline tourne sans lui si aucune scène ne l'utilise. */
