@@ -3,6 +3,8 @@ import { existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import {
   contextOptions,
+  launchAuthedContext,
+  RECORD_PROFILE_DIR,
   diagnoseCapture,
   hideAutomation,
   hideCookieBanners,
@@ -57,6 +59,11 @@ export interface RecordingSpec {
   startAt?: { selector?: string; y?: number };
   /** Mettre en pause les animations CSS infinies avant de filmer (défaut: true). Voir §anti-saccade. */
   freezeLoops?: boolean;
+  /**
+   * Filmer DANS la session connectée du profil d'enregistrement (`.chrome-record`).
+   * Voir lib/capture.ts / RECORD_PROFILE_DIR. Interdit tout beat `click` — voir plus bas.
+   */
+  auth?: boolean;
   /** planned scene length; the clip is filmed longer and conformed at assembly */
   plannedDurationSec?: number;
 }
@@ -70,6 +77,7 @@ export function recordingHashInput(spec: RecordingSpec): string {
     hideSelectors: spec.hideSelectors ?? [],
     startAt: spec.startAt ?? null,
     freezeLoops: spec.freezeLoops !== false,
+    auth: spec.auth === true,
     beats: spec.beats,
   });
 }
@@ -350,6 +358,20 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
     throw new Error(`recording: URL non publique ou invalide "${spec.url}" — http(s) uniquement`);
   }
   if (!spec.beats?.length) throw new Error(`recording: ${spec.url} sans beats`);
+  /**
+   * LECTURE SEULE DANS UN COMPTE RÉEL — règle codée, pas recommandée.
+   *
+   * Sur un site vitrine, « interaction inoffensive » a un sens : un onglet, un accordéon. Dans un
+   * dashboard, la même notion ne tient plus — un clic supprime un bot, lance un abonnement, vide
+   * une liste. On ne peut pas énumérer à l'avance ce qui est sûr, donc on interdit la catégorie.
+   */
+  if (spec.auth && spec.beats.some((b) => b.do === "click")) {
+    throw new Error(
+      `recording: ${spec.url} — un beat "click" est interdit dans une scène authentifiée.\n` +
+      `        Dans un compte réel, aucun clic ne peut être garanti inoffensif.\n` +
+      `        Utiliser scrollTo / moveTo / hover, ou filmer la page publique équivalente.`,
+    );
+  }
 
   const chromium = await loadChromium();
   const viewport = parseViewportSpec(spec.viewport);
@@ -357,7 +379,13 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
   const tmpDir = join(process.cwd(), ".recording-tmp", `${Date.now()}`);
   mkdirSync(tmpDir, { recursive: true });
 
-  const browser = await launchBrowser(chromium);
+  /**
+   * En mode authentifié, le contexte persistant EST le navigateur : lancer en plus un Chrome
+   * jetable ouvrirait une seconde fenêtre pour rien (et elle serait filmée par l'utilisateur qui
+   * regarde). On ne lance donc `launchBrowser` que dans le cas public.
+   */
+  const browser = spec.auth ? null : await launchBrowser(chromium);
+  let context: any = null;
   let webm: string | null = null;
   let headOffsetSec = 0;
 
@@ -366,14 +394,19 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
     // Everything before the beats (blank page, load, cookie-banner flash, probe) IS filmed, so
     // we timestamp the start of the beats and trim that head off with ffmpeg -ss below.
     const t0 = Date.now();
-    const context = await browser.newContext({
+    const ctxOpts = {
       ...contextOptions(viewport),
       recordVideo: { dir: tmpDir, size: { width: viewport.width, height: viewport.height } },
-    });
+    };
+    // Un profil persistant EST son propre contexte : pas de newContext() par-dessus.
+    context = spec.auth
+      ? await launchAuthedContext(chromium, join(process.cwd(), RECORD_PROFILE_DIR), ctxOpts)
+      : await browser!.newContext(ctxOpts);
+    if (spec.auth) log("INFO", `recording: session authentifiée — profil ${RECORD_PROFILE_DIR} (lecture seule)`);
     await hideAutomation(context);
     if (withCursor) await context.addInitScript(cursorInitScript(CURSOR_ID));
 
-    const page = await context.newPage();
+    const page = spec.auth ? (context.pages()[0] ?? await context.newPage()) : await context.newPage();
     let status = 0;
     try {
       const resp = await page.goto(spec.url, { waitUntil: "networkidle", timeout: 60_000 });
@@ -528,7 +561,14 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
     );
     log("INFO", `recording: ${spec.url} -> ${outFile} (tête coupée ${headOffsetSec.toFixed(1)}s)`);
   } finally {
-    await browser.close().catch(() => {});
+    /**
+     * Le contexte persistant n'appartient à aucun `browser` : si on sort par une exception avant
+     * le close nominal, la fenêtre Chrome resterait ouverte ET garderait le verrou sur
+     * .chrome-record — le rendu suivant échouerait sans raison lisible. On ferme les deux, dans
+     * l'ordre, en ignorant un double-close déjà effectué.
+     */
+    await context?.close().catch(() => {});
+    await browser?.close().catch(() => {});
     rmSync(tmpDir, { recursive: true, force: true });
   }
 }

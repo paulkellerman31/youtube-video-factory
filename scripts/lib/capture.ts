@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { log } from "./util.js";
 
 /**
@@ -157,6 +158,65 @@ export async function launchBrowser(chromium: any): Promise<any> {
     return await chromium.launch({ channel: "chrome", headless: true, args: LAUNCH_ARGS });
   } catch {
     return await chromium.launch({ headless: true, args: LAUNCH_ARGS });
+  }
+}
+
+/**
+ * SESSION AUTHENTIFIÉE — profil Chrome dédié, dossier de données SÉPARÉ (2026-08-05).
+ *
+ * Objectif : filmer un dashboard derrière login avec le MÊME moteur que le reste (curseur
+ * synthétique, scroll par à-coups, crf 16), sans jamais manipuler d'identifiant.
+ *
+ * Pourquoi un dossier séparé et pas un « profil » créé depuis le menu de Chrome : Chrome pose son
+ * verrou sur tout le dossier « User Data », pas par profil. Un profil créé dans l'installation
+ * habituelle obligerait donc à fermer TOUT Chrome avant chaque rendu. Un dossier distinct a son
+ * propre verrou : les deux navigateurs cohabitent.
+ *
+ * Pourquoi pas `storageState` : la connexion doit alors se faire dans un navigateur piloté, et
+ * Google la REFUSE (« ce navigateur n'est peut-être pas sécurisé »). Ici la connexion a lieu une
+ * fois, à la main, dans un Chrome normal lancé par `record-profile.bat` — aucune automatisation
+ * n'est présente au moment du login, donc rien à détecter.
+ *
+ * ⚠️ Ce dossier contient des sessions actives. Il vaut un mot de passe : jamais versionné, jamais
+ * envoyé, jamais copié ailleurs. Il est dans .gitignore.
+ */
+export const RECORD_PROFILE_DIR = ".chrome-record";
+
+/**
+ * Contexte persistant sur le profil d'enregistrement. Remplace launch()+newContext() : un profil
+ * persistant EST son propre contexte, on ne peut pas en créer un second par-dessus.
+ */
+export async function launchAuthedContext(
+  chromium: any,
+  userDataDir: string,
+  opts: Record<string, unknown>,
+): Promise<any> {
+  /**
+   * Si le dossier n'existe pas, Playwright en crée un vide SANS broncher : on filmerait alors une
+   * page déconnectée en croyant filmer le dashboard, et le défaut ne se verrait qu'au visionnage.
+   * On échoue avant, avec la marche à suivre.
+   */
+  if (!existsSync(userDataDir)) {
+    throw new Error(
+      `recording: profil d'enregistrement absent (${RECORD_PROFILE_DIR}).\n` +
+        `        Lance record-profile.bat une fois, connecte-toi à l'outil dans la fenêtre qui s'ouvre,\n` +
+        `        ferme-la, puis relance le rendu. La session reste sur cette machine.`,
+    );
+  }
+  const args = [...LAUNCH_ARGS];
+  try {
+    return await chromium.launchPersistentContext(userDataDir, { channel: "chrome", headless: false, args, ...opts });
+  } catch (e) {
+    try {
+      return await chromium.launchPersistentContext(userDataDir, { headless: false, args, ...opts });
+    } catch {
+      throw new Error(
+        `recording: impossible d'ouvrir le profil ${RECORD_PROFILE_DIR} — il est probablement déjà ouvert.\n` +
+          `        Ferme la fenêtre Chrome lancée par record-profile.bat, puis relance le rendu.\n` +
+          `        (Ton Chrome habituel peut rester ouvert : il utilise un autre dossier.)\n` +
+          `        Détail : ${e instanceof Error ? e.message.split("\n")[0] : String(e)}`,
+      );
+    }
   }
 }
 
