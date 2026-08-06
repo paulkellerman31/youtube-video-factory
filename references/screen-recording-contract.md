@@ -249,13 +249,40 @@ scènes ne se rendent que sur la machine de Théo, via `factory.bat`.
 
 ---
 
-## 4-bis. Scènes authentifiées — `"auth": true` (ajouté le 2026-08-06)
+## 4-bis. Scènes authentifiées — `"auth": true` — HORS FORMULE STANDARD
+
+> **Doctrine arrêtée le 2026-08-06, après construction ET test complet.** Le mécanisme marche.
+> Il ne sert quand même pas dans le flux normal, et voici pourquoi — pour ne pas le reconstruire
+> dans six mois en croyant avoir eu une idée.
+>
+> Un compte d'essai fraîchement créé est **vide** : pas de bot, pas de conversation, pas de
+> données. Il prouve donc qu'on s'est inscrit — ce que personne ne met en doute. Il est compatible
+> avec « ce type connaît l'outil » ET avec « ce type a créé un compte pour la vidéo », donc il ne
+> départage rien. Une preuve qui n'élimine aucune hypothèse ne convainc personne, quel qu'ait été
+> son coût de production.
+>
+> La version qui prouverait vraiment quelque chose — compte peuplé, bot monté, boîte de réception
+> pleine — exige d'utiliser l'outil pour de bon. C'est un coût récurrent **par outil**,
+> incompatible avec une stratégie de volume.
+>
+> **Ce qu'on fait à la place, et qui suffit :** les pages produit publiques des éditeurs SaaS
+> embarquent déjà des captures de leur propre interface, souvent peuplées de données de démo. On
+> filme donc ces sections — c'est le plan « dedans l'outil », gratuit, sans session, sans
+> expiration, sans risque de données personnelles. Le 20/80 est là.
+>
+> **Quand rallumer `auth` :** un outil que tu utilises déjà vraiment au quotidien, sur une review
+> soignée. Là, le compte est peuplé et la preuve discrimine enfin.
+>
+> **Piège de maintenance à connaître :** une scène `auth` rend le projet non re-rendable dès que
+> la session expire. Un projet en pages publiques reste rendable indéfiniment.
+
+### Le mécanisme (construit, testé, inerte tant qu'aucune scène ne le demande)
 
 Le dashboard connecté est le footage le plus convaincant qui existe : il prouve que l'outil est
 réellement utilisé, pas seulement lu. On sait maintenant le filmer avec le moteur de l'usine, sans
 jamais automatiser une connexion.
 
-### Le principe
+#### Le principe
 
 La connexion est faite **une seule fois, à la main, par un humain**, dans un Chrome normal. Le
 moteur ne fait que rouvrir ce profil déjà connecté et filmer. Aucune étape du login n'est
