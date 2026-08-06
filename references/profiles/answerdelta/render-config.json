@@ -1,4 +1,6 @@
 {
   "subtitles": "burned",
-  "note": "burned | cc | none — le .srt CC est TOUJOURS produit. burned choisi pour AnswerDelta : audience mobile et technique, beaucoup de visionnage sans son. Surchargeable par projet via project-config.json (champ subtitles)."
+  "note": "burned | cc | none — le .srt CC est TOUJOURS produit. burned choisi pour AnswerDelta : audience mobile et technique, beaucoup de visionnage sans son. Surchargeable par projet via project-config.json (champ subtitles).",
+  "accent": "#E8A33D",
+  "accentNote": "Couleur d'accent de la miniature (seam + ligne 2 du titre). Lue par la pipeline si l'entree thumbnail n'a pas de champ overlay.accent. Element d'identite : ne se decide pas par video."
 }

@@ -39,13 +39,31 @@ interface SceneAsset {
  * AI image. The channel mark comes from the profile — absent, the slot is simply left empty and
  * the render stays valid.
  */
+/**
+ * Couleur d'accent de la MINIATURE — profil de chaîne d'abord, entrée par vidéo ensuite.
+ *
+ * POURQUOI : `thumbnailOverlay` a `#00C8FF` en défaut, hérité de la chaîne OFM. Omettre
+ * `overlay.accent` sur une autre chaîne sortait donc une miniature aux couleurs d'OFM — sans
+ * erreur, sans avertissement, visible seulement à l'œil sur le fichier fini. Un élément
+ * d'identité ne doit pas dépendre d'un champ qu'on peut oublier : il est lu dans le profil.
+ * Le champ par vidéo reste prioritaire, pour ne rien casser et laisser une porte de sortie.
+ */
+function profileAccent(projectDir: string): string | undefined {
+  try {
+    const rc = JSON.parse(readFileSync(profileFile(projectDir, "render-config.json"), "utf8")) as { accent?: string };
+    if (typeof rc.accent === "string" && /^#[0-9a-fA-F]{6}$/.test(rc.accent.trim())) return rc.accent.trim();
+  } catch { /* pas de render-config -> on retombe sur le defaut du code */ }
+  return undefined;
+}
+
 function applyThumbnailOverlay(p: SceneAsset, rawFile: string, projectDir: string, dryRun: boolean): void {
   if (p.sceneId !== "thumbnail" || !p.overlay?.lines?.length) return;
   const logo = p.overlay.logo ? join(projectDir, p.overlay.logo) : null;
   const mark = join(getProfileDir(projectDir), "channel-mark.png");
   const hasMark = existsSync(mark);
   if (dryRun) {
-    log("DRY", `images: thumbnail DA "${p.overlay.lines.join(" / ")}" -> assets/thumbnail.jpg - $0 (ffmpeg local)`);
+    const acc = p.overlay.accent ?? profileAccent(projectDir);
+    log("DRY", `images: thumbnail DA "${p.overlay.lines.join(" / ")}" accent=${acc ?? "#00C8FF (DÉFAUT CODE — vérifie le profil de la chaîne)"} -> assets/thumbnail.jpg - $0 (ffmpeg local)`);
     if (p.overlay.logo && !existsSync(logo!)) log("WARN", `images: logo outil manquant (${p.overlay.logo}) — slot laissé vide`);
     if (!hasMark) log("WARN", `images: marque de chaîne absente (${mark}) — slot laissé vide, la DA n'est pas complète`);
     return;
@@ -60,7 +78,7 @@ function applyThumbnailOverlay(p: SceneAsset, rawFile: string, projectDir: strin
     image: rawFile,
     out: join(projectDir, "assets", "thumbnail.jpg"),
     lines: p.overlay.lines,
-    accent: p.overlay.accent,
+    accent: p.overlay.accent ?? profileAccent(projectDir),
     logo: logo && existsSync(logo) ? logo : null,
     channelMark: hasMark ? mark : null,
   });
