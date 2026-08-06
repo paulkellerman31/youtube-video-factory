@@ -1,6 +1,6 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { captureHashInput, screenCapture, type CaptureSpec } from "./lib/capture.js";
+import { captureHashInput, RECORD_PROFILE_DIR, screenCapture, type CaptureSpec } from "./lib/capture.js";
 import { recordingDurationSec, recordingHashInput, screenRecording, type RecordingSpec } from "./lib/recording.js";
 import { compositionDir, hyperframesHashInput, renderHyperframes, type HyperframesSpec } from "./lib/hyperframes.js";
 import { readManifest, writeFragment, type ImageFragment } from "./lib/manifest.js";
@@ -191,7 +191,14 @@ export async function generateImages(ctx: StepCtx): Promise<void> {
         continue;
       }
       if (dryRun) {
-        log("DRY", `images: ${p.sceneId} source=screen_recording url=${p.recording.url} beats=${p.recording.beats?.length ?? 0} ~${recordingDurationSec(p.recording).toFixed(1)}s - $0 (browser NOT launched)`);
+        /**
+         * Un profil d'enregistrement absent est une erreur de PRÉPARATION, pas de rendu. La dire
+         * ici, à la vérification, évite de la découvrir après plusieurs minutes de capture.
+         */
+        if (p.recording.auth && !existsSync(join(process.cwd(), RECORD_PROFILE_DIR))) {
+          log("WARN", `images: ${p.sceneId} est une scène authentifiée mais ${RECORD_PROFILE_DIR} n'existe pas — lance record-profile.bat et connecte-toi AVANT le rendu`);
+        }
+        log("DRY", `images: ${p.sceneId} source=screen_recording url=${p.recording.url}${p.recording.auth ? " [AUTH]" : ""} beats=${p.recording.beats?.length ?? 0} ~${recordingDurationSec(p.recording).toFixed(1)}s - $0 (browser NOT launched)`);
         generated++;
         continue;
       }
