@@ -435,6 +435,28 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
       );
     }
 
+    /**
+     * BANDES NOIRES — contrôle, parce que le défaut est invisible au code.
+     *
+     * L'enregistreur préserve le rapport largeur/hauteur : si la zone de page réelle n'a pas le
+     * même rapport que la taille demandée, il complète en noir au lieu d'échouer. Le mp4 sort
+     * « valide », aux bonnes dimensions, avec des bandes — et on ne s'en aperçoit qu'au
+     * visionnage. On mesure donc le viewport réel et on le dit.
+     */
+    const real = await page.evaluate(() => ({ w: window.innerWidth, h: window.innerHeight }));
+    const wantRatio = viewport.width / viewport.height;
+    const realRatio = real.w / real.h;
+    if (Math.abs(realRatio - wantRatio) / wantRatio > 0.01) {
+      log(
+        "WARN",
+        `recording: cadre réel ${real.w}x${real.h} (rapport ${realRatio.toFixed(3)}) ≠ demandé ` +
+          `${viewport.width}x${viewport.height} (${wantRatio.toFixed(3)}) — le clip aura des BANDES NOIRES. ` +
+          (spec.auth
+            ? `Cause probable : la fenêtre n'est pas en plein écran, ou la mise à l'échelle Windows n'est pas à 100 %.`
+            : `Cause probable : viewport trop grand pour l'écran.`),
+      );
+    }
+
     let pos = { x: viewport.width * 0.5, y: viewport.height * 0.62 };
     if (withCursor) await setCursor(page, pos.x, pos.y);
 
