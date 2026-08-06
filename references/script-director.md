@@ -279,55 +279,42 @@ sanction à **750 000 € (personne physique) / 3,75 M€ (personne morale)**.
 - Formulation type, à garder courte : *« Straight up — the link below is an affiliate link. I earn
   a commission. You pay the same price. It does not change the verdict. »*
 
-### Offre exclusive — le bloc `offer` du projet, et la règle du support immuable
+### Le bandeau CTA — libellé VERROUILLÉ, identique sur toutes les vidéos
 
-**Un CTA chiffré bat un CTA neutre de 34 à 38 %** (tests A/B agrégés — direction forte, pas loi).
-C'est le levier le plus puissant disponible, donc il vaut la peine d'aller chercher les codes
-auprès des programmes. Mais il se heurte à une asymétrie de support :
-
-> **La description est modifiable. La vidéo ne l'est pas.**
-
-Un code promo a une durée de vie. S'il expire dans trois mois et que la vidéo vit trois ans, elle
-affirme une offre disponible qui ne l'est plus — **de façon permanente et incorrigible**. C'est le
-motif exact sanctionné par **CA Paris, 2 avril 2025, RG 23/05696** (Tediber c/ Emma, **2 M€**) :
-ce n'est pas la promotion qui est illicite, c'est de la présenter comme disponible quand elle ne
-l'est plus.
-
-**Règle de placement, qui découle du support :**
-
-| L'offre est… | Dans la VOIX et le BANDEAU | Dans la DESCRIPTION |
-|---|---|---|
-| **Permanente** (partenariat, code evergreen) | le code et la réduction, en toutes lettres | idem |
-| **Temporaire ou incertaine** | rien de chiffré — *« check the description for the current deal »* | le code, éditable, retirable |
-| **Aucune** | l'offre publique réelle (essai, sans carte) | idem |
-
-Le CTR ne s'effondre pas dans le cas du milieu : le spectateur sait qu'il y a quelque chose pour
-lui en dessous. Ce qu'on perd, c'est le chiffre à l'oral — et seulement dans le cas où on ne
-pouvait pas le garantir.
-
-### Le bloc `offer` — une donnée du projet, pas une formule à improviser
-
-`project-config.json` porte désormais un bloc `offer` que le PLAN doit remplir **avant le rendu** :
-
-```json
-"offer": {
-  "type": "code | public",
-  "code": "OFM20", "discount": "20%",
-  "evergreen": true,
-  "verifiedOn": "2026-08-05",
-  "publicText": "Seven-day free trial. No credit card.",
-  "source": "<URL où le vérifier>"
-}
+```
+EXCLUSIVE DEAL BELOW
+Seven-day free trial. No card needed.                         ↓
 ```
 
-**Le CTA ne peut affirmer que ce que ce bloc déclare.** `evergreen: false` ou `type: "public"` ⇒
-ni la voix ni le bandeau ne prononcent de code, quelles qu'aient été les intentions. C'est une
-contrainte structurelle et pas un rappel : une affirmation commerciale ne doit pas pouvoir naître
-d'un oubli de vérification.
+Adapter uniquement la durée d'essai à l'outil (« seven-day », « fourteen-day », « free plan »).
+**Le reste ne se réécrit pas par vidéo** — c'est un CTA de chaîne, pas un exercice de style.
 
-⚠️ Et ne pas surestimer le levier même quand il est vrai : l'effet mesuré de la rareté (δ = 0,31,
-Barton et al. 2022, 416 tailles d'effet) porte sur des **intentions déclarées** — **24 effets sur
-416** mesurent un comportement réel. Direction probable, pas promesse de vente.
+Pourquoi cette formulation. La ligne 1 porte la **valeur** et la direction : un CTA à valeur
+chiffrée ou nommée bat un CTA neutre de 34 à 38 % (tests A/B agrégés — direction forte, pas loi),
+et les mots de curiosité sont « le positif le plus constant toutes niches confondues » sur YouTube.
+La ligne 2 porte les **deux critères de spécificité** — un chiffre (la durée) et une levée de
+risque explicite (« no card ») — ce qui la sort de la catégorie générique. Et « below » + la flèche
+disent où aller sans dépendre d'une surface éditable.
+
+**Le même appel, aux trois occurrences.** Répéter est neutre à positif ; varier les libellés est le
+motif « plusieurs actions concurrentes », mesuré à −22/−25 %.
+
+### La répartition des surfaces
+
+| Surface | Éditable après publication | Ce qu'elle porte |
+|---|---|---|
+| **Vidéo** (voix + bandeau) | non | l'essai et le renvoi vers la description — durable |
+| **Description** | oui | **le code, la réduction, la date** — tenue à jour par Théo |
+| **Titre** | oui | le mot-clé et l'angle — **pas l'offre**, voir ci-dessous |
+
+**Pourquoi pas l'offre dans le titre.** Ce n'est pas une question de droit, le titre est corrigeable.
+C'est que l'A/B natif de YouTube déclare vainqueur le titre au plus fort **temps de visionnage**,
+pas au meilleur CTR — et YouTube dit explicitement qu'un titre que le contenu ne tient pas produit
+une durée de visionnage faible. Un titre qui promet une réduction que la vidéo ne détaille pas
+attire des clics qui repartent, et l'outil de test le sanctionne. Le titre garde le mot-clé.
+
+> **Tenu par Théo, pas par la pipeline :** la description doit porter une offre réelle et à jour.
+> Le bandeau y renvoie sur toutes les vidéos, de façon permanente.
 
 ### Rappels — ce qui reste interdit quoi qu'il arrive
 
