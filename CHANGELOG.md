@@ -2,6 +2,51 @@
 
 Toute modification systémique (presets, pipeline, structure) se note ici. Une ligne par changement, datée.
 
+## 2026-08-06 — captures authentifiées (construites puis mises hors formule), et grand nettoyage
+
+- **Scènes authentifiées `"auth": true`** (`lib/capture.ts`, `lib/recording.ts`). Filme un
+  dashboard derrière login avec le moteur habituel, **sans jamais automatiser une connexion** : le
+  login est fait une fois à la main par `record-profile.bat`, dans un dossier de profil séparé
+  (`.chrome-record`, gitignoré). Dossier séparé et non un profil du menu Chrome, parce que **Chrome
+  verrouille tout le dossier « User Data », pas un profil** — sinon il faudrait fermer tout Chrome
+  avant chaque rendu.
+- **Interdits codés, pas recommandés** : aucun beat `click` dans une scène `auth` (erreur dure —
+  dans un compte réel, aucun clic n'est garantissable inoffensif) ; profil absent = arrêt dur, pour
+  ne pas filmer une page déconnectée sans s'en apercevoir.
+- **La capture tourne sans affichage**, y compris authentifiée. Deux échecs avant d'y arriver :
+  fenêtre normale → bandes noires (l'interface du navigateur mange ~90 px, le cadre réel est plus
+  plat que demandé, l'enregistreur complète en noir) ; plein écran kiosque → pire, la mise à
+  l'échelle Windows ×2 a donné 715×405 pour 1440×810 demandés. **Leçon : en mode visible la
+  géométrie dépend de l'écran physique**, que la pipeline ne contrôle pas. Échappatoire
+  `RECORD_HEADFUL=1`.
+- **Garde-fou de cadrage** : après chargement, comparaison du rapport du cadre réel au rapport
+  demandé, `WARN` au-delà de 1 %. Le défaut était invisible au code — le mp4 sortait aux bonnes
+  dimensions, avec des bandes.
+- **Traduction automatique coupée** (`--disable-features=Translate,TranslateUI --lang=en-US` dans
+  `LAUNCH_ARGS`, donc sur les captures publiques aussi) + **arrêt dur** si la page porte la marque
+  de Google Translate. Une page traduite est un défaut de *contenu* : le clip serait net, cadré,
+  de la bonne durée, et raconterait autre chose que le produit.
+- **`networkidle` n'est plus le critère de chargement** : une application temps réel garde une
+  connexion ouverte, le silence réseau n'arrive jamais et on payait le timeout entier. Chargement
+  sur `load`, puis `networkidle` en bonus plafonné à 8 s.
+- **DOCTRINE — `auth` est hors formule standard.** Un compte d'essai est vide : il prouve qu'on
+  s'est inscrit, ce que personne ne met en doute. Il ne départage aucune hypothèse, donc il ne
+  convainc pas, quel qu'ait été son coût. **Ce qu'on filme à la place** : les pages produit
+  publiques (`/platform/`, `/features/`, `/use-cases/`) qui embarquent déjà des captures de
+  l'interface de l'éditeur, souvent peuplées de données de démo. Gratuit, sans session, sans
+  expiration. Conditions pour rallumer `auth`, dans cet ordre : **1) l'offre est validée
+  (mesurée)**, 2) le compte est peuplé parce que l'outil est utilisé au quotidien. Sans mesure du
+  clic par outil (`/go/<tool>`), la condition 1 est invérifiable. Détail dans
+  `screen-recording-contract.md` §4-bis.
+- **Piège de maintenance** : une scène `auth` rend un projet non re-rendable dès que la session
+  expire. La scène 08 de BotPenguin, testée en authentifié, a été remise sur la page publique pour
+  cette raison — le projet redevient rendable indéfiniment.
+- **Nettoyage** : tout le rebut est dans `_POUBELLE-2026-08-06/` (107 Mo), à supprimer à la main.
+  Contenu : sorties de démo régénérables, harnais de test ponctuels, l'expérience A/B de juin sans
+  point d'entrée, un `STATE.md` périmé, l'ancien `final-v1.mp4`. `demo-*.mp4` et `_POUBELLE-*/`
+  ajoutés au `.gitignore`. **Vérifié après coup** : 35 imports relatifs résolus, `tsc --noEmit`
+  strict propre sur tout `scripts/`.
+
 ## 2026-08-01 (nuit) — voix propre « Theo 2 », découpage anti-dérive, débit auto-mesuré
 
 - **Nouvelle voix** : clone Pro de Théo (« Theo 2 »), `eleven_v3`, `stability 0.40` /
