@@ -2,6 +2,40 @@
 
 Toute modification systémique (presets, pipeline, structure) se note ici. Une ligne par changement, datée.
 
+## 2026-08-06 (soir) — nouvelle chaîne : AnswerDelta (outils GEO/AEO)
+
+- **Profil complet** dans `references/profiles/answerdelta/` : `style.md`, `thumbnail-playbook.md`,
+  `render-config.json` (`subtitles: burned`), `hyperframes-tokens.css`, `voice-config.json`
+  (même voix « Theo 2 », donc même débit mesuré de 165 mots/minute) et `voice-config.example.json`.
+  Projets dans `projects/answerdelta/`. Résolution vérifiée : `channel: "answerdelta"` dans un
+  `project-config.json` fait bien pointer les cinq fichiers sur le profil, aucun repli global.
+- **Aucun code touché.** La factory était déjà multi-chaînes ; une nouvelle chaîne est un dossier
+  de profil, pas un fork. C'est l'argument décisif contre la duplication du dépôt : une
+  correction de moteur profite aux deux chaînes le jour où elle est faite.
+- **Identité VERROUILLÉE — source de vérité hors factory : `answerdelta/identite.md` §9.** Accent
+  ambre `#E8A33D`, tiré du logo et de la bannière, 8,76:1 sur l'encre `#111111` (au-dessus du
+  seuil AAA), lisible à 360 px. Encre `#111111`, blanc, texte secondaire `#B9BEC6`, gris de
+  données `#8B919B`, surface `#1C1C1C`, grille `#1F1F1F`.
+- **L'accent est une couleur à DEUX valeurs.** `#E8A33D` ne donne que 2,16:1 sur blanc — illisible.
+  Tout ce que produit cette pipeline est sur fond sombre, donc `#E8A33D` partout ici ; `#A8650E`
+  (4,63:1, AA) est réservé aux surfaces claires, hors factory. À ne jamais intervertir.
+- **Règle non négociable de la chaîne : UN SEUL ACCENT PAR IMAGE.** L'ambre marque ce qui est
+  mesuré, jamais la décoration : dans un graphique à huit séries, sept en `#8B919B` et une en
+  ambre — celle dont parle la voix. Deux accents détruisent la hiérarchie et sortent du registre
+  « instrument » qui est la signature de la chaîne. Vaut pour images IA, hyperframes, overlays et
+  miniatures.
+- **Réserve assumée** : Semrush et Ahrefs sont orange. Verrouillé en le sachant — la
+  différenciation visée est celle du violet-bleu des outils de visibilité IA, pas celle des
+  outils SEO historiques.
+- **Piège documenté, à ne pas « réparer »** : `overlay.accent` a `#00C8FF` en défaut dans le code
+  (hérité d'OFM). L'omettre sur une miniature AnswerDelta sort les couleurs de l'autre chaîne,
+  sans erreur ni avertissement. Et `THUMBNAIL_DA.scrimColor` reste `#05070C` alors que l'encre
+  AnswerDelta est `#111111` : sans conséquence visible (dégradé à 92 % d'opacité sur une photo),
+  et y toucher invaliderait le cache de miniature des DEUX chaînes.
+- **Reste à déposer** : `references/profiles/answerdelta/channel-mark.png` (logo carré, fond
+  transparent). Absent = `WARN` au log et miniature sans son élément de reconnaissance le plus
+  fort.
+
 ## 2026-08-06 — captures authentifiées (construites puis mises hors formule), et grand nettoyage
 
 - **Scènes authentifiées `"auth": true`** (`lib/capture.ts`, `lib/recording.ts`). Filme un
