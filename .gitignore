@@ -17,3 +17,9 @@ node_modules/
 *.log
 **/_font.ttf
 tmp/
+
+# Profil Chrome d'enregistrement (sessions actives — vaut un mot de passe)
+.chrome-record/
+
+# Temporaires de capture video
+.recording-tmp/
