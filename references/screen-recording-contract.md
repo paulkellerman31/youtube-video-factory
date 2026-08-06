@@ -40,7 +40,8 @@
 **Champs.** `url` (requis, http(s) public) · `viewport` (défaut `1920x1080`, à garder égal à la
 résolution de sortie) · `cursor` (défaut `true`) · `hideSelectors` (en plus des sélecteurs
 cookies génériques) · `startAt` (`{ selector }` ou `{ y }` — position de départ appliquée hors
-caméra, voir §2) · `beats` (requis, ≥ 2).
+caméra, voir §2) · `auth` (défaut `false` — filme la session connectée du profil
+`.chrome-record`, voir §4-bis ; interdit tout beat `click`) · `beats` (requis, ≥ 2).
 
 **Verbes de beat :**
 
@@ -310,7 +311,9 @@ Une scène de dashboard greffée sur un script déjà écrit se voit. Le bon usa
 ## 5. `manual_asset` accepte toujours une vidéo
 
 Voie manuelle, complémentaire de 4-bis : utile quand la session est trop pénible à ouvrir, quand
-le parcours demande des clics (donc interdits en `auth`), ou quand il faut couper au montage. Extension : si `assets/captures/<sceneId>.mp4` (ou `.mov`) existe, il est conformé
+le parcours demande des clics (donc interdits en `auth`), ou quand il faut couper au montage.
+
+Si `assets/captures/<sceneId>.mp4` (ou `.mov`) existe, il est conformé
 comme un clip ; sinon `<sceneId>.png` est utilisé comme aujourd'hui. Aucun des deux = **arrêt
 dur**, jamais de repli silencieux sur `ai_image`. Hash = hash des octets du fichier.
 
