@@ -407,14 +407,24 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
     if (withCursor) await context.addInitScript(cursorInitScript(CURSOR_ID));
 
     const page = spec.auth ? (context.pages()[0] ?? await context.newPage()) : await context.newPage();
+    /**
+     * ATTENTE DE CHARGEMENT — pourquoi `networkidle` n'est pas le critère par défaut ici.
+     *
+     * `networkidle` attend 500 ms sans requête. Une application temps réel — messagerie,
+     * dashboard, notifications — garde une connexion ouverte et sonde en boucle : ce silence
+     * n'arrive JAMAIS, et on paie le timeout entier avant de basculer. Sur une session
+     * authentifiée c'est la règle, pas l'exception.
+     *
+     * On charge donc d'abord sur `load` (fiable partout), puis on tente `networkidle` en bonus
+     * avec un délai court : si la page se calme, tant mieux, sinon on continue. Un `settle` de
+     * 1200 ms suit de toute façon, et le premier beat est un `settle` explicite.
+     */
     let status = 0;
-    try {
-      const resp = await page.goto(spec.url, { waitUntil: "networkidle", timeout: 60_000 });
-      status = resp?.status() ?? 0;
-    } catch {
-      const resp = await page.goto(spec.url, { waitUntil: "load", timeout: 60_000 });
-      status = resp?.status() ?? 0;
-    }
+    const resp = await page.goto(spec.url, { waitUntil: "load", timeout: 60_000 });
+    status = resp?.status() ?? 0;
+    await page.waitForLoadState("networkidle", { timeout: 8_000 }).catch(() => {
+      log("INFO", "recording: trafic réseau permanent (application temps réel) — on continue sans attendre le silence");
+    });
 
     await hideCookieBanners(page, spec.hideSelectors);
     if (spec.freezeLoops !== false) await freezeLoopingAnimations(page);
