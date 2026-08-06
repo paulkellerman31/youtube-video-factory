@@ -1,0 +1,8 @@
+{
+  "provider": "elevenlabs",
+  "voiceId": "REMPLIR_ton_voiceId_elevenlabs",
+  "modelId": "eleven_v3",
+  "settings": { "stability": 0.4, "similarityBoost": 0.65, "style": 0.05, "useSpeakerBoost": true },
+  "maxCharsPerRequest": 800,
+  "note": "Copie ce fichier en voice-config.json et mets ton voiceId. voice-config.json est gitignore. Reglages identiques a la chaine OFM : meme voix (clone Pro « Theo 2 »), donc meme debit mesure (165 mots/minute) et mêmes bornes — ne PAS monter stability au-dessus de 0.5 ni similarity au-dessus de 0.85. Voir references/voice-contract.md."
+}

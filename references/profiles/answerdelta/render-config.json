@@ -1,0 +1,4 @@
+{
+  "subtitles": "burned",
+  "note": "burned | cc | none — le .srt CC est TOUJOURS produit. burned choisi pour AnswerDelta : audience mobile et technique, beaucoup de visionnage sans son. Surchargeable par projet via project-config.json (champ subtitles)."
+}

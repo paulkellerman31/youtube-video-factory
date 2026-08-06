@@ -1,0 +1,24 @@
+/* Tokens DA hyperframes — chaîne AnswerDelta. Copier ce bloc :root dans le <style> de chaque
+   compo GRAPHIC d'un projet answerdelta (compo autonome : on inline, pas d'import au rendu).
+   Source de vérité de l'identité : answerdelta/identite.md §9. */
+:root {
+  --bg:       #111111;   /* encre de marque */
+  --bg-glow:  #1c1c1c;   /* surface surélevée : cartes, panneaux */
+  --accent:   #e8a33d;   /* ambre de marque — 8,76:1 sur l'encre, AAA */
+  --accent2:  #a8650e;   /* ambre fond clair — NE PAS utiliser sur sombre (trop sourd) */
+  --ink:      #ffffff;   /* texte principal */
+  --muted:    #b9bec6;   /* texte secondaire, légendes */
+  --data:     #8b919b;   /* séries de données NON mises en avant */
+  --dim:      #1f1f1f;   /* grille, axes, séparateurs */
+  --alert:    #ff3b30;   /* perte / blocage / chute uniquement, <= 15% de la surface */
+  --font:     Arial, Helvetica, sans-serif;
+}
+
+/* RÈGLE NON NÉGOCIABLE — un seul accent par compo.
+   L'ambre marque CE QUI EST MESURÉ, jamais la décoration. Dans un graphique à huit séries, sept
+   sont en --data et UNE est en --accent : celle dont parle la voix. Deux accents dans une même
+   image détruisent la hiérarchie et sortent du registre « instrument » qui est la signature de
+   la chaîne. Si deux choses semblent mériter l'accent, c'est qu'il faut deux compos.
+
+   Feel : instrument de laboratoire. Fond quasi noir, grille discrète, gros chiffres blancs,
+   une seule zone chaude. Pas de dégradé décoratif, pas de glow diffus, pas de néon. */
