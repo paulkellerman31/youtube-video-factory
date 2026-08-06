@@ -282,9 +282,14 @@ sanction à **750 000 € (personne physique) / 3,75 M€ (personne morale)**.
 ### Le bandeau CTA — libellé VERROUILLÉ, identique sur toutes les vidéos
 
 ```
-EXCLUSIVE DEAL BELOW
+EXCLUSIVE DEAL IN DESCRIPTION
 Seven-day free trial. No card needed.                         ↓
 ```
+
+⚠️ **« in description », pas « below ».** La flèche porte déjà la direction ; le texte doit porter
+la DESTINATION. Et « below » est ambigu sur mobile — dans l'app YouTube la description est derrière
+un appui sur le titre, tandis que ce qui se trouve visuellement en dessous, ce sont les
+commentaires.
 
 Adapter uniquement la durée d'essai à l'outil (« seven-day », « fourteen-day », « free plan »).
 **Le reste ne se réécrit pas par vidéo** — c'est un CTA de chaîne, pas un exercice de style.
