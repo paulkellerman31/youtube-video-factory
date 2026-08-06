@@ -27,9 +27,15 @@ Toute modification systémique (presets, pipeline, structure) se note ici. Une l
 - **Réserve assumée** : Semrush et Ahrefs sont orange. Verrouillé en le sachant — la
   différenciation visée est celle du violet-bleu des outils de visibilité IA, pas celle des
   outils SEO historiques.
-- **Piège documenté, à ne pas « réparer »** : `overlay.accent` a `#00C8FF` en défaut dans le code
-  (hérité d'OFM). L'omettre sur une miniature AnswerDelta sort les couleurs de l'autre chaîne,
-  sans erreur ni avertissement. Et `THUMBNAIL_DA.scrimColor` reste `#05070C` alors que l'encre
+- **Faille silencieuse fermée dans la foulée** : `overlay.accent` avait `#00C8FF` en défaut dans
+  le code (hérité d'OFM), donc l'omettre sur une miniature AnswerDelta sortait les couleurs de
+  l'autre chaîne — sans erreur, sans avertissement, visible seulement à l'œil sur le fichier
+  fini. La couleur d'accent est désormais lue dans `render-config.json` du profil de chaîne
+  (`profileAccent()`, `generate-images.ts`) ; le champ par vidéo reste prioritaire, et le dry-run
+  imprime la couleur retenue. Un élément d'identité ne doit pas dépendre d'un champ qu'on peut
+  oublier. `accent` ajouté aux deux profils : `#00C8FF` pour ofm, `#E8A33D` pour answerdelta —
+  comportement d'OFM inchangé, ses prompts portaient déjà la valeur.
+- **À ne pas « réparer »** : `THUMBNAIL_DA.scrimColor` reste `#05070C` alors que l'encre
   AnswerDelta est `#111111` : sans conséquence visible (dégradé à 92 % d'opacité sur une photo),
   et y toucher invaliderait le cache de miniature des DEUX chaînes.
 - **Reste à déposer** : `references/profiles/answerdelta/channel-mark.png` (logo carré, fond

@@ -37,9 +37,12 @@ cent vidéos.
 
 - `quality: "high"` **uniquement ici** — c'est l'asset CTR, le seul endroit où le tier haut se
   rentabilise.
-- `accent` **doit valoir `#E8A33D`** sur cette chaîne. C'est la seule ligne qui porte l'identité
-  couleur : le code a `#00C8FF` en défaut, hérité d'OFM. L'oublier sort une miniature aux
-  couleurs de l'autre chaîne, sans erreur ni avertissement.
+- `accent` vaut `#E8A33D` sur cette chaîne. **Filet ajouté le 2026-08-06** : si le champ est
+  absent, la pipeline lit `accent` dans `render-config.json` du profil — un élément d'identité ne
+  doit pas dépendre d'un champ qu'on peut oublier. Avant ce correctif, l'omettre sortait une
+  miniature aux couleurs d'OFM (`#00C8FF`, le défaut du code), sans erreur ni avertissement. Le
+  champ par vidéo reste prioritaire s'il est présent, et le dry-run imprime désormais la couleur
+  retenue : vérifie-la à l'étape 1/2.
 - `logo` pointe un **vrai PNG** téléchargé depuis le press kit de l'éditeur, chemin relatif au
   dossier du projet. Un logo n'est **jamais** généré par IA (le modèle ne sait pas écrire).
   Fichier absent = pas de logo, le reste est rendu normalement.
