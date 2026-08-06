@@ -203,7 +203,30 @@ export async function launchAuthedContext(
         `        ferme-la, puis relance le rendu. La session reste sur cette machine.`,
     );
   }
-  const args = [...LAUNCH_ARGS];
+  /**
+   * PLEIN ÉCRAN OBLIGATOIRE — sinon bandes noires (constaté 2026-08-06).
+   *
+   * En mode visible, Playwright n'émule pas le viewport : il REDIMENSIONNE la fenêtre. Une fenêtre
+   * Chrome normale porte ~90 px d'interface (onglets + barre d'adresse), donc sur un écran 1080p
+   * la zone de page ne peut pas faire 1080 px de haut. Le viewport réel devient plus plat que
+   * celui demandé, et l'enregistreur, qui préserve le rapport, complète en noir : bandes.
+   *
+   * `--kiosk` supprime toute l'interface : la zone de page occupe l'écran entier, donc un vrai
+   * 16/9. `--force-device-scale-factor=1` neutralise la mise à l'échelle Windows (à 125 %, un
+   * écran 1920 n'offre que 1536 px CSS — même cause, même bandes).
+   *
+   * Contrepartie assumée : pendant la capture, Chrome occupe tout l'écran. C'est quinze secondes,
+   * et c'est le seul moyen d'obtenir un cadre propre en mode visible.
+   */
+  const args = [
+    ...LAUNCH_ARGS,
+    "--kiosk",
+    "--start-fullscreen",
+    "--force-device-scale-factor=1",
+    "--window-position=0,0",
+    "--hide-crash-restore-bubble",
+    "--disable-session-crashed-bubble",
+  ];
   try {
     return await chromium.launchPersistentContext(userDataDir, { channel: "chrome", headless: false, args, ...opts });
   } catch (e) {
