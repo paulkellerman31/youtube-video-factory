@@ -270,8 +270,20 @@ scènes ne se rendent que sur la machine de Théo, via `factory.bat`.
 > filme donc ces sections — c'est le plan « dedans l'outil », gratuit, sans session, sans
 > expiration, sans risque de données personnelles. Le 20/80 est là.
 >
-> **Quand rallumer `auth` :** un outil que tu utilises déjà vraiment au quotidien, sur une review
-> soignée. Là, le compte est peuplé et la preuve discrimine enfin.
+> **Quand rallumer `auth` — deux conditions, dans cet ordre :**
+>
+> 1. **L'offre est validée.** Elle rapporte, mesurément : des clics sur le lien, et des
+>    commissions derrière. Tant qu'on ignore si un outil convertit, toute dépense de production
+>    supplémentaire mise sur une inconnue. La règle générale, posée par Théo le 2026-08-06 :
+>    *on n'améliore pas la production d'une offre non validée, on en publie plus et on mesure.*
+>    L'ordre est validation → investissement, jamais l'inverse — et il vaut pour le dashboard
+>    comme pour toute autre montée en qualité par vidéo.
+> 2. **Le compte est peuplé**, parce que tu utilises déjà l'outil au quotidien. Un compte vide ne
+>    prouve rien (voir plus haut), même sur une offre qui marche.
+>
+> Corollaire opérationnel : sans mesure du clic par outil, la condition 1 est **invérifiable**.
+> Les slugs `/go/<tool>` ne sont donc pas un raffinement, ce sont eux qui rendent toute la
+> hiérarchisation possible.
 >
 > **Piège de maintenance à connaître :** une scène `auth` rend le projet non re-rendable dès que
 > la session expire. Un projet en pages publiques reste rendable indéfiniment.
