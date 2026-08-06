@@ -217,34 +217,36 @@ export async function launchAuthedContext(
     );
   }
   /**
-   * PLEIN ÉCRAN OBLIGATOIRE — sinon bandes noires (constaté 2026-08-06).
+   * SANS FENÊTRE — décision du 2026-08-06, après deux échecs de cadrage.
    *
-   * En mode visible, Playwright n'émule pas le viewport : il REDIMENSIONNE la fenêtre. Une fenêtre
-   * Chrome normale porte ~90 px d'interface (onglets + barre d'adresse), donc sur un écran 1080p
-   * la zone de page ne peut pas faire 1080 px de haut. Le viewport réel devient plus plat que
-   * celui demandé, et l'enregistreur, qui préserve le rapport, complète en noir : bandes.
+   * Tentative 1, fenêtre normale : Playwright n'émule pas le viewport en mode visible, il
+   * REDIMENSIONNE la fenêtre. L'interface de Chrome mange ~90 px, la zone de page était trop
+   * plate, l'enregistreur complétait en noir. Tentative 2, plein écran kiosque : la mise à
+   * l'échelle Windows (ici ×2) a rendu la zone de page deux fois plus petite que demandée, et
+   * l'enregistreur a collé l'image en haut à gauche d'un cadre deux fois trop grand.
    *
-   * `--kiosk` supprime toute l'interface : la zone de page occupe l'écran entier, donc un vrai
-   * 16/9. `--force-device-scale-factor=1` neutralise la mise à l'échelle Windows (à 125 %, un
-   * écran 1920 n'offre que 1536 px CSS — même cause, même bandes).
+   * Le point commun des deux échecs : en mode visible, la taille de l'image dépend de l'écran
+   * physique et de ses réglages, que la pipeline ne contrôle pas. Sans fenêtre, Playwright pose
+   * le viewport exactement — c'est déjà pourquoi les captures de pages publiques n'ont jamais eu
+   * ce problème. La session connectée vient du dossier de profil, pas de l'affichage : elle est
+   * lue de la même façon, avec ou sans fenêtre.
    *
-   * Contrepartie assumée : pendant la capture, Chrome occupe tout l'écran. C'est quinze secondes,
-   * et c'est le seul moyen d'obtenir un cadre propre en mode visible.
+   * Bonus : l'écran n'est plus confisqué pendant la capture.
+   *
+   * Échappatoire si un site refuse le mode sans fenêtre : RECORD_HEADFUL=1.
    */
-  const args = [
-    ...LAUNCH_ARGS,
-    "--kiosk",
-    "--start-fullscreen",
-    "--force-device-scale-factor=1",
-    "--window-position=0,0",
-    "--hide-crash-restore-bubble",
-    "--disable-session-crashed-bubble",
-  ];
+  const headful = process.env.RECORD_HEADFUL === "1";
+  const args = [...LAUNCH_ARGS];
+  if (headful) {
+    // Mode visible : au moins supprimer l'interface, sinon le cadre est faux à coup sûr.
+    args.push("--kiosk", "--start-fullscreen", "--window-position=0,0");
+    log("WARN", "recording: RECORD_HEADFUL=1 — mode visible, le cadrage dépend de l'écran (bandes possibles)");
+  }
   try {
-    return await chromium.launchPersistentContext(userDataDir, { channel: "chrome", headless: false, args, ...opts });
+    return await chromium.launchPersistentContext(userDataDir, { channel: "chrome", headless: !headful, args, ...opts });
   } catch (e) {
     try {
-      return await chromium.launchPersistentContext(userDataDir, { headless: false, args, ...opts });
+      return await chromium.launchPersistentContext(userDataDir, { headless: !headful, args, ...opts });
     } catch {
       throw new Error(
         `recording: impossible d'ouvrir le profil ${RECORD_PROFILE_DIR} — il est probablement déjà ouvert.\n` +
