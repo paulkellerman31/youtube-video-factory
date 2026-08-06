@@ -408,3 +408,10 @@ Voir le quota et les beats obligatoires dans `script-director.md` § TOOL FOOTAG
 - **Le scroll de ton propre article de blog** (`ofm-tools.com/...`) est une source de premier
   choix : jamais bloquée, elle prouve que le travail de recherche existe, et elle expose le site
   au passage. Bon candidat pour la scène de preuve ou pour la transition vers le CTA.
+- **Pour montrer « l'intérieur » de l'outil, viser les pages produit qui embarquent des captures
+  de l'interface** — `/platform/...`, `/features/...`, `/use-cases/...`. Les éditeurs SaaS y
+  affichent leur propre console, souvent peuplée de données de démo, en haute définition et déjà
+  mise en scène. C'est le plan dashboard, gratuit : pas de session, pas d'expiration, pas de
+  données personnelles, pas de compte vide qui ne prouve rien (voir §4-bis). Au repérage, noter
+  quelles pages en contiennent : elles valent plus qu'une page de texte, et ce sont elles qu'on
+  filme quand le script dit « voilà à quoi ça ressemble ».
