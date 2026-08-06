@@ -402,7 +402,7 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
     context = spec.auth
       ? await launchAuthedContext(chromium, join(process.cwd(), RECORD_PROFILE_DIR), ctxOpts)
       : await browser!.newContext(ctxOpts);
-    if (spec.auth) log("INFO", `recording: session authentifiée — profil ${RECORD_PROFILE_DIR} (lecture seule)`);
+    if (spec.auth) log("INFO", `recording: session authentifiée — profil ${RECORD_PROFILE_DIR} (lecture seule, sans fenêtre)`);
     await hideAutomation(context);
     if (withCursor) await context.addInitScript(cursorInitScript(CURSOR_ID));
 
@@ -471,9 +471,7 @@ export async function screenRecording(spec: RecordingSpec, outFile: string): Pro
         "WARN",
         `recording: cadre réel ${real.w}x${real.h} (rapport ${realRatio.toFixed(3)}) ≠ demandé ` +
           `${viewport.width}x${viewport.height} (${wantRatio.toFixed(3)}) — le clip aura des BANDES NOIRES. ` +
-          (spec.auth
-            ? `Cause probable : la fenêtre n'est pas en plein écran, ou la mise à l'échelle Windows n'est pas à 100 %.`
-            : `Cause probable : viewport trop grand pour l'écran.`),
+          `Cause probable : RECORD_HEADFUL=1 (le cadre dépend alors de l'écran physique).`,
       );
     }
 
