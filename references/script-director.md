@@ -279,7 +279,57 @@ sanction à **750 000 € (personne physique) / 3,75 M€ (personne morale)**.
 - Formulation type, à garder courte : *« Straight up — the link below is an affiliate link. I earn
   a commission. You pay the same price. It does not change the verdict. »*
 
-### Offre exclusive — seulement si elle existe
+### Offre exclusive — le bloc `offer` du projet, et la règle du support immuable
+
+**Un CTA chiffré bat un CTA neutre de 34 à 38 %** (tests A/B agrégés — direction forte, pas loi).
+C'est le levier le plus puissant disponible, donc il vaut la peine d'aller chercher les codes
+auprès des programmes. Mais il se heurte à une asymétrie de support :
+
+> **La description est modifiable. La vidéo ne l'est pas.**
+
+Un code promo a une durée de vie. S'il expire dans trois mois et que la vidéo vit trois ans, elle
+affirme une offre disponible qui ne l'est plus — **de façon permanente et incorrigible**. C'est le
+motif exact sanctionné par **CA Paris, 2 avril 2025, RG 23/05696** (Tediber c/ Emma, **2 M€**) :
+ce n'est pas la promotion qui est illicite, c'est de la présenter comme disponible quand elle ne
+l'est plus.
+
+**Règle de placement, qui découle du support :**
+
+| L'offre est… | Dans la VOIX et le BANDEAU | Dans la DESCRIPTION |
+|---|---|---|
+| **Permanente** (partenariat, code evergreen) | le code et la réduction, en toutes lettres | idem |
+| **Temporaire ou incertaine** | rien de chiffré — *« check the description for the current deal »* | le code, éditable, retirable |
+| **Aucune** | l'offre publique réelle (essai, sans carte) | idem |
+
+Le CTR ne s'effondre pas dans le cas du milieu : le spectateur sait qu'il y a quelque chose pour
+lui en dessous. Ce qu'on perd, c'est le chiffre à l'oral — et seulement dans le cas où on ne
+pouvait pas le garantir.
+
+### Le bloc `offer` — une donnée du projet, pas une formule à improviser
+
+`project-config.json` porte désormais un bloc `offer` que le PLAN doit remplir **avant le rendu** :
+
+```json
+"offer": {
+  "type": "code | public",
+  "code": "OFM20", "discount": "20%",
+  "evergreen": true,
+  "verifiedOn": "2026-08-05",
+  "publicText": "Seven-day free trial. No credit card.",
+  "source": "<URL où le vérifier>"
+}
+```
+
+**Le CTA ne peut affirmer que ce que ce bloc déclare.** `evergreen: false` ou `type: "public"` ⇒
+ni la voix ni le bandeau ne prononcent de code, quelles qu'aient été les intentions. C'est une
+contrainte structurelle et pas un rappel : une affirmation commerciale ne doit pas pouvoir naître
+d'un oubli de vérification.
+
+⚠️ Et ne pas surestimer le levier même quand il est vrai : l'effet mesuré de la rareté (δ = 0,31,
+Barton et al. 2022, 416 tailles d'effet) porte sur des **intentions déclarées** — **24 effets sur
+416** mesurent un comportement réel. Direction probable, pas promesse de vente.
+
+### Rappels — ce qui reste interdit quoi qu'il arrive
 
 Une offre ou un code réellement négociés avec le programme sont le CTA le plus fort disponible :
 on les écrit, chiffrés et datés. **Sinon on écrit l'offre publique réelle** (« essai de sept jours,
