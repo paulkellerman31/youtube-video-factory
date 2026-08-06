@@ -23,3 +23,9 @@ tmp/
 
 # Temporaires de capture video
 .recording-tmp/
+
+# Sorties de demo regenerables (demo-recording.bat) — jamais versionnees
+demo-*.mp4
+
+# Dossiers de mise au rebut, en attente de suppression par l'humain
+_POUBELLE-*/
