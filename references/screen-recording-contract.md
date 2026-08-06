@@ -283,6 +283,27 @@ piloté pour le produire, ce qui ramène au blocage Google.
 À refaire seulement quand la session expire. Le dry-run avertit si `.chrome-record` est absent —
 l'erreur se voit à la vérification, pas après dix minutes de capture.
 
+### Plein écran obligatoire — la cause des bandes noires
+
+Constaté au premier test réel (2026-08-06) : le clip sortait avec des bandes noires. En mode
+visible, Playwright **n'émule pas** le viewport, il redimensionne la fenêtre. Une fenêtre Chrome
+normale porte ~90 px d'interface, donc sur un écran 1080p la zone de page ne peut pas faire 1080
+de haut : le cadre réel est plus plat que celui demandé, et l'enregistreur — qui préserve le
+rapport — complète en noir au lieu d'échouer. Le mp4 sort « valide », aux bonnes dimensions,
+avec des bandes.
+
+Deux correctifs, tous deux dans `launchAuthedContext` :
+
+- `--kiosk --start-fullscreen` : plus d'interface, la page occupe l'écran entier, vrai 16/9.
+- `--force-device-scale-factor=1` : à 125 % de mise à l'échelle Windows, un écran 1920 n'offre que
+  1536 px CSS — même cause, mêmes bandes.
+
+Contrepartie assumée : pendant la capture, Chrome occupe tout l'écran. Quinze secondes.
+
+Et un garde-fou, parce que le défaut était **invisible au code** : après chargement, le moteur
+compare le rapport du cadre réel à celui demandé et logue un `WARN` explicite au-delà de 1 %
+d'écart. Un clip aux bonnes dimensions n'est pas un clip au bon cadrage — il fallait mesurer.
+
 ### Règles codées, pas recommandées
 
 - **Aucun beat `click` dans une scène `auth`** — erreur dure dans `screenRecording()`. Sur un site
