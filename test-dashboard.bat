@@ -17,8 +17,8 @@ if not exist ".chrome-record" (
   exit /b 1
 )
 
-echo   Une fenetre Chrome va s ouvrir. Ne clique pas dedans.
-echo   Elle se fermera toute seule a la fin ^(~15 s^).
+echo   Aucune fenetre ne va s ouvrir : le navigateur tourne sans affichage.
+echo   Ton ecran reste libre, ca prend ~15 s.
 echo.
 
 set DEMO_URL=https://app.botpenguin.com/home-v2

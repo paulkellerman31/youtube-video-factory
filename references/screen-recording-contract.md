@@ -283,26 +283,36 @@ piloté pour le produire, ce qui ramène au blocage Google.
 À refaire seulement quand la session expire. Le dry-run avertit si `.chrome-record` est absent —
 l'erreur se voit à la vérification, pas après dix minutes de capture.
 
-### Plein écran obligatoire — la cause des bandes noires
+### Sans fenêtre — et pourquoi il a fallu deux échecs pour y arriver
 
-Constaté au premier test réel (2026-08-06) : le clip sortait avec des bandes noires. En mode
-visible, Playwright **n'émule pas** le viewport, il redimensionne la fenêtre. Une fenêtre Chrome
-normale porte ~90 px d'interface, donc sur un écran 1080p la zone de page ne peut pas faire 1080
-de haut : le cadre réel est plus plat que celui demandé, et l'enregistreur — qui préserve le
-rapport — complète en noir au lieu d'échouer. Le mp4 sort « valide », aux bonnes dimensions,
-avec des bandes.
+La capture authentifiée tourne **sans affichage**, comme les captures publiques. Ce n'était pas
+le premier choix, et le chemin vaut d'être gardé.
 
-Deux correctifs, tous deux dans `launchAuthedContext` :
+Tentative 1, fenêtre Chrome normale : bandes noires en haut et en bas. En mode visible, Playwright
+n'émule pas le viewport, il redimensionne la fenêtre — et l'interface de Chrome mange ~90 px, donc
+sur un écran 1080p la zone de page ne peut pas faire 1080 de haut. Le cadre réel était plus plat
+que celui demandé et l'enregistreur, qui préserve le rapport, complétait en noir.
 
-- `--kiosk --start-fullscreen` : plus d'interface, la page occupe l'écran entier, vrai 16/9.
-- `--force-device-scale-factor=1` : à 125 % de mise à l'échelle Windows, un écran 1920 n'offre que
-  1536 px CSS — même cause, mêmes bandes.
+Tentative 2, plein écran kiosque : pire. La mise à l'échelle Windows (×2 sur cette machine) a
+donné une zone de page de 715×405 pour 1440×810 demandés, et l'enregistreur a collé l'image en
+haut à gauche d'un cadre deux fois trop grand.
 
-Contrepartie assumée : pendant la capture, Chrome occupe tout l'écran. Quinze secondes.
+Le point commun, qui est la vraie leçon : **en mode visible, la taille de l'image dépend de
+l'écran physique et de ses réglages** — interface du navigateur, résolution, facteur d'échelle —
+c'est-à-dire de trois choses que la pipeline ne contrôle pas et qui varient d'une machine à
+l'autre. Sans fenêtre, Playwright pose le viewport exactement. C'est d'ailleurs pourquoi les
+captures de pages publiques n'ont jamais eu ce problème : elles étaient déjà sans affichage.
 
-Et un garde-fou, parce que le défaut était **invisible au code** : après chargement, le moteur
-compare le rapport du cadre réel à celui demandé et logue un `WARN` explicite au-delà de 1 %
-d'écart. Un clip aux bonnes dimensions n'est pas un clip au bon cadrage — il fallait mesurer.
+La session connectée vient du **dossier de profil**, pas de l'affichage : elle est lue à
+l'identique avec ou sans fenêtre. Seul le *login* exige un vrai navigateur visible, et il a lieu
+dans `record-profile.bat`. Bonus : l'écran n'est plus confisqué pendant la capture.
+
+Échappatoire si un site refuse le mode sans fenêtre : `RECORD_HEADFUL=1`. Le kiosque est alors
+appliqué et un `WARN` prévient que le cadrage dépend de l'écran.
+
+Le garde-fou reste en place quel que soit le mode : après chargement, le moteur compare le rapport
+du cadre réel à celui demandé et logue un `WARN` au-delà de 1 % d'écart. Un clip aux bonnes
+dimensions n'est pas un clip au bon cadrage — c'était exactement l'angle mort des deux tentatives.
 
 ### Traduction automatique — refusée par construction
 

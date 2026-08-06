@@ -58,7 +58,7 @@ const out = `demo-${SLUG}.mp4`;
 console.log(`Enregistrement de ${URL} …`);
 console.log(
   AUTH
-    ? "Mode authentifié : une fenêtre Chrome VA s'ouvrir sur le profil .chrome-record.\nNe clique pas dedans, ne la ferme pas — elle se ferme toute seule à la fin.\n"
+    ? "Mode authentifié : profil .chrome-record, sans fenêtre. Ton écran reste libre.\n"
     : "Une fenêtre Chrome ne s'ouvrira pas : le navigateur tourne en arrière-plan.\n",
 );
 
