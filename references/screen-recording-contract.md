@@ -236,8 +236,10 @@ scènes ne se rendent que sur la machine de Théo, via `factory.bat`.
 
 ## 4. Interdits — non négociables
 
-- **URLs publiques uniquement. Aucune automatisation de login, jamais.** Pas de saisie
-  d'identifiants, pas de formulaire d'authentification, pas de cookie de session rejoué.
+- **Aucune automatisation de login, jamais.** Pas de saisie d'identifiants, pas de formulaire
+  d'authentification, pas de cookie de session rejoué, aucun secret transmis à l'assistant. Une
+  page derrière login se filme uniquement via le profil décrit en 4-bis, où l'humain s'est
+  connecté lui-même, à la main, hors de toute automatisation.
 - `click` est réservé aux interactions **inoffensives et locales à la page** : onglet, accordéon,
   bascule mensuel/annuel d'une grille tarifaire, carrousel. Interdit : tout ce qui soumet un
   formulaire, crée un compte, lance un paiement, un essai, ou navigue hors du domaine.
@@ -246,10 +248,69 @@ scènes ne se rendent que sur la machine de Théo, via `factory.bat`.
 
 ---
 
-## 5. `manual_asset` accepte désormais une vidéo
+## 4-bis. Scènes authentifiées — `"auth": true` (ajouté le 2026-08-06)
 
-Le dashboard derrière login est le footage le plus convaincant qui existe — et il n'est pas
-automatisable. Extension : si `assets/captures/<sceneId>.mp4` (ou `.mov`) existe, il est conformé
+Le dashboard connecté est le footage le plus convaincant qui existe : il prouve que l'outil est
+réellement utilisé, pas seulement lu. On sait maintenant le filmer avec le moteur de l'usine, sans
+jamais automatiser une connexion.
+
+### Le principe
+
+La connexion est faite **une seule fois, à la main, par un humain**, dans un Chrome normal. Le
+moteur ne fait que rouvrir ce profil déjà connecté et filmer. Aucune étape du login n'est
+scriptée — c'est ce qui rend la chose à la fois sûre et fonctionnelle : Google refuse activement
+les connexions depuis un navigateur piloté (« ce navigateur n'est peut-être pas sécurisé »), donc
+tenter de scripter le login échouerait de toute façon.
+
+### Pourquoi un dossier séparé et pas le profil Chrome habituel
+
+**Chrome verrouille tout le dossier « User Data », pas un profil.** Un profil créé depuis le menu
+Chrome vit à l'intérieur du dossier partagé : tant que le Chrome principal tourne, Playwright ne
+peut pas l'ouvrir, et il faudrait tout fermer à chaque rendu. Un `--user-data-dir` distinct a son
+propre verrou : les deux Chrome cohabitent. C'est la seule raison de ce détour.
+
+`storageState` (export des cookies) a été écarté : il faut d'abord se connecter dans un navigateur
+piloté pour le produire, ce qui ramène au blocage Google.
+
+### La marche à suivre
+
+1. Lancer `record-profile.bat` à la racine du repo. Il ouvre un Chrome sur `.chrome-record/`.
+2. Se connecter à l'outil à filmer, vérifier que le dashboard s'affiche proprement.
+3. **Fermer cette fenêtre.** Le Chrome habituel peut rester ouvert.
+4. Marquer les scènes concernées `"auth": true` dans `recording` (`image-prompts.json`).
+
+À refaire seulement quand la session expire. Le dry-run avertit si `.chrome-record` est absent —
+l'erreur se voit à la vérification, pas après dix minutes de capture.
+
+### Règles codées, pas recommandées
+
+- **Aucun beat `click` dans une scène `auth`** — erreur dure dans `screenRecording()`. Sur un site
+  vitrine, « interaction inoffensive » a un sens : un onglet, un accordéon. Dans un compte réel, la
+  même notion s'effondre — un clic supprime un bot, lance un abonnement, vide une liste. On ne peut
+  pas énumérer d'avance ce qui est sûr, donc la catégorie entière est interdite. Il reste
+  `scrollTo`, `moveTo`, `hover` : largement de quoi faire une scène vivante.
+- **Profil absent = arrêt dur.** Playwright créerait sinon un profil vide sans broncher et on
+  filmerait une page déconnectée en croyant filmer le dashboard — défaut invisible jusqu'au
+  visionnage.
+- **`auth` entre dans le hash** de la scène : basculer une scène en authentifié la re-rend.
+- `.chrome-record/` est **gitignoré**. Ce dossier contient des sessions actives : il vaut un mot de
+  passe. Jamais versionné, jamais copié, jamais envoyé — il ne quitte pas la machine.
+- **Ne jamais filmer de données personnelles de tiers.** Dans un dashboard, ça veut dire : pas de
+  liste de contacts, pas de conversations réelles, pas d'emails de clients. Compte de démo ou
+  données factices — et on vérifie l'image avant de publier, pas après.
+
+### Ce que ça ne remplace pas
+
+Une scène de dashboard greffée sur un script déjà écrit se voit. Le bon usage est de la prévoir
+**au moment du script** : la promesse annonce ce qu'on va montrer, la scène le montre. Sinon,
+`manual_asset` reste parfaitement valable.
+
+---
+
+## 5. `manual_asset` accepte toujours une vidéo
+
+Voie manuelle, complémentaire de 4-bis : utile quand la session est trop pénible à ouvrir, quand
+le parcours demande des clics (donc interdits en `auth`), ou quand il faut couper au montage. Extension : si `assets/captures/<sceneId>.mp4` (ou `.mov`) existe, il est conformé
 comme un clip ; sinon `<sceneId>.png` est utilisé comme aujourd'hui. Aucun des deux = **arrêt
 dur**, jamais de repli silencieux sur `ai_image`. Hash = hash des octets du fichier.
 
