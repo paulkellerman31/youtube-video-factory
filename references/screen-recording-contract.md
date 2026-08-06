@@ -304,6 +304,23 @@ Et un garde-fou, parce que le défaut était **invisible au code** : après char
 compare le rapport du cadre réel à celui demandé et logue un `WARN` explicite au-delà de 1 %
 d'écart. Un clip aux bonnes dimensions n'est pas un clip au bon cadrage — il fallait mesurer.
 
+### Traduction automatique — refusée par construction
+
+Le profil d'enregistrement est un vrai profil Chrome : sa langue d'interface peut être le
+français. Chrome propose alors de traduire une page anglaise — et si « toujours traduire » a été
+coché une fois, il traduit **sans rien demander**. On filmerait un dashboard anglais rendu en
+français approximatif : un défaut de *contenu*, pas d'affichage, invisible à tout contrôle
+technique puisque le clip serait net, cadré et de la bonne durée.
+
+Deux verrous. `--disable-features=Translate,TranslateUI --lang=en-US` au lancement, dans
+`LAUNCH_ARGS` — donc sur les captures publiques aussi, même risque. Et un contrôle après
+chargement : Google Translate marque la racine du document (`translated-ltr` / `translated-rtl`),
+sa détection provoque un **arrêt dur**, jamais un avertissement. Une capture traduite n'a aucune
+valeur de repli.
+
+Côté humain : pendant le login dans `record-profile.bat`, si Chrome propose de traduire, refuser —
+et surtout jamais « toujours traduire ».
+
 ### Règles codées, pas recommandées
 
 - **Aucun beat `click` dans une scène `auth`** — erreur dure dans `screenRecording()`. Sur un site

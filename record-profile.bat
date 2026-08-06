@@ -32,9 +32,12 @@ if not exist %CHROME% (
 echo.
 echo   Ouverture du profil d'enregistrement...
 echo   Connecte-toi aux outils, verifie le dashboard, PUIS FERME LA FENETRE.
+echo   Si Chrome propose de traduire la page : REFUSER (jamais "toujours traduire").
 echo.
 
-%CHROME% --user-data-dir="%PROFILE_DIR%" --no-first-run --no-default-browser-check about:blank
+REM --disable-features=Translate : jamais de traduction automatique dans ce profil.
+REM Un dashboard anglais traduit en francais serait filme tel quel, et ne se verrait qu'a la lecture.
+%CHROME% --user-data-dir="%PROFILE_DIR%" --no-first-run --no-default-browser-check --disable-features=Translate,TranslateUI --lang=en-US about:blank
 
 echo.
 echo   Fenetre fermee. Le profil est pret : %PROFILE_DIR%
