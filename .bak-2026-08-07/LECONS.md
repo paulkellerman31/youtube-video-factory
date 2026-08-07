@@ -22,20 +22,6 @@ une page en 1920×1080.
 Solution : toute scène capture/enregistrement est `motion: "static"`. Le
 mouvement vient du curseur et du scroll — il est DANS le clip.
 
-**Page protégée par Cloudflare — le vrai Chrome passe, Playwright non.**
-Problème : `searchatlas.com/otto-seo/` fait échouer le rendu en arrêt dur
-(`challenge anti-bot détecté (motif: cloudflare)`), alors que la même URL
-s'ouvre normalement dans le Chrome de la machine, et que trois AUTRES pages du
-MÊME domaine (`/`, `/llm-visibility/`, `/pricing/`) s'enregistrent sans un
-avertissement.
-Cause : la protection est par page, pas par domaine. Vérifier une URL du site
-dans un navigateur ne dit rien des autres. L'arrêt dur est le comportement
-voulu — jamais de repli silencieux sur `ai_image`.
-Solution : ne pas relancer à l'identique en espérant que ça passe. Soit
-rebasculer la scène sur une page du site qui s'enregistre déjà, soit passer en
-`manual_asset`. Au PLAN, quand une page porte 2 scènes ou plus, prévoir son
-repli — c'est le point de rupture le moins cher à anticiper.
-
 **Bandes noires et géométrie fausse en mode visible.**
 Problème : le mp4 sort aux bonnes dimensions mais avec des bandes ; en kiosque,
 1440×810 demandés ont donné 715×405.
@@ -238,56 +224,3 @@ octets.
 Cause : le transport a resservi une copie d'une session précédente.
 Solution : comparer les empreintes avant de patcher. Ne jamais commiter depuis
 le sandbox sans vérifier le fichier vivant sur la machine.
-
-## Voix et minutage
-
-**Fenêtres de scène calées sur un débit SUPPOSÉ.**
-Problème : script écrit pour 143,3 s (à 165 mots/minute), audio réel de 156,6 s.
-`assemble` rééchelonne alors silencieusement les 14 fenêtres d'un facteur 1,09 ;
-les clips, enregistrés à la durée du plan, sont trop courts et se font étirer.
-Cause : le débit a valu 150, puis 206,6, puis 165, puis 151 — sans que
-`voice-config.json` change entre les deux derniers. C'est une propriété
-instable d'ElevenLabs, pas une constante du preset.
-Solution : le débit ne sert plus qu'à VISER un nombre de mots à l'écriture. Les
-fenêtres définitives se calculent APRÈS l'étape audio, sur
-`assets/audio/timestamps.json` (horodatage caractère par caractère renvoyé par
-ElevenLabs) : on aligne chaque paragraphe du `voiceover.txt` sur le flux de
-caractères et on lit les bornes réelles. Puis on reporte ces durées dans
-`plannedDurationSec`, sinon les enregistrements restent taillés pour l'ancien
-minutage. Un plan calé sur une estimation est un plan faux d'environ 9 %.
-
-**Le débit imprimé n'est pas celui de la vidéo qu'on regarde.**
-Problème : on relève `DÉBIT MESURÉ 169 mots/minute` dans un log et on l'écrit
-dans le preset — alors qu'il vient d'un autre projet, sur une autre chaîne.
-Cause : `factory.bat` rend tout le backlog ; plusieurs chaînes écrivent leurs
-logs dans la même fenêtre, et chaque chaîne a sa voix.
-Solution : lire la ligne dans `projects/<chaîne>/<projet>/pipeline.log`, jamais
-dans le flot du terminal.
-
-## Outillage et lancement (Windows)
-
-**`factory run <projet>` n'est pas une commande.**
-Problème : `factory : Le terme «factory» n'est pas reconnu`.
-Cause : c'est un raccourci d'écriture de la documentation, pas un exécutable.
-Solution : `.\run-windows.bat <chaîne>/<projet>` ou
-`npm.cmd run factory -- run <chaîne>/<projet>`. Le CLI accepte un nom nu sous
-`projects/`. **Corrigé dans `SKILL.md` et `README.md` le 2026-08-07.**
-
-**`npm` bloqué par la stratégie d'exécution PowerShell.**
-Problème : `Impossible de charger le fichier npm.ps1, car l'exécution de
-scripts est désactivée sur ce système`.
-Cause : PowerShell refuse les `.ps1` non signés ; `npm` est un `.ps1`.
-Solution : appeler `npm.cmd`, ou passer par `run-windows.bat` — un `.bat` n'est
-pas concerné. **Ne pas toucher à l'`ExecutionPolicy`** : c'est un réglage de
-sécurité de la machine pour contourner un problème qui a une solution locale.
-
-**`factory.bat` relance tout le backlog, y compris ce qu'on ne veut plus.**
-Problème : lancé pour rendre UNE vidéo, il a commencé par régénérer voix et
-images d'un projet déjà terminé (~0,85 $ de crédits), puis enchaîné sur cinq
-projets écrits au format long périmé — la vidéo voulue passant en dernier.
-Cause : c'est son rôle, écrit dans son en-tête. Mais le skip idempotent n'a pas
-protégé un projet pourtant muni de son manifeste : les empreintes avaient été
-invalidées.
-Solution : `factory.bat` uniquement quand on veut vraiment tout le backlog.
-Pour une vidéo, `run-windows.bat <projet>`. Et sortir de `projects/` les
-projets périmés qu'on ne rendra jamais, sinon ils sont repris à chaque passage.

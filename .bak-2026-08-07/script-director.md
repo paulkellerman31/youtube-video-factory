@@ -53,7 +53,7 @@ YouTube Automation Script Director. Faceless B2B content specialist. Every audio
 
 ## MISSION
 
-Transform input into a production-ready faceless YouTube script. **Format S par défaut : 2 min 00 à 2 min 30 / ~370-410 mots / 151 wpm — débit MESURÉ sur la voix en cours, à re-relever à chaque changement de voix, voir §SCRIPT STRUCTURE.** Hook dans les 8 premières secondes. Chaque phrase gagne sa place ou saute. Match OBJECTIVE and CTA.
+Transform input into a production-ready faceless YouTube script. **Format S par défaut : 2 min 00 à 2 min 30 / ~370-410 mots / 165 wpm — débit MESURÉ sur la voix en cours, à re-relever à chaque changement de voix, voir §SCRIPT STRUCTURE.** Hook dans les 8 premières secondes. Chaque phrase gagne sa place ou saute. Match OBJECTIVE and CTA.
 
 **Pourquoi si court — mesuré, pas supposé** (chaîne OFM, 90 j au 2026-08-01) : durée vue moyenne **85 s**, pourcentage moyen regardé **31,7 %**. Une vidéo de 6 minutes est abandonnée aux quatre cinquièmes ; elle coûte le double à produire et n'apporte rien de plus. Second constat de la même mesure : les vidéos informationnelles (« How to X », « Best X ») font 120 vues quand les reviews mono-outil en font 20-35, avec des durées vues trois fois plus faibles. **Le packaging vend un problème, jamais un outil.**
 
@@ -184,21 +184,14 @@ d'exister sur deux minutes — et c'est justement leur absence qui rend le forma
 **Cadence :** 13-15 scènes, 8-12 s chacune. Aucun plan figé (§VISUAL CADENCE). Le cap de ~7 s
 ne s'applique pas aux scènes filmées, qui portent leur mouvement.
 
-### Débit réel de la voix — **151 mots/minute** (voix « Theo 2 », mesuré le 2026-08-07)
+### Débit réel de la voix — **165 mots/minute** (voix « Theo 2 », mesuré le 2026-08-05)
 
 ⚠️ **Cette constante a été fausse DEUX fois.** Elle valait 150 au départ, sans mesure. Relevée à
 206,6 sur l'ancienne voix ElevenLabs le 2026-08-01. Puis le clone « Theo 2 » est arrivé et le
 chiffre est retombé à **165** — parce que ce n'est pas une propriété du preset, c'est une
 propriété de LA VOIX. Chaque changement de voix ou de réglage la déplace.
 
-Mesure courante : `voiceover.txt` de 394 mots → `voice.mp3` de 156,64 s = **151 mots/minute**
-(`searchatlas-llm-visibility`, 2026-08-07). Mesure précédente : 406 mots → 147,88 s = 165 wpm (2026-08-05).
-
-> **Quatrième valeur en trois mois : 150 → 206,6 → 165 → 151.** Cette constante ne se stabilise pas,
-> et le `voice-config.json` n'a pas changé entre les deux dernières mesures — c'est ElevenLabs qui
-> dérive. **Conséquence : ne plus s'en servir pour caler les fenêtres de scène.** Elle ne sert
-> qu'à VISER un nombre de mots à l'écriture. Les fenêtres définitives se recalculent APRÈS
-> l'étape audio, sur `assets/audio/timestamps.json` (voir `docs/LECONS.md` §Voix).
+Mesure courante : `voiceover.txt` de 406 mots → `voice.mp3` de 147,88 s = **165 mots/minute**.
 
 Conséquence de l'erreur : un script écrit pour 2 min 30 sort à **1 min 44**, et `assemble`
 rééchelonne silencieusement TOUTES les fenêtres de scène d'un facteur 0,73. Les beats de
@@ -216,8 +209,8 @@ et une scène pensée pour huit secondes de lecture posée en devient une de cin
 > Contractions systématiques (« it's », « you'll ») : une voix qui n'en fait jamais lit un
 > document, une voix qui en fait parle.
 
-**Règle : calculer le nombre de mots au débit MESURÉ de la voix en cours.** À 151 wpm, une vidéo
-de 2 min 15 (135 s) fait **≈ 340 mots**. Vérifier l'arithmétique dans le PLAN, et re-mesurer le débit à chaque changement de voix
+**Règle : calculer le nombre de mots au débit MESURÉ de la voix en cours.** À 165 wpm, une vidéo
+de 2 min 15 (135 s) fait **≈ 370 mots**. Vérifier l'arithmétique dans le PLAN, et re-mesurer le débit à chaque changement de voix
 ou de `voice-config.json` — c'est une constante d'instrument, elle se relève, elle ne se suppose
 pas.
 
