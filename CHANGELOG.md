@@ -388,4 +388,4 @@ entrée.
 
 ---
 
-_Entrées antérieures au 2026-06-09 : `docs/archives/CHANGELOG-2026-T2.md`._
+_Historique plus ancien (8 entrées de juin) : `docs/archives/CHANGELOG-2026-T2.md`._
