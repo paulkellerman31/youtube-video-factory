@@ -397,6 +397,17 @@ entrée.
   `IMAGE_QUALITY=high`, celui du dernier rendu réel). Reste gaté chiffres pour l'usage en
   prod (rétention scènes data) — l'infra est prête, aucun projet publié n'est modifié.
 
+## 2026-06-09 (suite — qualite corps-humain)
+
+- **Casting recurrent (coherence "storyboard")** : style.md corps-humain documente la regle —
+  personnages recurrents decrits VERBATIM a chaque scene (gpt-image-1 sans memoire). Video
+  "3-jours-sans-boire" : mascotte goutte d'eau (s01/s03/s12/s13/s14) + perso humain
+  (s02/s11/s12/s13) + organes-personnages a look fige. Cohérence ~80 %, vrai fix image-to-image
+  reste en ROADMAP.
+- **Qualite image high** : `IMAGE_QUALITY=high` force dans le launcher du projet
+  (run-corps-humain-3jours.bat). Defaut pipeline inchange (medium) pour les autres chaines.
+  Note dans style.md. Cout ~3-4x medium.
+
 ---
 
-_Historique plus ancien (9 entrées de juin) : `docs/archives/CHANGELOG-2026-T2.md`._
+_Historique plus ancien (8 entrées de juin) : `docs/archives/CHANGELOG-2026-T2.md`._
