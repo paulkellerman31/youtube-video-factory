@@ -2,6 +2,38 @@
 
 Toute modification systémique (presets, pipeline, structure) se note ici. Une ligne par changement, datée.
 
+## 2026-08-07 (soir) — premier rendu au format S sur SearchAtlas : trois pièges payés
+
+Rendu de `ofm/2026-08-07_searchatlas-llm-visibility`, premier projet écrit
+intégralement au quota « zéro image IA ». Trois défauts trouvés en production,
+tous consignés dans `docs/LECONS.md`.
+
+- **Débit voix : 165 → 151 mots/minute** (`references/script-director.md`).
+  Quatrième valeur en trois mois, et la première à bouger **sans** changement de
+  `voice-config.json` — c'est ElevenLabs qui dérive. Conséquence structurelle :
+  **le débit ne sert plus à caler les fenêtres de scène.** Il sert à viser un
+  nombre de mots ; les fenêtres se recalculent après l'étape audio sur
+  `assets/audio/timestamps.json`, en alignant chaque paragraphe du `voiceover.txt`
+  sur le flux de caractères horodaté. Un plan calé sur l'estimation était faux
+  de 9 % — 143,3 s prévus contre 156,6 s réels.
+- **Cloudflare protège par PAGE, pas par domaine.** `/otto-seo/` fait échouer
+  l'enregistrement en arrêt dur pendant que `/`, `/llm-visibility/` et
+  `/pricing/` du même site s'enregistrent sans un avertissement, et que la page
+  s'ouvre normalement dans le vrai Chrome. Les deux scènes concernées ont été
+  rebasculées sur la page d'accueil et sur le centre d'aide — ce dernier étant
+  un meilleur plan de toute façon, puisqu'il documente lui-même la limite dont
+  parle la voix. Règle ajoutée : au PLAN, toute page portant 2 scènes ou plus
+  doit avoir son repli écrit.
+- **`factory.bat` a coûté ~0,85 $ pour rien.** Lancé pour rendre une vidéo, il a
+  régénéré voix et images d'un projet déjà terminé (dont le manifeste existait
+  pourtant), puis enchaîné sur les cinq projets de juin au format périmé, la
+  vidéo voulue passant en dernier. Le README le documentait déjà ; la leçon est
+  ajoutée avec les deux autres pièges Windows rencontrés (`factory run` n'est pas
+  une commande, `npm.ps1` bloqué par l'`ExecutionPolicy` → `npm.cmd`).
+- **Point ouvert n°1 inchangé et devenu plus cher** : le projet tourne toujours
+  sous `channel: "ofm"` alors qu'il vise la verticale d'`answerdelta`. L'audio et
+  la moitié des enregistrements existent déjà sous le profil OFM.
+
 ## 2026-08-07 — le dépôt passe au modèle de travail du portefeuille
 
 Aucun code ni preset touché. Mise en conformité avec
