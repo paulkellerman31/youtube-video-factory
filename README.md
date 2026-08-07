@@ -28,6 +28,19 @@ Lancer un rendu : `npm run factory -- run projects/<channel>/<projet>` (ou `run-
 ---
 
 
+## Où lire quoi (rituel de session)
+
+- `docs/ETAT.md` — état courant : chaînes, format en vigueur, backlog, points ouverts. **Se lit en premier.**
+- `docs/LECONS.md` — pièges opérationnels déjà payés (Problème → Cause → Solution). À relire avant de toucher au code ou aux presets.
+- `CHANGELOG.md` — journal daté des changements systémiques. 10 entrées actives, le reste dans `docs/archives/`.
+
+Après chaque bloc de travail : entrée datée en haut du CHANGELOG, mise à jour
+d'`ETAT.md`, piège rencontré → `LECONS.md`. Les améliorations de MÉTHODE
+(valables sur d'autres projets) vont dans `Projets/skill-observations/log.md`,
+pas ici.
+
+---
+
 ## Deux couches
 - **Cerveau** (`SKILL.md` + `references/`) → s'opère dans **Cowork**. Décide, brief, écrit le plan d'exécution.
 - **Mains** (`scripts/`) → se construit dans **Claude Code** à partir de `BUILD-SPEC.md`. Exécute : API + FFmpeg.
