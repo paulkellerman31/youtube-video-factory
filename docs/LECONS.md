@@ -1,0 +1,226 @@
+# LEÇONS — YouTube Video Factory
+
+Pièges OPÉRATIONNELS de ce projet, déjà payés une fois. Format
+Problème → Cause → Solution. À relire avant de toucher au code ou aux presets.
+
+> Ce fichier n'est pas le CHANGELOG (qui raconte ce qu'on a décidé) ni le log
+> d'observations (`Projets/skill-observations/log.md`, qui capte la méthode
+> valable sur d'autres projets). Ici : ce qui casse, et pourquoi.
+>
+> Une leçon devenue obsolète (outil abandonné, bug corrigé en amont) part dans
+> `archives/LECONS-<AAAA>.md`, elle ne se supprime pas.
+
+---
+
+## Capture et enregistrement d'écran
+
+**Ken Burns sur une capture d'écran.**
+Problème : la vidéo paraît « hyper zoomée, super laide » sur les scènes filmées.
+Cause : le `push-in` recadre dans le pixel ; invisible sur une image générée en
+1536×1024, c'est un agrandissement d'un texte déjà à sa résolution native sur
+une page en 1920×1080.
+Solution : toute scène capture/enregistrement est `motion: "static"`. Le
+mouvement vient du curseur et du scroll — il est DANS le clip.
+
+**Bandes noires et géométrie fausse en mode visible.**
+Problème : le mp4 sort aux bonnes dimensions mais avec des bandes ; en kiosque,
+1440×810 demandés ont donné 715×405.
+Cause : en mode visible la géométrie dépend de l'écran physique et de la mise à
+l'échelle Windows, que la pipeline ne contrôle pas. L'interface du navigateur
+mange ~90 px.
+Solution : capture sans affichage par défaut. Échappatoire `RECORD_HEADFUL=1`.
+Garde-fou : comparaison du rapport réel au rapport demandé après chargement,
+`WARN` au-delà de 1 %.
+
+**`networkidle` comme critère de chargement.**
+Problème : on payait le timeout entier sur certains sites.
+Cause : une application temps réel garde une connexion ouverte, le silence
+réseau n'arrive jamais.
+Solution : chargement sur `load`, `networkidle` en bonus plafonné à 8 s.
+
+**Page traduite automatiquement par Chrome.**
+Problème : un clip net, cadré, à la bonne durée — qui raconte autre chose que le
+produit.
+Cause : Chrome traduit la page sans le signaler. C'est un défaut de *contenu*,
+invisible à tout contrôle technique.
+Solution : `--disable-features=Translate,TranslateUI --lang=en-US` dans
+`LAUNCH_ARGS` + arrêt dur si la page porte la marque de Google Translate.
+
+**Une scène `auth` rend le projet non re-rendable.**
+Problème : la session expire, le projet ne se rend plus.
+Cause : la capture authentifiée dépend d'un profil Chrome dont la session a une
+durée de vie.
+Solution : préférer la page produit publique, qui embarque souvent déjà des
+captures d'interface peuplées de données de démo. La scène 08 de BotPenguin a
+été remise en public pour cette raison.
+
+**Chrome verrouille tout le dossier « User Data », pas un profil.**
+Problème : impossible de lancer un rendu si Chrome est ouvert.
+Cause : le verrou porte sur le dossier entier.
+Solution : dossier de profil séparé (`.chrome-record`, gitignoré), jamais un
+profil du menu Chrome.
+
+**Capture depuis un environnement distant.**
+Problème : certains sites servent une page anti-bot.
+Cause : IP datacenter.
+Solution : capturer depuis la machine locale (IP résidentielle). Sites
+définitivement non capturables (beacons.ai/Cloudflare, onlytraffic.co/rendu
+blanc) → `manual_asset`. Le garde-fou de `capture.ts` stoppe le rendu sur frame
+bloquée ou vide plutôt que de livrer du déchet.
+
+---
+
+## Voix et sous-titres
+
+**Le ton dérive sur une longue génération.**
+Problème : posé au début, plat à la fin. **Aucun réglage ne corrige ça.**
+Cause : limite du modèle sur les longues séquences.
+Solution : découpage en segments de ≤ 800 caractères, **uniquement sur des
+frontières de paragraphe** — dans cette pipeline un paragraphe est une scène,
+donc la coupure tombe sur un silence.
+
+**Décalage cumulatif des sous-titres en multi-segments.**
+Problème : les sous-titres avancent de plus en plus au fil de la vidéo.
+Cause : chaque segment revient avec un alignement relatif à lui-même, et un
+segment se termine par du silence — mesurer l'offset sur la fin du dernier
+caractère perd ce silence, l'erreur s'accumule.
+Solution : offset mesuré à l'`ffprobe` du fichier produit, jamais sur le texte.
+
+**Balises audio lues à voix haute.**
+Problème : « pause », « sighs » prononcés dans la voix off.
+Cause : les balises sont propres à `eleven_v3` ; le repli automatique sur
+`eleven_multilingual_v2` les LIT.
+Solution : aucune balise audio dans `voiceover.txt`, jamais.
+
+**Débit supposé au lieu de mesuré.**
+Problème : toutes les fenêtres de scène rééchelonnées d'un facteur 0,73, en
+silence.
+Cause : le preset supposait 150 mots/minute, la voix en faisait 206.
+Solution : le débit est imprimé à chaque génération. À relever et reporter dans
+`script-director.md` **à chaque changement de voix**.
+
+**« Générer trois fois et garder la meilleure » ne transfère pas.**
+Cause : ça suppose une oreille humaine ; la pipeline génère une fois.
+Solution : écouter `assets/audio/voice.mp3`, supprimer le fichier et relancer si
+la prise ne va pas.
+
+---
+
+## Rendu et FFmpeg
+
+**Contenu d'écran pixélisé.**
+Problème : « la vidéo de l'outil a l'air pixélisée ».
+Cause : le texte fin et les aplats sont le pire cas de x264, et la chaîne
+empilait trois générations (webm → mp4 → conform → mux) à `crf 20 + veryfast`.
+Solution : réglage unique dans `lib/ffmpeg.ts` — `VIDEO_CRF = 16`,
+`VIDEO_PRESET = medium`, repris par tous les étages. Filmage au viewport de
+sortie exact. Coût : du CPU local, zéro dollar.
+
+**`drawtext` cassé sous Windows.**
+Cause : fontconfig cassé sur les builds Windows, et le `:` de `C:` est
+incompatible avec le parseur de filtres FFmpeg.
+Solution : la police est copiée dans `assets/clips/_font.ttf` et référencée en
+chemin relatif sans `:`.
+
+**Miniature refusée par YouTube.**
+Cause : un PNG 1280×720 photoréaliste dépasse souvent les 2 Mo.
+Solution : sortie JPEG q≈92.
+
+**Assets périmés repêchés au montage.**
+Problème : un clip d'une version précédente réapparaît dans le rendu.
+Cause : la sonde disque d'`assemble` cherche par convention de nom et préfère
+`hyperframes/` à `recordings/`.
+Solution : déplacer les anciens assets hors de l'arborescence du projet
+(`_to_delete/`), pas seulement les ignorer.
+
+---
+
+## Génération d'images
+
+**Les prompts négatifs attirent l'artefact.**
+Problème : écrire « no text, no logos » fait apparaître du texte.
+Cause : gpt-image ignore les négations, et nommer « text/logo » attire
+l'artefact.
+Solution : décrire les surfaces en positif (« plain blank surfaces, unmarked
+screens ») et ne plus nommer text/logo/sign.
+
+**STRIP ≠ ROUTE.**
+Problème : vider une scène de son texte la tue.
+Cause : on confond texte décoratif et texte porteur de sens.
+Solution : décoratif (fausse facture, sceau) → surface vierge, OK. Porteur de
+sens (calendrier = mois, dashboard = données) → **router** vers capture,
+overlay ou hyperframes. Jamais vider.
+
+**La chaîne de style globale s'ajoute aussi au prompt de miniature.**
+Problème : la DA miniature devient inapplicable — le bloc « charcoal void, no
+environment » se fait suivre du décor que la DA bannit.
+Cause : `generate-images.ts` fait `${prompt}. ${style}` sans exception.
+Solution : exclure l'entrée `sceneId: "thumbnail"` de cet append.
+
+**Palette de chaîne écrite dans le fichier global.**
+Problème : bannir « l'or sans exception » dans `image-prompt-style.md` casse
+`rome-antique` (or/bronze) et `corps-humain` (teal/corail).
+Cause : `image-prompt-style.md` est le **fallback global multi-chaînes**, pas un
+fichier de chaîne.
+Solution : palette et police dans `profiles/<chaîne>/style.md`. Le fichier
+global ne garde que l'universel : une seule police par chaîne, jamais « X ou Y ».
+
+**Couleur d'accent en dur dans le code.**
+Problème : une miniature AnswerDelta sortait aux couleurs d'OFM. Sans erreur,
+sans avertissement, visible seulement à l'œil sur le fichier fini.
+Cause : `overlay.accent` avait `#00C8FF` en défaut dans le code ; l'omettre par
+vidéo suffisait à basculer l'identité.
+Solution : l'accent est lu dans le `render-config.json` du profil de chaîne
+(`profileAccent()`). **Un élément d'identité ne doit jamais dépendre d'un champ
+qu'on peut oublier.**
+
+**Un accent est une couleur à deux valeurs.**
+Cause : `#E8A33D` fait 8,76:1 sur l'encre sombre mais 2,16:1 sur blanc.
+Solution : la valeur sombre pour tout ce que produit la pipeline, la variante
+foncée réservée aux surfaces claires hors factory. Ne jamais intervertir.
+
+---
+
+## Presets et méthode
+
+**Un seuil en pourcentage autorise ce qu'il plafonne.**
+Problème : le quota « ≤ 30 % d'images IA » a été respecté (21 %) et le rendu
+était quand même mauvais. Il n'a pas tenu 24 heures.
+Cause : quand le défaut est de NATURE (« ça se voit que c'est généré »), une
+seule image générée au milieu de captures réelles signale « généré » et
+contamine la lecture des plans réels autour d'elle.
+Solution : **seul un seuil à zéro corrige un défaut de nature.** À se demander
+avant d'écrire le prochain quota.
+
+**Un preset qui existe mais n'est pas contrôlé n'existe pas.**
+Problème : 9 titres sur 22 violaient une règle écrite depuis juin.
+Cause : les titres étaient produits **après** la porte d'approbation, donc le
+contrôle n'avait rien à contrôler.
+Solution : remonter l'artefact avant le gate, et transformer la règle en
+contrôle explicite du PLAN.
+
+**Un fichier de reprise faux coûte plus cher qu'un fichier absent.**
+Problème : `STATE.md` annonçait « 7 vidéos, 5 non rendues, blocage facturation »
+alors que l'API en montrait 22 publiées.
+Cause : fichier d'état jamais mis à jour après une session.
+Solution : c'est le rituel de fermeture. ETAT.md se met à jour ou se supprime,
+il ne se laisse pas pourrir.
+
+---
+
+## Outillage
+
+**`page.evaluate` + `tsx` → « __name is not defined ».**
+Cause : esbuild réécrit les fonctions nommées en injectant un helper `__name`
+qui n'existe pas dans le navigateur. L'erreur survient à l'exécution, jamais à
+la compilation.
+Solution : écrire le code navigateur en **chaîne**, avec les antislashs doublés
+(dans un littéral de gabarit, `\s` vaut `s`).
+
+**Le pont de fichiers Cowork peut resservir un cache.**
+Problème : un fichier rapatrié ne contenait aucune des lignes lues quelques
+minutes plus tôt ; les deux versions faisaient exactement la même taille en
+octets.
+Cause : le transport a resservi une copie d'une session précédente.
+Solution : comparer les empreintes avant de patcher. Ne jamais commiter depuis
+le sandbox sans vérifier le fichier vivant sur la machine.
