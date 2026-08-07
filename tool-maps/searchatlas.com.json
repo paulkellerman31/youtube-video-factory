@@ -1,0 +1,151 @@
+{
+ "domain": "searchatlas.com",
+ "capturedAt": "2026-08-07",
+ "viewport": "1920x1080",
+ "note": "Releve manuellement via Chrome (le harnais recon.ts n'a pas de reseau dans le conteneur). Positions y mesurees a vw=1920. La page d'aide n'a pas pu etre mesuree : navigation bloquee par les permissions de l'extension. Ses y sont des estimations a verifier au premier rendu.",
+ "pages": [
+  {
+   "key": "home",
+   "url": "https://searchatlas.com/",
+   "docHeight": 11069,
+   "h1": "The Growth Engine That Runs Your Marketing While You Sleep",
+   "sections": [
+    {
+     "name": "h1",
+     "selector": "h1",
+     "y": 164
+    },
+    {
+     "name": "subtitle_by_morning",
+     "y": 437,
+     "text": "By morning, it's handled."
+    },
+    {
+     "name": "nav_get_started",
+     "x": 1501,
+     "y": 9,
+     "note": "header fixe"
+    }
+   ]
+  },
+  {
+   "key": "llm-visibility",
+   "url": "https://searchatlas.com/llm-visibility/",
+   "docHeight": 13685,
+   "h1": "Meet LLM Visibility — See What AI Says About Your Brand Before Your Customers Do.",
+   "sections": [
+    {
+     "name": "h1",
+     "selector": "h1",
+     "y": 187
+    },
+    {
+     "name": "stat_3_models",
+     "y": 2176,
+     "text": "3 Major AI Models in One Dashboard"
+    },
+    {
+     "name": "what_is_heading",
+     "y": 2446
+    },
+    {
+     "name": "dashboard_screenshot",
+     "y": 2567,
+     "width": 1122,
+     "note": "capture produit : rail gauche, onglets Summary/Visibility/Sentiment/Topics, 70% / 88,7% / 127"
+    },
+    {
+     "name": "track_across_claude",
+     "y": 5122,
+     "text": "Track visibility across ChatGPT, Gemini, Perplexity, Claude, and more."
+    }
+   ]
+  },
+  {
+   "key": "otto-seo",
+   "url": "https://searchatlas.com/otto-seo/",
+   "docHeight": 11222,
+   "h1": "Meet OTTO SEO — It Wins Every Search on Its Own",
+   "sections": [
+    {
+     "name": "h1",
+     "selector": "h1",
+     "y": 284
+    },
+    {
+     "name": "scans_deploys",
+     "y": 438,
+     "text": "scans your site and deploys fixes in real time, automating 99% of the manual work"
+    },
+    {
+     "name": "stat_99",
+     "y": 2287,
+     "text": "99% Reduction in manual SEO tasks"
+    }
+   ]
+  },
+  {
+   "key": "pricing",
+   "url": "https://searchatlas.com/pricing/",
+   "docHeight": 14299,
+   "h1": "Priced Like a Coworker, Not a Tool Stack",
+   "prices": {
+    "Starter": "$99/mo",
+    "Growth": "$199/mo",
+    "Pro": "$399/mo",
+    "Agency": "$999/mo"
+   },
+   "sections": [
+    {
+     "name": "h1",
+     "selector": "h1",
+     "y": 180
+    },
+    {
+     "name": "plan_cards",
+     "y": 688
+    },
+    {
+     "name": "ai_visibility_starts_on_growth",
+     "y": 2233,
+     "text": "See your brand across three core AI platforms. Pro adds Copilot and Perplexity for five supported platforms total."
+    },
+    {
+     "name": "universal_credits",
+     "y": 2269
+    },
+    {
+     "name": "compare_plans_heading",
+     "y": 2546
+    },
+    {
+     "name": "llm_visibility_section",
+     "y": 5447,
+     "note": "Starter = 4 croix : Projects, Available Credits, Platforms, Query Distribution"
+    },
+    {
+     "name": "available_credits_row",
+     "y": 5588,
+     "text": "1 credit = 1 query x 1 platform x 1 refresh ; 3500 / 20000 / 50000"
+    },
+    {
+     "name": "platforms_row",
+     "y": 5703,
+     "text": "Growth: ChatGPT, Gemini, Google AI Mode | Pro+Agency: +Copilot, +Perplexity"
+    }
+   ]
+  },
+  {
+   "key": "help-js-rendering",
+   "url": "https://help.searchatlas.com/en/articles/15940016-javascript-rendering-for-llm-crawler-visibility",
+   "measured": false,
+   "sections": [
+    {
+     "name": "key_sentence",
+     "y": "~1450 (ESTIME)",
+     "text": "LLM crawlers such as ChatGPT, Perplexity, and Google's AI Overviews often fetch pages without fully executing JavaScript ... may see a nearly empty page and miss all of your content entirely."
+    }
+   ]
+  }
+ ]
+}
