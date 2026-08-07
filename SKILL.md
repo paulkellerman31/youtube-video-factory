@@ -12,7 +12,7 @@ description: >
 # YouTube Video Factory
 
 Brain layer. It decides what to produce and writes the execution plan; the **pipeline**
-(built per the build spec, run via `factory run <project>`) does the rendering. This skill
+(built per the build spec, run via `run-windows.bat <channel>/<project>` (ou `npm.cmd run factory -- run <channel>/<project>`)) does the rendering. This skill
 operates in **Cowork**. It never renders anything itself.
 
 ---
@@ -154,14 +154,13 @@ Never re-decide what a preset already fixes.
 ### 01 — One video (the spine)
 1. Load presets. 2. Pick format from the mix; build the PLAN (format + reason, antagonist +
 how defeated, tone, 5–8 blocks). **GATE: wait for "go".** 3. Write `voiceover.txt`,
-`image-prompts.json`, `project-config.json`. 4. `factory run <project>`. 5. Surface `final.mp4`.
+`image-prompts.json`, `project-config.json`. 4. `run-windows.bat <channel>/<project>` (ou `npm.cmd run factory -- run <channel>/<project>`). 5. Surface `final.mp4`.
 
 ### 02 — Bulk batch (the 20/80 core)
 1. Load presets once. 2. Take the topic list (or derive it from a theme/keyword cluster).
 3. Generate **all** plans at once, spread across the format mix for variety. 4. **BATCHED GATE:**
 present the plans compactly (one line each: topic · format · antagonist) → approve / drop /
-tweak the whole set in one pass. 5. For each approved plan: write its assets + config, then
-`factory run`. Fire unattended. 6. Surface the batch: table of `final.mp4` + per-video cost
+tweak the whole set in one pass. 5. For each approved plan: write its assets + config, then lancer le rendu. Fire unattended. 6. Surface the batch: table of `final.mp4` + per-video cost
 pulled from manifests.
 
 > The gate is per-**plan**, batched — never per-asset, never per-video-after-render.

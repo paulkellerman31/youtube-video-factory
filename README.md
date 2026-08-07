@@ -20,7 +20,12 @@ cp references/profiles/ofm/voice-config.example.json references/profiles/ofm/voi
 ```
 
 Prérequis machine : **Node** + **FFmpeg** installés et dans le PATH.
-Lancer un rendu : `npm run factory -- run projects/<channel>/<projet>` (ou `run-windows.bat`).
+Lancer un rendu : `run-windows.bat <channel>/<projet>`.
+
+> Windows : `npm` est un `.ps1` et PowerShell le bloque souvent
+> (`UnauthorizedAccess`). Utiliser `npm.cmd run factory -- run <channel>/<projet>`,
+> ou le `.bat`, qui n'est pas concerné. Ne pas modifier l'`ExecutionPolicy`.
+> `factory run <projet>` est un raccourci d'écriture, **pas une commande**.
 
 > Ce repo ne contient ni clés API (`.env`), ni voix perso (`voice-config.json`), ni vidéos
 > rendues (`projects/`). Voir `projects/_example/` pour le format des fichiers d'entrée.
