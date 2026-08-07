@@ -239,7 +239,32 @@ Cause : le transport a resservi une copie d'une session précédente.
 Solution : comparer les empreintes avant de patcher. Ne jamais commiter depuis
 le sandbox sans vérifier le fichier vivant sur la machine.
 
-### Lancement sous Windows
+## Voix et minutage
+
+**Fenêtres de scène calées sur un débit SUPPOSÉ.**
+Problème : script écrit pour 143,3 s (à 165 mots/minute), audio réel de 156,6 s.
+`assemble` rééchelonne alors silencieusement les 14 fenêtres d'un facteur 1,09 ;
+les clips, enregistrés à la durée du plan, sont trop courts et se font étirer.
+Cause : le débit a valu 150, puis 206,6, puis 165, puis 151 — sans que
+`voice-config.json` change entre les deux derniers. C'est une propriété
+instable d'ElevenLabs, pas une constante du preset.
+Solution : le débit ne sert plus qu'à VISER un nombre de mots à l'écriture. Les
+fenêtres définitives se calculent APRÈS l'étape audio, sur
+`assets/audio/timestamps.json` (horodatage caractère par caractère renvoyé par
+ElevenLabs) : on aligne chaque paragraphe du `voiceover.txt` sur le flux de
+caractères et on lit les bornes réelles. Puis on reporte ces durées dans
+`plannedDurationSec`, sinon les enregistrements restent taillés pour l'ancien
+minutage. Un plan calé sur une estimation est un plan faux d'environ 9 %.
+
+**Le débit imprimé n'est pas celui de la vidéo qu'on regarde.**
+Problème : on relève `DÉBIT MESURÉ 169 mots/minute` dans un log et on l'écrit
+dans le preset — alors qu'il vient d'un autre projet, sur une autre chaîne.
+Cause : `factory.bat` rend tout le backlog ; plusieurs chaînes écrivent leurs
+logs dans la même fenêtre, et chaque chaîne a sa voix.
+Solution : lire la ligne dans `projects/<chaîne>/<projet>/pipeline.log`, jamais
+dans le flot du terminal.
+
+## Outillage et lancement (Windows)
 
 **`factory run <projet>` n'est pas une commande.**
 Problème : `factory : Le terme «factory» n'est pas reconnu`.
@@ -266,29 +291,3 @@ invalidées.
 Solution : `factory.bat` uniquement quand on veut vraiment tout le backlog.
 Pour une vidéo, `run-windows.bat <projet>`. Et sortir de `projects/` les
 projets périmés qu'on ne rendra jamais, sinon ils sont repris à chaque passage.
-
-
-## Voix et minutage
-
-**Fenêtres de scène calées sur un débit SUPPOSÉ.**
-Problème : script écrit pour 143,3 s (à 165 mots/minute), audio réel de 156,6 s.
-`assemble` rééchelonne alors silencieusement les 14 fenêtres d'un facteur 1,09 ;
-les clips, enregistrés à la durée du plan, sont trop courts et se font étirer.
-Cause : le débit a valu 150, puis 206,6, puis 165, puis 151 — sans que
-`voice-config.json` change entre les deux derniers. C'est une propriété
-instable d'ElevenLabs, pas une constante du preset.
-Solution : le débit ne sert plus qu'à VISER un nombre de mots à l'écriture. Les
-fenêtres définitives se calculent APRÈS l'étape audio, sur
-`assets/audio/timestamps.json` (horodatage caractère par caractère renvoyé par
-ElevenLabs) : on aligne chaque paragraphe du `voiceover.txt` sur le flux de
-caractères et on lit les bornes réelles. Puis on reporte ces durées dans
-`plannedDurationSec`, sinon les enregistrements restent taillés pour l'ancien
-minutage. Un plan calé sur une estimation est un plan faux d'environ 9 %.
-
-**Le débit imprimé n'est pas celui de la vidéo qu'on regarde.**
-Problème : on relève `DÉBIT MESURÉ 169 mots/minute` dans un log et on l'écrit
-dans le preset — alors qu'il vient d'un autre projet, sur une autre chaîne.
-Cause : `factory.bat` rend tout le backlog ; plusieurs chaînes écrivent leurs
-logs dans la même fenêtre, et chaque chaîne a sa voix.
-Solution : lire la ligne dans `projects/<chaîne>/<projet>/pipeline.log`, jamais
-dans le flot du terminal.
