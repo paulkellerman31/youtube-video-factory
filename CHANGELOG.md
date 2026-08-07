@@ -2,6 +2,28 @@
 
 Toute modification systémique (presets, pipeline, structure) se note ici. Une ligne par changement, datée.
 
+## 2026-08-07 — le dépôt passe au modèle de travail du portefeuille
+
+Aucun code ni preset touché. Mise en conformité avec
+`Projets/METHODE-TRAVAIL.md`, qui sépare trois mémoires que ce dépôt gardait
+fusionnées dans le seul CHANGELOG.
+
+- **`docs/ETAT.md`** — état courant lisible en 30 s : chaînes, chiffres de la
+  chaîne OFM, format en vigueur, backlog de rendu, points ouverts. Remplace le
+  `STATE.md` périmé supprimé le 2026-08-01.
+- **`docs/LECONS.md`** — les pièges opérationnels déjà payés, extraits des
+  18 entrées du CHANGELOG et remis au format Problème → Cause → Solution,
+  classés par domaine (capture, voix, FFmpeg, images, presets, outillage).
+  Le CHANGELOG raconte ce qu'on a décidé ; LECONS dit ce qui casse.
+- **Archivage du CHANGELOG appliqué** : le fichier actif garde les 10 dernières
+  entrées, les 8 plus anciennes partent dans
+  `docs/archives/CHANGELOG-2026-T2.md`. Sauvegarde préalable et contrôle du
+  nombre d'entrées avant/après (18 = 10 + 8).
+- **Point relevé sans le corriger** : `projects/ofm/2026-08-07_searchatlas-llm-visibility`
+  porte `channel: "ofm"` alors que SearchAtlas est un outil GEO/AEO et que la
+  chaîne `answerdelta`, créée la veille pour cette verticale, n'a aucun projet.
+  À trancher avant rendu — c'est une décision, pas une coquille.
+
 ## 2026-08-06 (soir) — nouvelle chaîne : AnswerDelta (outils GEO/AEO)
 
 - **Profil complet** dans `references/profiles/answerdelta/` : `style.md`, `thumbnail-playbook.md`,
